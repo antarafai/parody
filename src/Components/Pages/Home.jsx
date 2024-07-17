@@ -4,6 +4,7 @@ import CardSection from "../Main/CardSection";
 import Navbar from "../Navbar/Navbar";
 import RightSide from "../RightSidebar/RightSide";
 import Main from "../Main/Main";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   return (
@@ -19,6 +20,11 @@ const Home = () => {
           <div className="w-[80%] mx-auto">
             <CardSection></CardSection>
             <Main></Main>
+            <div className="w-10 h-10 flex bg-gray-100">
+              <Link to="/studio">
+                <button>Go to Designer Studio</button>
+              </Link>
+            </div>
           </div>
         </div>
         <div className="flex-auto w-[20%] fixed right-0 top-12">
