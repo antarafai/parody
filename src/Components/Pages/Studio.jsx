@@ -1,10 +1,19 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import Stats from 'three/examples/jsm/libs/stats.module';
+import { GUI } from 'dat.gui';
 
 const DesignerStudio = () => {
   const webGLRef = useRef(null);
+  const progressBarRef = useRef(null);
+  const [animations, setAnimations] = useState({});
+  const [mixer, setMixer] = useState(null);
+  const [modelReady, setModelReady] = useState(false);
+  const [animationActions, setAnimationActions] = useState([]);
+  const [activeAction, setActiveAction] = useState(null);
+  const [lastAction, setLastAction] = useState(null);
 
   useEffect(() => {
     // Scene setup
@@ -16,61 +25,170 @@ const DesignerStudio = () => {
 
     // OrbitControls
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
+    controls.screenSpacePanning = true;
+    controls.target.set(0, 1, 0);
+
+    // Axes helper
+    const axesHelper = new THREE.AxesHelper(5);
+    scene.add(axesHelper);
 
     // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    scene.add(ambientLight);
+    const light = new THREE.PointLight(0xffffff, 1);
+    light.position.set(2.5, 7.5, 15);
+    scene.add(light);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.position.set(5, 10, 7.5);
-    scene.add(directionalLight);
+    // Camera position
+    camera.position.set(0.8, 1.4, 1.0);
 
-    // Add a simple cube for reference
-    const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-    const cube = new THREE.Mesh(geometry, material);
-    cube.position.set(0, 1, 0);
-    scene.add(cube);
+    // Stats
+    const stats = new Stats();
+    document.body.appendChild(stats.dom);
 
-    // Load FBX model
-    const loader = new FBXLoader();
-    loader.load('/path/to/your/model.fbx', (object) => {
-      object.traverse((child) => {
-        if (child.isMesh) {
-          child.castShadow = true;
-          child.receiveShadow = true;
+    // GUI
+    const gui = new GUI();
+    const animationsFolder = gui.addFolder('Animations');
+    animationsFolder.open();
+
+    // Load FBX models and animations
+    const fbxLoader = new FBXLoader();
+    fbxLoader.load(
+      '/models/vanguard_t_choonyung.fbx',
+      (object) => {
+        object.scale.set(0.01, 0.01, 0.01);
+        const mixerInstance = new THREE.AnimationMixer(object);
+        setMixer(mixerInstance);
+        const animationAction = mixerInstance.clipAction(object.animations[0]);
+        setAnimationActions((prevActions) => [...prevActions, animationAction]);
+        animationsFolder.add(animations, 'default');
+        setActiveAction(animationActions[0]);
+        scene.add(object);
+
+        fbxLoader.load(
+          '/models/vanguard@samba.fbx',
+          (object) => {
+            const animationAction = mixerInstance.clipAction(object.animations[0]);
+            setAnimationActions((prevActions) => [...prevActions, animationAction]);
+            animationsFolder.add(animations, 'samba');
+
+            fbxLoader.load(
+              '/models/vanguard@bellydance.fbx',
+              (object) => {
+                const animationAction = mixerInstance.clipAction(object.animations[0]);
+                setAnimationActions((prevActions) => [...prevActions, animationAction]);
+                animationsFolder.add(animations, 'bellydance');
+
+                fbxLoader.load(
+                  '/models/vanguard@goofyrunning.fbx',
+                  (object) => {
+                    object.animations[0].tracks.shift();
+                    const animationAction = mixerInstance.clipAction(object.animations[0]);
+                    setAnimationActions((prevActions) => [...prevActions, animationAction]);
+                    animationsFolder.add(animations, 'goofyrunning');
+                    progressBarRef.current.style.display = 'none';
+                    setModelReady(true);
+                  },
+                  (xhr) => {
+                    if (xhr.lengthComputable) {
+                      const percentComplete = (xhr.loaded / xhr.total) * 100;
+                      progressBarRef.current.value = percentComplete;
+                      progressBarRef.current.style.display = 'block';
+                    }
+                  },
+                  (error) => {
+                    console.log(error);
+                  }
+                );
+              },
+              (xhr) => {
+                if (xhr.lengthComputable) {
+                  const percentComplete = (xhr.loaded / xhr.total) * 100;
+                  progressBarRef.current.value = percentComplete;
+                  progressBarRef.current.style.display = 'block';
+                }
+              },
+              (error) => {
+                console.log(error);
+              }
+            );
+          },
+          (xhr) => {
+            if (xhr.lengthComputable) {
+              const percentComplete = (xhr.loaded / xhr.total) * 100;
+              progressBarRef.current.value = percentComplete;
+              progressBarRef.current.style.display = 'block';
+            }
+          },
+          (error) => {
+            console.log(error);
+          }
+        );
+      },
+      (xhr) => {
+        if (xhr.lengthComputable) {
+          const percentComplete = (xhr.loaded / xhr.total) * 100;
+          progressBarRef.current.value = percentComplete;
+          progressBarRef.current.style.display = 'block';
         }
-      });
-      scene.add(object);
-    });
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
 
-    camera.position.set(0, 5, 10);
-    controls.update();
-
-    // Handle window resize
+    // Window resize handler
     const onWindowResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
+      render();
     };
     window.addEventListener('resize', onWindowResize, false);
 
     // Animation loop
+    const clock = new THREE.Clock();
     const animate = () => {
       requestAnimationFrame(animate);
       controls.update();
-      renderer.render(scene, camera);
+      if (modelReady && mixer) mixer.update(clock.getDelta());
+      render();
+      stats.update();
     };
 
+    const render = () => {
+      renderer.render(scene, camera);
+    };
     animate();
 
     // Cleanup on component unmount
     return () => {
       window.removeEventListener('resize', onWindowResize);
       webGLRef.current.removeChild(renderer.domElement);
+      document.body.removeChild(stats.dom);
+      gui.destroy();
     };
-  }, []);
+  }, [modelReady, mixer, animationActions, animations]);
+
+  const setAction = (toAction) => {
+    if (toAction !== activeAction && activeAction) {
+      lastAction.fadeOut(1);
+      toAction.reset();
+      toAction.fadeIn(1);
+      toAction.play();
+    }
+    setLastAction(activeAction);
+    setActiveAction(toAction);
+  };
+
+  useEffect(() => {
+    if (animationActions.length > 0) {
+      setAnimations({
+        default: () => setAction(animationActions[0]),
+        samba: () => setAction(animationActions[1]),
+        bellydance: () => setAction(animationActions[2]),
+        goofyrunning: () => setAction(animationActions[3]),
+      });
+    }
+  }, [animationActions]);
 
   return (
     <div className="h-screen flex flex-col">
@@ -90,6 +208,7 @@ const DesignerStudio = () => {
         <div className="flex-1 ml-16 p-4">
           {/* WebGL viewport */}
           <div className="bg-gray-300 flex-1 flex items-center justify-center" ref={webGLRef}></div>
+          <progress value="0" max="100" id="progressBar" ref={progressBarRef}></progress>
           {/* Prompt Bar */}
           <div className="flex items-center mt-4">
             <input
