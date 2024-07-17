@@ -247,6 +247,7 @@ const Main = () => {
           <div>
             {state?.posts?.length > 0 &&
               state?.posts?.map((post, index) => {
+                console.log(post);
                 return (
                   <PostCard
                     key={index}
@@ -256,7 +257,7 @@ const Main = () => {
                     name={post?.name}
                     email={post?.email}
                     media={post?.media}
-                    text={post?.text}
+                    mediaType={post?.media?.includes("mp4") ? "video" : "image"}
                     timestamp={new Date(
                       post?.timestamp?.toDate()
                     )?.toUTCString()}

@@ -35,6 +35,9 @@ const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestam
   const { ADD_LIKE, HANDLE_ERROR } = postActions;
   const [open, setOpen] = useState(false);
 
+  console.log('media', media)
+  console.log('mediaType', mediaType)
+
   const handleOpen = (e) => {
     e.preventDefault();
     setOpen(true);
