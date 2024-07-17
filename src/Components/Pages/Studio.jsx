@@ -1,6 +1,43 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import * as THREE from 'three';
 
 const DesignerStudio = () => {
+  const webGLRef = useRef(null); // Ref for the div where the WebGL will be rendered
+
+  useEffect(() => {
+    // Scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    webGLRef.current.appendChild(renderer.domElement); // Attach renderer to the DOM
+
+    // Add objects to the scene
+    const geometry = new THREE.BoxGeometry();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+
+    camera.position.z = 5;
+
+    // Animation loop
+    const animate = function () {
+      requestAnimationFrame(animate);
+
+      cube.rotation.x += 0.01;
+      cube.rotation.y += 0.01;
+
+      renderer.render(scene, camera);
+    };
+
+    animate();
+
+    // Cleanup on component unmount
+    return () => {
+      webGLRef.current.removeChild(renderer.domElement);
+    };
+  }, []);
+
   return (
     <div className="h-screen flex flex-col">
       <header className="text-center py-4 bg-gray-800 text-white">
@@ -17,16 +54,8 @@ const DesignerStudio = () => {
         </div>
         {/* Main Content */}
         <div className="flex-1 ml-16 p-4">
-          {/* Video Player */}
-          <div className="bg-gray-300 flex-1 flex items-center justify-center">
-            <video
-              className="w-full h-full"
-              controls
-              src="path-to-your-video.mp4"
-            >
-              Your browser does not support the video tag.
-            </video>
-          </div>
+          {/* WebGL viewport */}
+          <div className="bg-gray-300 flex-1 flex items-center justify-center" ref={webGLRef}></div>
           {/* Prompt Bar */}
           <div className="flex items-center mt-4">
             <input
