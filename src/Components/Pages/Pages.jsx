@@ -5,6 +5,7 @@ import Login from "./Login";
 import Register from "./Regsiter";
 import Reset from "./Reset";
 import FriendProfile from "./FriendProfile";
+import DesignerStudio from "./Studio";
 
 const Pages = () => {
   return (
@@ -14,6 +15,7 @@ const Pages = () => {
         <Route path="/login" element={<Login></Login>}></Route>
         <Route path="/register" element={<Register></Register>}></Route>
         <Route path="reset" element={<Reset></Reset>}></Route>
+        <Route path="/studio" element={<DesignerStudio></DesignerStudio>}></Route>
         <Route
           path="/profile/:id"
           element={<FriendProfile></FriendProfile>}

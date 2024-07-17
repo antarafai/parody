@@ -35,7 +35,7 @@ const NavLinks = () => {
           />
         </svg>
       </div>
-      <div className="hover:translate-y-1 duration-500 ease-in-out hover:text-blue-500">
+      <div className="hover:translate-y-1 duration-500 ease-in-out hover:text-blue-500"  onClick={() => {window.location.href = '/studio'}}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
