@@ -20,11 +20,13 @@ const Home = () => {
           <div className="w-[80%] mx-auto">
             <CardSection></CardSection>
             <Main></Main>
-            <div className="w-10 h-10 flex bg-gray-100">
-              <Link to="/studio">
-                <button>Go to Designer Studio</button>
-              </Link>
-            </div>
+          </div>
+          <div className="flex justify-center items-center mt-4 mb-8">
+            <Link to="/studio" className="inline-block">
+              <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition duration-300">
+                Go to Designer Studio
+              </button>
+            </Link>
           </div>
         </div>
         <div className="flex-auto w-[20%] fixed right-0 top-12">
