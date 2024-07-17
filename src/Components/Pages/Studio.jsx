@@ -52,7 +52,7 @@ const DesignerStudio = () => {
     // Load FBX models and animations
     const fbxLoader = new FBXLoader();
     fbxLoader.load(
-      '/models/vanguard_t_choonyung.fbx',
+      '/models/Y-Bot-T-pose.fbx',
       (object) => {
         object.scale.set(0.01, 0.01, 0.01);
         const mixerInstance = new THREE.AnimationMixer(object);
@@ -64,26 +64,26 @@ const DesignerStudio = () => {
         scene.add(object);
 
         fbxLoader.load(
-          '/models/vanguard@samba.fbx',
+          '/models/Slide-Hip-Hop-Dance.fbx',
           (object) => {
             const animationAction = mixerInstance.clipAction(object.animations[0]);
             setAnimationActions((prevActions) => [...prevActions, animationAction]);
-            animationsFolder.add(animations, 'samba');
+            animationsFolder.add(animations, 'dance');
 
             fbxLoader.load(
-              '/models/vanguard@bellydance.fbx',
+              '/models/Shoved-Reaction-With-Spin.fbx',
               (object) => {
                 const animationAction = mixerInstance.clipAction(object.animations[0]);
                 setAnimationActions((prevActions) => [...prevActions, animationAction]);
-                animationsFolder.add(animations, 'bellydance');
+                animationsFolder.add(animations, 'reaction');
 
                 fbxLoader.load(
-                  '/models/vanguard@goofyrunning.fbx',
+                  '/models/Joyful-Jump.fbx',
                   (object) => {
                     object.animations[0].tracks.shift();
                     const animationAction = mixerInstance.clipAction(object.animations[0]);
                     setAnimationActions((prevActions) => [...prevActions, animationAction]);
-                    animationsFolder.add(animations, 'goofyrunning');
+                    animationsFolder.add(animations, 'jumping');
                     progressBarRef.current.style.display = 'none';
                     setModelReady(true);
                   },
@@ -183,9 +183,9 @@ const DesignerStudio = () => {
     if (animationActions.length > 0) {
       setAnimations({
         default: () => setAction(animationActions[0]),
-        samba: () => setAction(animationActions[1]),
-        bellydance: () => setAction(animationActions[2]),
-        goofyrunning: () => setAction(animationActions[3]),
+        dance: () => setAction(animationActions[1]),
+        reaction: () => setAction(animationActions[2]),
+        jumping: () => setAction(animationActions[3]),
       });
     }
   }, [animationActions]);
