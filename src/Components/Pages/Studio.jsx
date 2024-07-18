@@ -51,8 +51,37 @@ const DesignerStudio = () => {
 
     // Load FBX models and animations
     const fbxLoader = new FBXLoader();
-    fbxLoader.load(
-      '/models/Y-Bot-T-pose.fbx',
+    const loadModel = (url, onLoad, onProgress) => {
+      fbxLoader.load(url, onLoad, onProgress, (error) => {
+        console.error(`Error loading ${url}`, error);
+      });
+    };
+
+    function checkFileExists(filePath) {
+      return new Promise((resolve, reject) => {
+        fetch(filePath)
+          .then(response => {
+            resolve(response.ok);
+          })
+          .catch(error => {
+            reject(error);
+          });
+      });
+    }
+
+    // Load FBX models and animations
+    checkFileExists('public/models/Y-Bot-T-pose.fbx')
+    .then(fileExists => {
+      if (fileExists) {
+        // File exists, load the model
+        console.log('File exists.');
+      } else {
+        console.log('File does not exist.');
+      }
+    })
+          // File exists, load the model
+    loadModel(
+      'public/models/Y-Bot-T-pose.fbx',
       (object) => {
         object.scale.set(0.01, 0.01, 0.01);
         const mixerInstance = new THREE.AnimationMixer(object);
@@ -60,30 +89,34 @@ const DesignerStudio = () => {
         const animationAction = mixerInstance.clipAction(object.animations[0]);
         setAnimationActions((prevActions) => [...prevActions, animationAction]);
         animationsFolder.add(animations, 'default');
+        console.log("Default animation loaded");
         setActiveAction(animationActions[0]);
         scene.add(object);
 
-        fbxLoader.load(
-          '/models/Slide-Hip-Hop-Dance.fbx',
+        loadModel(
+          'public/models/Slide-Hip-Hop-Dance.fbx',
           (object) => {
             const animationAction = mixerInstance.clipAction(object.animations[0]);
             setAnimationActions((prevActions) => [...prevActions, animationAction]);
             animationsFolder.add(animations, 'dance');
+            console.log("Dance animation loaded");
 
-            fbxLoader.load(
-              '/models/Shoved-Reaction-With-Spin.fbx',
+            loadModel(
+              'public/models/Shoved-Reaction-With-Spin.fbx',
               (object) => {
                 const animationAction = mixerInstance.clipAction(object.animations[0]);
                 setAnimationActions((prevActions) => [...prevActions, animationAction]);
                 animationsFolder.add(animations, 'reaction');
+                console.log("Reaction animation loaded");
 
-                fbxLoader.load(
-                  '/models/Joyful-Jump.fbx',
+                loadModel(
+                  'public/models/Joyful-Jump.fbx',
                   (object) => {
                     object.animations[0].tracks.shift();
                     const animationAction = mixerInstance.clipAction(object.animations[0]);
                     setAnimationActions((prevActions) => [...prevActions, animationAction]);
                     animationsFolder.add(animations, 'jumping');
+                    console.log("Jumping animation loaded");
                     progressBarRef.current.style.display = 'none';
                     setModelReady(true);
                   },
