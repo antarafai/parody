@@ -1,19 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import Stats from 'three/examples/jsm/libs/stats.module';
 import { GUI } from 'dat.gui';
 
 const DesignerStudio = () => {
   const webGLRef = useRef(null);
   const progressBarRef = useRef(null);
-  const [animations, setAnimations] = useState({});
   const [mixer, setMixer] = useState(null);
   const [modelReady, setModelReady] = useState(false);
-  const [animationActions, setAnimationActions] = useState([]);
-  const [activeAction, setActiveAction] = useState(null);
-  const [lastAction, setLastAction] = useState(null);
 
   useEffect(() => {
     // Scene setup
@@ -49,124 +45,44 @@ const DesignerStudio = () => {
     const animationsFolder = gui.addFolder('Animations');
     animationsFolder.open();
 
-    // Load FBX models and animations
-    const fbxLoader = new FBXLoader();
-    const loadModel = (url, onLoad, onProgress) => {
-      fbxLoader.load(url, onLoad, onProgress, (error) => {
+    // Load glTF models and animations
+    const gltfLoader = new GLTFLoader();
+    const loadModel = async (url) => {
+      try {
+        return await new Promise((resolve, reject) => {
+          gltfLoader.load(url, resolve, undefined, reject);
+        });
+      } catch (error) {
         console.error(`Error loading ${url}`, error);
-      });
+        throw error;
+      }
     };
 
-    function checkFileExists(filePath) {
-      return new Promise((resolve, reject) => {
-        fetch(filePath)
-          .then(response => {
-            resolve(response.ok);
-          })
-          .catch(error => {
-            reject(error);
-          });
-      });
-    }
+    const loadModels = async () => {
+      try {
+        const mainModel = await loadModel('/models/vanguard_t_choonyung.glb');
+        console.log('Loaded main model', mainModel);
+        mainModel.scene.scale.set(0.01, 0.01, 0.01);
+        setMixer(new THREE.AnimationMixer(mainModel.scene));
+        scene.add(mainModel.scene);
 
-    // Load FBX models and animations
-    checkFileExists('public/models/Y-Bot-T-pose.fbx')
-    .then(fileExists => {
-      if (fileExists) {
-        // File exists, load the model
-        console.log('File exists.');
-      } else {
-        console.log('File does not exist.');
+        const samba = await loadModel('/models/vanguard_samba.glb');
+        console.log('Loaded samba animation', samba);
+
+        const bellydance = await loadModel('/models/vanguard_bellydance.glb');
+        console.log('Loaded bellydance animation', bellydance);
+
+        const goofyrunning = await loadModel('/models/vanguard_goofyrunning.glb');
+        console.log('Loaded goofyrunning animation', goofyrunning);
+
+        progressBarRef.current.style.display = 'none';
+        setModelReady(true);
+      } catch (error) {
+        console.error('Error loading one of the models', error);
       }
-    })
-          // File exists, load the model
-    loadModel(
-      'public/models/Y-Bot-T-pose.fbx',
-      (object) => {
-        object.scale.set(0.01, 0.01, 0.01);
-        const mixerInstance = new THREE.AnimationMixer(object);
-        setMixer(mixerInstance);
-        const animationAction = mixerInstance.clipAction(object.animations[0]);
-        setAnimationActions((prevActions) => [...prevActions, animationAction]);
-        animationsFolder.add(animations, 'default');
-        console.log("Default animation loaded");
-        setActiveAction(animationActions[0]);
-        scene.add(object);
+    };
 
-        loadModel(
-          'public/models/Slide-Hip-Hop-Dance.fbx',
-          (object) => {
-            const animationAction = mixerInstance.clipAction(object.animations[0]);
-            setAnimationActions((prevActions) => [...prevActions, animationAction]);
-            animationsFolder.add(animations, 'dance');
-            console.log("Dance animation loaded");
-
-            loadModel(
-              'public/models/Shoved-Reaction-With-Spin.fbx',
-              (object) => {
-                const animationAction = mixerInstance.clipAction(object.animations[0]);
-                setAnimationActions((prevActions) => [...prevActions, animationAction]);
-                animationsFolder.add(animations, 'reaction');
-                console.log("Reaction animation loaded");
-
-                loadModel(
-                  'public/models/Joyful-Jump.fbx',
-                  (object) => {
-                    object.animations[0].tracks.shift();
-                    const animationAction = mixerInstance.clipAction(object.animations[0]);
-                    setAnimationActions((prevActions) => [...prevActions, animationAction]);
-                    animationsFolder.add(animations, 'jumping');
-                    console.log("Jumping animation loaded");
-                    progressBarRef.current.style.display = 'none';
-                    setModelReady(true);
-                  },
-                  (xhr) => {
-                    if (xhr.lengthComputable) {
-                      const percentComplete = (xhr.loaded / xhr.total) * 100;
-                      progressBarRef.current.value = percentComplete;
-                      progressBarRef.current.style.display = 'block';
-                    }
-                  },
-                  (error) => {
-                    console.log(error);
-                  }
-                );
-              },
-              (xhr) => {
-                if (xhr.lengthComputable) {
-                  const percentComplete = (xhr.loaded / xhr.total) * 100;
-                  progressBarRef.current.value = percentComplete;
-                  progressBarRef.current.style.display = 'block';
-                }
-              },
-              (error) => {
-                console.log(error);
-              }
-            );
-          },
-          (xhr) => {
-            if (xhr.lengthComputable) {
-              const percentComplete = (xhr.loaded / xhr.total) * 100;
-              progressBarRef.current.value = percentComplete;
-              progressBarRef.current.style.display = 'block';
-            }
-          },
-          (error) => {
-            console.log(error);
-          }
-        );
-      },
-      (xhr) => {
-        if (xhr.lengthComputable) {
-          const percentComplete = (xhr.loaded / xhr.total) * 100;
-          progressBarRef.current.value = percentComplete;
-          progressBarRef.current.style.display = 'block';
-        }
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
+    loadModels();
 
     // Window resize handler
     const onWindowResize = () => {
@@ -199,29 +115,7 @@ const DesignerStudio = () => {
       document.body.removeChild(stats.dom);
       gui.destroy();
     };
-  }, [modelReady, mixer, animationActions, animations]);
-
-  const setAction = (toAction) => {
-    if (toAction !== activeAction && activeAction) {
-      lastAction.fadeOut(1);
-      toAction.reset();
-      toAction.fadeIn(1);
-      toAction.play();
-    }
-    setLastAction(activeAction);
-    setActiveAction(toAction);
-  };
-
-  useEffect(() => {
-    if (animationActions.length > 0) {
-      setAnimations({
-        default: () => setAction(animationActions[0]),
-        dance: () => setAction(animationActions[1]),
-        reaction: () => setAction(animationActions[2]),
-        jumping: () => setAction(animationActions[3]),
-      });
-    }
-  }, [animationActions]);
+  }, [modelReady, mixer]);
 
   return (
     <div className="h-screen flex flex-col">
