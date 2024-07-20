@@ -69,14 +69,14 @@ const WebGLRenderer = ({ progressBarRef }) => {
                     let animationAction = mixer.clipAction(object.animations[0]);
                     animationActions.push(animationAction);
                     animationsFolder.add(animations, 'goofyrunning');
-                    progressBar.style.display = 'none';
+                    progressBarRef.current.style.display = 'none';
                     modelReady = true;
                   },
                   (xhr) => {
                     if (xhr.lengthComputable) {
                       var percentComplete = (xhr.loaded / xhr.total) * 100;
-                      progressBar.value = percentComplete;
-                      progressBar.style.display = 'block';
+                      progressBarRef.current.value = percentComplete;
+                      progressBarRef.current.style.display = 'block';
                     }
                   },
                   (error) => {
@@ -87,8 +87,8 @@ const WebGLRenderer = ({ progressBarRef }) => {
               (xhr) => {
                 if (xhr.lengthComputable) {
                   var percentComplete = (xhr.loaded / xhr.total) * 100;
-                  progressBar.value = percentComplete;
-                  progressBar.style.display = 'block';
+                  progressBarRef.current.value = percentComplete;
+                  progressBarRef.current.style.display = 'block';
                 }
               },
               (error) => {
@@ -99,8 +99,8 @@ const WebGLRenderer = ({ progressBarRef }) => {
           (xhr) => {
             if (xhr.lengthComputable) {
               var percentComplete = (xhr.loaded / xhr.total) * 100;
-              progressBar.value = percentComplete;
-              progressBar.style.display = 'block';
+              progressBarRef.current.value = percentComplete;
+              progressBarRef.current.style.display = 'block';
             }
           },
           (error) => {
@@ -111,8 +111,8 @@ const WebGLRenderer = ({ progressBarRef }) => {
       (xhr) => {
         if (xhr.lengthComputable) {
           var percentComplete = (xhr.loaded / xhr.total) * 100;
-          progressBar.value = percentComplete;
-          progressBar.style.display = 'block';
+          progressBarRef.current.value = percentComplete;
+          progressBarRef.current.style.display = 'block';
         }
       },
       (error) => {
