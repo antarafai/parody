@@ -8,6 +8,9 @@
 # testing
 /coverage
 
+# Testing Motions
+/public/models/Motions
+
 # production
 /build
 
