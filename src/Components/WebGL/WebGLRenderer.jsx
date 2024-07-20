@@ -168,14 +168,7 @@ const WebGLRenderer = ({ progressBarRef }) => {
   return (
     <div
       ref={mountRef}
-      style={{
-        width: '800px', // Set your desired width
-        height: '600px', // Set your desired height
-        overflow: 'hidden',
-        margin: '0 auto', // Center the container
-        padding: 0,
-        border: '1px solid #ccc', // Optional border to visualize the container
-      }}
+      className="w-[800px] h-[600px] overflow-hidden mx-auto p-0"
     />
   );
 };
