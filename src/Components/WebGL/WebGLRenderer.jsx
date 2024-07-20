@@ -36,7 +36,6 @@ const WebGLRenderer = ({ progressBarRef, modelPaths }) => {
     let modelReady = false;
     let animationActions = [];
     let activeAction;
-    let lastAction;
 
     const fbxLoader = new FBXLoader();
     const textureLoader = new THREE.TextureLoader();
@@ -62,6 +61,7 @@ const WebGLRenderer = ({ progressBarRef, modelPaths }) => {
       if (index >= paths.length) {
         progressBarRef.current.style.display = 'none';
         modelReady = true;
+        playSequentialAnimations();
         return;
       }
 
@@ -92,6 +92,10 @@ const WebGLRenderer = ({ progressBarRef, modelPaths }) => {
           }
           const animationAction = mixer.clipAction(object.animations[0]);
           animationActions.push(animationAction);
+
+          console.log(`Loaded animation ${index + 1}:`, object.animations[0]);
+          console.log(`Animation ${index + 1} duration: ${object.animations[0].duration}s`);
+
           if (index === 0) {
             activeAction = animationActions[0];
           }
@@ -117,22 +121,39 @@ const WebGLRenderer = ({ progressBarRef, modelPaths }) => {
     // Set the active animation action
     const setAction = (toAction) => {
       if (toAction !== activeAction) {
-        lastAction = activeAction;
+        const lastAction = activeAction;
         activeAction = toAction;
         if (lastAction) lastAction.fadeOut(0.5); // Smooth transition
         activeAction.reset().fadeIn(0.5).play(); // Smooth transition and play the new action
       }
     };
 
-    // Switch between animations on click
-    const handleClick = () => {
-      if (modelReady) {
-        const nextActionIndex = (animationActions.indexOf(activeAction) + 1) % animationActions.length;
-        setAction(animationActions[nextActionIndex]);
+    // Play animations in sequence
+    const playSequentialAnimations = () => {
+      if (animationActions.length > 0) {
+        let currentAnimationIndex = 0;
+
+        const playNextAnimation = () => {
+          if (currentAnimationIndex < animationActions.length) {
+            setAction(animationActions[currentAnimationIndex]);
+            activeAction.play();
+
+            console.log(`Playing animation ${currentAnimationIndex + 1}`);
+
+            // Transition to the next animation after the current one's duration
+            setTimeout(() => {
+              console.log(`Finished animation ${currentAnimationIndex + 1}`);
+              currentAnimationIndex++;
+              if (currentAnimationIndex < animationActions.length) {
+                playNextAnimation();
+              }
+            }, activeAction.getClip().duration * 1000); // Convert duration to milliseconds
+          }
+        };
+
+        playNextAnimation();
       }
     };
-
-    mount.addEventListener('click', handleClick);
 
     const clock = new THREE.Clock();
 
@@ -153,7 +174,6 @@ const WebGLRenderer = ({ progressBarRef, modelPaths }) => {
     // Clean up the scene when the component unmounts
     return () => {
       window.removeEventListener('resize', onWindowResize);
-      mount.removeEventListener('click', handleClick);
       if (renderer.domElement.parentNode === mount) {
         mount.removeChild(renderer.domElement);
       }
