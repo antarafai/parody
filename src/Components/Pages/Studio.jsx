@@ -1,4 +1,3 @@
-// Studio.jsx
 import React, { useRef } from 'react';
 import WebGLRenderer from '../WebGL/WebGLRenderer';
 
@@ -8,14 +7,14 @@ const FBXAnimations = () => {
   return (
     <div className="flex flex-col h-screen">
       <div className="flex flex-row flex-1">
-        <div id="sidePanel" className="flex flex-col bg-gray-200 p-2 w-16 fixed" style={{ maxHeight: '50vh' }}>
+        <div id="sidePanel" className="flex flex-col bg-gray-600 p-2 w-16">
           <button className="bg-green-500 mb-2 rounded h-10 w-10"></button>
           <button className="bg-green-500 mb-2 rounded h-10 w-10"></button>
           <button className="bg-green-500 mb-2 rounded h-10 w-10"></button>
           <button className="bg-green-500 mb-2 rounded h-10 w-10"></button>
           <button className="bg-green-500 mb-2 rounded h-10 w-10"></button>
         </div>
-        <div className="relative flex-grow bg-gray-300 ml-16">
+        <div className="relative flex-grow h bg-gray-300">
           <WebGLRenderer progressBarRef={progressBarRef} />
           <progress value="0" max="100" id="progressBar" ref={progressBarRef} className="absolute top-2 left-2"></progress>
         </div>

@@ -1,4 +1,3 @@
-// WebGLRenderer.jsx
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -21,11 +20,11 @@ const WebGLRenderer = ({ progressBarRef }) => {
     light.position.set(2.5, 7.5, 15);
     scene.add(light);
 
-    const camera = new THREE.PerspectiveCamera(75, mount.clientWidth / mount.clientHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.set(0.8, 1.4, 1.0);
 
     const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(mount.clientWidth, mount.clientHeight);
+    renderer.setSize(window.innerWidth, window.innerHeight);
     mount.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -123,11 +122,12 @@ const WebGLRenderer = ({ progressBarRef }) => {
     );
 
     function onWindowResize() {
-      camera.aspect = mount.clientWidth / mount.clientHeight;
+      camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(mount.clientWidth, mount.clientHeight);
+      renderer.setSize(window.innerWidth, window.innerHeight);
       render();
     }
+
     window.addEventListener('resize', onWindowResize, false);
 
     const stats = new Stats();
@@ -186,7 +186,7 @@ const WebGLRenderer = ({ progressBarRef }) => {
     };
   }, [progressBarRef]);
 
-  return <div ref={mountRef} style={{ width: '100%', height: '100%' }} />;
+  return <div ref={mountRef} style={{ width: '100%', height: '100%', overflow: 'hidden', margin: 0, padding: 0 }} />;
 };
 
 export default WebGLRenderer;
