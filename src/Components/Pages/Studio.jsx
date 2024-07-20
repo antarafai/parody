@@ -190,16 +190,18 @@ const FBXAnimations = () => {
   }, []);
 
   return (
-    <div className="flex h-screen w-screen flex-col md:flex-row">
-      <div className="flex flex-col bg-gray-200 p-2 w-16">
-        <div className="flex-1 bg-green-500 m-1 rounded"></div>
-        <div className="flex-1 bg-green-500 m-1 rounded"></div>
-        <div className="flex-1 bg-green-500 m-1 rounded"></div>
-        <div className="flex-1 bg-green-500 m-1 rounded"></div>
-        <div className="flex-1 bg-green-500 m-1 rounded"></div>
-      </div>
-      <div className="flex-grow relative bg-gray-300" ref={mountRef}>
-        <progress value="0" max="100" id="progressBar" ref={progressBarRef} className="absolute top-2 left-2"></progress>
+    <div className="flex flex-col h-screen">
+      <div className="flex flex-row flex-1">
+        <div className="flex flex-col bg-gray-200 p-2 w-16">
+          <div className="flex-1 bg-green-500 m-1 rounded"></div>
+          <div className="flex-1 bg-green-500 m-1 rounded"></div>
+          <div className="flex-1 bg-green-500 m-1 rounded"></div>
+          <div className="flex-1 bg-green-500 m-1 rounded"></div>
+          <div className="flex-1 bg-green-500 m-1 rounded"></div>
+        </div>
+        <div className="relative flex-grow bg-gray-300" ref={mountRef}>
+          <progress value="0" max="100" id="progressBar" ref={progressBarRef} className="absolute top-2 left-2"></progress>
+        </div>
       </div>
       <div className="flex bg-gray-200 p-2">
         <input type="text" placeholder="Enter command" className="flex-grow p-2 mr-2 border border-gray-400 rounded" />
