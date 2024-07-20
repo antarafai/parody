@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
-import Stats from 'three/examples/jsm/libs/stats.module';
 import { GUI } from 'dat.gui';
 
 const WebGLRenderer = ({ progressBarRef }) => {
@@ -129,9 +128,6 @@ const WebGLRenderer = ({ progressBarRef }) => {
 
     window.addEventListener('resize', onWindowResize, false);
 
-    const stats = new Stats();
-    document.body.appendChild(stats.dom);
-
     var animations = {
       default: function () {
         setAction(animationActions[0]);
@@ -151,7 +147,7 @@ const WebGLRenderer = ({ progressBarRef }) => {
       if (toAction !== activeAction) {
         lastAction = activeAction;
         activeAction = toAction;
-        lastAction.fadeOut(1);
+        if (lastAction) lastAction.fadeOut(1);
         activeAction.reset();
         activeAction.fadeIn(1);
         activeAction.play();
@@ -169,7 +165,6 @@ const WebGLRenderer = ({ progressBarRef }) => {
       controls.update();
       if (modelReady) mixer.update(clock.getDelta());
       render();
-      stats.update();
     }
 
     function render() {
@@ -181,7 +176,6 @@ const WebGLRenderer = ({ progressBarRef }) => {
     return () => {
       window.removeEventListener('resize', onWindowResize);
       mount.removeChild(renderer.domElement);
-      document.body.removeChild(stats.dom);
     };
   }, [progressBarRef]);
 
