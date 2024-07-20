@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
-import { GUI } from 'dat.gui';
 
 const WebGLRenderer = ({ progressBarRef }) => {
   const mountRef = useRef(null);
@@ -43,7 +42,6 @@ const WebGLRenderer = ({ progressBarRef }) => {
         mixer = new THREE.AnimationMixer(object);
         let animationAction = mixer.clipAction(object.animations[0]);
         animationActions.push(animationAction);
-        animationsFolder.add(animations, 'default');
         activeAction = animationActions[0];
         scene.add(object);
 
@@ -52,14 +50,12 @@ const WebGLRenderer = ({ progressBarRef }) => {
           (object) => {
             let animationAction = mixer.clipAction(object.animations[0]);
             animationActions.push(animationAction);
-            animationsFolder.add(animations, 'samba');
 
             fbxLoader.load(
               '/models/Slide-Hip-Hop-Dance.fbx',
               (object) => {
                 let animationAction = mixer.clipAction(object.animations[0]);
                 animationActions.push(animationAction);
-                animationsFolder.add(animations, 'bellydance');
 
                 fbxLoader.load(
                   '/models/Shoved-Reaction-With-Spin.fbx',
@@ -67,7 +63,6 @@ const WebGLRenderer = ({ progressBarRef }) => {
                     object.animations[0].tracks.shift();
                     let animationAction = mixer.clipAction(object.animations[0]);
                     animationActions.push(animationAction);
-                    animationsFolder.add(animations, 'goofyrunning');
                     progressBarRef.current.style.display = 'none';
                     modelReady = true;
                   },
@@ -128,21 +123,6 @@ const WebGLRenderer = ({ progressBarRef }) => {
 
     window.addEventListener('resize', onWindowResize, false);
 
-    var animations = {
-      default: function () {
-        setAction(animationActions[0]);
-      },
-      samba: function () {
-        setAction(animationActions[1]);
-      },
-      bellydance: function () {
-        setAction(animationActions[2]);
-      },
-      goofyrunning: function () {
-        setAction(animationActions[3]);
-      },
-    };
-
     const setAction = (toAction) => {
       if (toAction !== activeAction) {
         lastAction = activeAction;
@@ -154,9 +134,14 @@ const WebGLRenderer = ({ progressBarRef }) => {
       }
     };
 
-    const gui = new GUI();
-    const animationsFolder = gui.addFolder('Animations');
-    animationsFolder.open();
+    const handleClick = () => {
+      if (modelReady) {
+        const nextActionIndex = (animationActions.indexOf(activeAction) + 1) % animationActions.length;
+        setAction(animationActions[nextActionIndex]);
+      }
+    };
+
+    mount.addEventListener('click', handleClick);
 
     const clock = new THREE.Clock();
 
@@ -175,6 +160,7 @@ const WebGLRenderer = ({ progressBarRef }) => {
 
     return () => {
       window.removeEventListener('resize', onWindowResize);
+      mount.removeEventListener('click', handleClick);
       mount.removeChild(renderer.domElement);
     };
   }, [progressBarRef]);
