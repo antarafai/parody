@@ -3,9 +3,15 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 
+/**
+ * This component renders a 3D model and allows the user to switch between different animations on click.
+ * @param {*} param0 
+ * @returns 
+ */
 const WebGLRenderer = ({ progressBarRef }) => {
   const mountRef = useRef(null);
 
+  // This hook runs once when the component mounts and sets up the scene, camera, renderer, controls, and animations.
   useEffect(() => {
     const mount = mountRef.current;
 
@@ -35,6 +41,7 @@ const WebGLRenderer = ({ progressBarRef }) => {
     let lastAction;
 
     const fbxLoader = new FBXLoader();
+    // Load the model and animations
     fbxLoader.load(
       '/models/Y-Bot-T-pose.fbx',
       (object) => {
@@ -114,6 +121,7 @@ const WebGLRenderer = ({ progressBarRef }) => {
       }
     );
 
+    // Resize the renderer when the window is resized
     function onWindowResize() {
       camera.aspect = mount.clientWidth / mount.clientHeight;
       camera.updateProjectionMatrix();
@@ -123,6 +131,7 @@ const WebGLRenderer = ({ progressBarRef }) => {
 
     window.addEventListener('resize', onWindowResize, false);
 
+    // Set the active animation action
     const setAction = (toAction) => {
       if (toAction !== activeAction) {
         lastAction = activeAction;
@@ -134,6 +143,7 @@ const WebGLRenderer = ({ progressBarRef }) => {
       }
     };
 
+    // Switch between animations on click
     const handleClick = () => {
       if (modelReady) {
         const nextActionIndex = (animationActions.indexOf(activeAction) + 1) % animationActions.length;
@@ -144,7 +154,8 @@ const WebGLRenderer = ({ progressBarRef }) => {
     mount.addEventListener('click', handleClick);
 
     const clock = new THREE.Clock();
-
+     
+    // Animate the scene on each frame
     function animate() {
       requestAnimationFrame(animate);
       controls.update();
@@ -158,6 +169,7 @@ const WebGLRenderer = ({ progressBarRef }) => {
 
     animate();
 
+    // Clean up the scene when the component unmounts
     return () => {
       window.removeEventListener('resize', onWindowResize);
       mount.removeEventListener('click', handleClick);
