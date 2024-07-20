@@ -12,10 +12,10 @@ const FBXAnimations = () => {
     console.log('Input value:', input.value);
     const paths = input.value.split(',').map(path => path.trim());
     console.log('Parsed paths:', paths);
-    // Prepend the hardcoded path
-    const updatedPaths = ['/models/Motions/idle_looking_over_both_shoulders.fbx', ...paths];
+    // Prepend the hardcoded path and append prefixes/suffixes
+    const updatedPaths = paths.map(path => `/models/Motions/${path}.fbx`);
     console.log('Updated paths:', updatedPaths);
-    setModelPaths(paths);
+    setModelPaths(updatedPaths);
   };
 
   return (
