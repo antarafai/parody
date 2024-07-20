@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import WebGLRenderer from '../WebGL/WebGLRenderer';
 
 const server_url = 'http://localhost:5000';
@@ -8,6 +8,11 @@ const FBXAnimations = () => {
   const [modelPaths, setModelPaths] = useState([
     '/models/Motions/idle_looking_over_both_shoulders.fbx'
   ]);
+  const [updateFlag, setUpdateFlag] = useState(false); // Ensure re-render
+
+  useEffect(() => {
+    console.log('Model paths updated:', modelPaths);
+  }, [modelPaths]);
 
   const handleButtonClick = async () => {
     const input = document.getElementById('modelPathsInput');
@@ -59,6 +64,7 @@ const FBXAnimations = () => {
 
       console.log('All configuration requests successful');
       setModelPaths(updatedPaths);
+      setUpdateFlag((prev) => !prev); // Toggle update flag to force re-render
 
       // Blocking GET request to exec
       const execResponse = await fetch(`${server_url}/exec`);
@@ -95,7 +101,7 @@ const FBXAnimations = () => {
           <button className="bg-green-500 mb-2 rounded h-10 w-10"></button>
         </div>
         <div className="relative flex-grow h bg-gray-300">
-          <WebGLRenderer progressBarRef={progressBarRef} modelPaths={modelPaths} />
+          <WebGLRenderer progressBarRef={progressBarRef} modelPaths={modelPaths} updateFlag={updateFlag} />
           <progress value="0" max="100" id="progressBar" ref={progressBarRef} className="absolute top-2 left-2"></progress>
         </div>
       </div>
