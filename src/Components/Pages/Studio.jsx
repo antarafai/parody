@@ -1,14 +1,22 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import WebGLRenderer from '../WebGL/WebGLRenderer';
 
 const FBXAnimations = () => {
   const progressBarRef = useRef(null);
-  const modelPaths = [
-    '/models/Y-Bot-T-pose.fbx',
-    '/models/Joyful-Jump.fbx',
-    '/models/Slide-Hip-Hop-Dance.fbx',
-    '/models/Shoved-Reaction-With-Spin.fbx'
-  ];
+  const [modelPaths, setModelPaths] = useState([
+    '/models/Y-Bot-T-pose.fbx'
+  ]);
+
+  const handleButtonClick = () => {
+    const input = document.getElementById('modelPathsInput');
+    console.log('Input value:', input.value);
+    const paths = input.value.split(',').map(path => path.trim());
+    console.log('Parsed paths:', paths);
+    // Prepend the hardcoded path
+    const updatedPaths = ['/models/Y-Bot-T-pose.fbx', ...paths];
+    console.log('Updated paths:', updatedPaths);
+    setModelPaths(updatedPaths);
+  };
 
   return (
     <div className="flex flex-col h-screen">
@@ -25,9 +33,14 @@ const FBXAnimations = () => {
           <progress value="0" max="100" id="progressBar" ref={progressBarRef} className="absolute top-2 left-2"></progress>
         </div>
       </div>
-      <div className="flex bg-gray-200 p-2">
-        <input type="text" placeholder="Enter command" className="flex-grow p-2 mr-2 border border-gray-400 rounded" />
-        <button className="p-2 bg-green-500 text-white rounded">Send</button>
+      <div id="inputBar" className="flex bg-gray-200 p-2">
+        <input
+          type="text"
+          id="modelPathsInput"
+          placeholder="Enter model paths separated by commas"
+          className="flex-grow p-2 mr-2 border border-gray-400 rounded"
+        />
+        <button id="Send" className="p-2 bg-green-500 text-white rounded" onClick={handleButtonClick}>Send</button>
       </div>
     </div>
   );
