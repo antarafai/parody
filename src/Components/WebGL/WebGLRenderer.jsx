@@ -3,12 +3,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 
-/**
- * This component renders a 3D model and allows the user to switch between different animations on click.
- * @param {*} param0 
- * @returns 
- */
-const WebGLRenderer = ({ progressBarRef }) => {
+const WebGLRenderer = ({ progressBarRef, modelPaths }) => {
   const mountRef = useRef(null);
 
   // This hook runs once when the component mounts and sets up the scene, camera, renderer, controls, and animations.
@@ -41,93 +36,64 @@ const WebGLRenderer = ({ progressBarRef }) => {
     let lastAction;
 
     const fbxLoader = new FBXLoader();
-    // Load the model and animations
-    fbxLoader.load(
-      '/models/Y-Bot-T-pose.fbx',
-      (object) => {
-        object.scale.set(0.01, 0.01, 0.01);
-        mixer = new THREE.AnimationMixer(object);
-        let animationAction = mixer.clipAction(object.animations[0]);
-        animationActions.push(animationAction);
-        activeAction = animationActions[0];
-        scene.add(object);
 
-        fbxLoader.load(
-          '/models/Joyful-Jump.fbx',
-          (object) => {
-            let animationAction = mixer.clipAction(object.animations[0]);
-            animationActions.push(animationAction);
+    // Function to load models and animations sequentially
+    const loadModel = (path, onComplete, onProgress, onError) => {
+      fbxLoader.load(path, onComplete, onProgress, onError);
+    };
 
-            fbxLoader.load(
-              '/models/Slide-Hip-Hop-Dance.fbx',
-              (object) => {
-                let animationAction = mixer.clipAction(object.animations[0]);
-                animationActions.push(animationAction);
-
-                fbxLoader.load(
-                  '/models/Shoved-Reaction-With-Spin.fbx',
-                  (object) => {
-                    object.animations[0].tracks.shift();
-                    let animationAction = mixer.clipAction(object.animations[0]);
-                    animationActions.push(animationAction);
-                    progressBarRef.current.style.display = 'none';
-                    modelReady = true;
-                  },
-                  (xhr) => {
-                    if (xhr.lengthComputable) {
-                      var percentComplete = (xhr.loaded / xhr.total) * 100;
-                      progressBarRef.current.value = percentComplete;
-                      progressBarRef.current.style.display = 'block';
-                    }
-                  },
-                  (error) => {
-                    console.log(error);
-                  }
-                );
-              },
-              (xhr) => {
-                if (xhr.lengthComputable) {
-                  var percentComplete = (xhr.loaded / xhr.total) * 100;
-                  progressBarRef.current.value = percentComplete;
-                  progressBarRef.current.style.display = 'block';
-                }
-              },
-              (error) => {
-                console.log(error);
-              }
-            );
-          },
-          (xhr) => {
-            if (xhr.lengthComputable) {
-              var percentComplete = (xhr.loaded / xhr.total) * 100;
-              progressBarRef.current.value = percentComplete;
-              progressBarRef.current.style.display = 'block';
-            }
-          },
-          (error) => {
-            console.log(error);
-          }
-        );
-      },
-      (xhr) => {
-        if (xhr.lengthComputable) {
-          var percentComplete = (xhr.loaded / xhr.total) * 100;
-          progressBarRef.current.value = percentComplete;
-          progressBarRef.current.style.display = 'block';
-        }
-      },
-      (error) => {
-        console.log(error);
+    const onProgress = (xhr) => {
+      if (xhr.lengthComputable) {
+        const percentComplete = (xhr.loaded / xhr.total) * 100;
+        progressBarRef.current.value = percentComplete;
+        progressBarRef.current.style.display = 'block';
       }
-    );
+    };
+
+    const onError = (error) => {
+      console.log(error);
+    };
+
+    const loadAnimations = (paths, index = 0) => {
+      if (index >= paths.length) {
+        progressBarRef.current.style.display = 'none';
+        modelReady = true;
+        return;
+      }
+
+      loadModel(
+        paths[index],
+        (object) => {
+          if (index === 0) {
+            object.scale.set(0.01, 0.01, 0.01);
+            mixer = new THREE.AnimationMixer(object);
+            scene.add(object);
+          } else {
+            if (index === paths.length - 1) {
+              object.animations[0].tracks.shift(); // Adjust for the last animation
+            }
+          }
+          const animationAction = mixer.clipAction(object.animations[0]);
+          animationActions.push(animationAction);
+          if (index === 0) {
+            activeAction = animationActions[0];
+          }
+          loadAnimations(paths, index + 1);
+        },
+        onProgress,
+        onError
+      );
+    };
+
+    loadAnimations(modelPaths);
 
     // Resize the renderer when the window is resized
-    function onWindowResize() {
+    const onWindowResize = () => {
       camera.aspect = mount.clientWidth / mount.clientHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(mount.clientWidth, mount.clientHeight);
       render();
-    }
+    };
 
     window.addEventListener('resize', onWindowResize, false);
 
@@ -136,10 +102,8 @@ const WebGLRenderer = ({ progressBarRef }) => {
       if (toAction !== activeAction) {
         lastAction = activeAction;
         activeAction = toAction;
-        if (lastAction) lastAction.fadeOut(1);
-        activeAction.reset();
-        activeAction.fadeIn(1);
-        activeAction.play();
+        if (lastAction) lastAction.fadeOut(0.5); // Smooth transition
+        activeAction.reset().fadeIn(0.5).play(); // Smooth transition and play the new action
       }
     };
 
@@ -154,18 +118,18 @@ const WebGLRenderer = ({ progressBarRef }) => {
     mount.addEventListener('click', handleClick);
 
     const clock = new THREE.Clock();
-     
+
     // Animate the scene on each frame
-    function animate() {
+    const animate = () => {
       requestAnimationFrame(animate);
       controls.update();
       if (modelReady) mixer.update(clock.getDelta());
       render();
-    }
+    };
 
-    function render() {
+    const render = () => {
       renderer.render(scene, camera);
-    }
+    };
 
     animate();
 
@@ -175,12 +139,12 @@ const WebGLRenderer = ({ progressBarRef }) => {
       mount.removeEventListener('click', handleClick);
       mount.removeChild(renderer.domElement);
     };
-  }, [progressBarRef]);
+  }, [progressBarRef, modelPaths]);
 
   return (
     <div
       ref={mountRef}
-      className="w-[800px] h-[600px] overflow-hidden mx-auto p-0"
+      className="w-[800px] h-[600px] overflow-hidden mx-auto p-0 border border-gray-300"
     />
   );
 };

@@ -3,6 +3,12 @@ import WebGLRenderer from '../WebGL/WebGLRenderer';
 
 const FBXAnimations = () => {
   const progressBarRef = useRef(null);
+  const modelPaths = [
+    '/models/Y-Bot-T-pose.fbx',
+    '/models/Joyful-Jump.fbx',
+    '/models/Slide-Hip-Hop-Dance.fbx',
+    '/models/Shoved-Reaction-With-Spin.fbx'
+  ];
 
   return (
     <div className="flex flex-col h-screen">
@@ -15,7 +21,7 @@ const FBXAnimations = () => {
           <button className="bg-green-500 mb-2 rounded h-10 w-10"></button>
         </div>
         <div className="relative flex-grow h bg-gray-300">
-          <WebGLRenderer progressBarRef={progressBarRef} />
+          <WebGLRenderer progressBarRef={progressBarRef} modelPaths={modelPaths} />
           <progress value="0" max="100" id="progressBar" ref={progressBarRef} className="absolute top-2 left-2"></progress>
         </div>
       </div>
