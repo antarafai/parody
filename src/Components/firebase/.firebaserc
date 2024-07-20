@@ -1,0 +1,9 @@
+{
+  "projects": {
+    "parody": "other-social-media",
+    "default": "other-social-media"
+  },
+  "targets": {},
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
+}
