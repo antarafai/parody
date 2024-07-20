@@ -6,25 +6,28 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 const WebGLRenderer = ({ progressBarRef, modelPaths }) => {
   const mountRef = useRef(null);
 
-  // This hook runs once when the component mounts and sets up the scene, camera, renderer, controls, and animations.
   useEffect(() => {
     const mount = mountRef.current;
 
+    // Scene setup
     const scene = new THREE.Scene();
-    const axesHelper = new THREE.AxesHelper(5);
-    scene.add(axesHelper);
+    scene.add(new THREE.AxesHelper(5));
 
+    // Light setup
     const light = new THREE.PointLight(0xffffff, 1000);
     light.position.set(2.5, 7.5, 15);
     scene.add(light);
 
+    // Camera setup
     const camera = new THREE.PerspectiveCamera(75, mount.clientWidth / mount.clientHeight, 0.1, 1000);
     camera.position.set(0.8, 1.4, 1.0);
 
+    // Renderer setup
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(mount.clientWidth, mount.clientHeight);
     mount.appendChild(renderer.domElement);
 
+    // Controls setup
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.screenSpacePanning = true;
     controls.target.set(0, 1, 0);
@@ -36,6 +39,7 @@ const WebGLRenderer = ({ progressBarRef, modelPaths }) => {
     let lastAction;
 
     const fbxLoader = new FBXLoader();
+    const textureLoader = new THREE.TextureLoader();
 
     // Function to load models and animations sequentially
     const loadModel = (path, onComplete, onProgress, onError) => {
@@ -51,7 +55,7 @@ const WebGLRenderer = ({ progressBarRef, modelPaths }) => {
     };
 
     const onError = (error) => {
-      console.log(error);
+      console.error(error);
     };
 
     const loadAnimations = (paths, index = 0) => {
@@ -68,6 +72,19 @@ const WebGLRenderer = ({ progressBarRef, modelPaths }) => {
             object.scale.set(0.01, 0.01, 0.01);
             mixer = new THREE.AnimationMixer(object);
             scene.add(object);
+
+            // Ensure materials are correctly assigned
+            object.traverse((child) => {
+              if (child.isMesh) {
+                const materialArray = Array.isArray(child.material) ? child.material : [child.material];
+                materialArray.forEach((material) => {
+                  if (material.map) {
+                    const texturePath = material.map.sourceFile;
+                    material.map = textureLoader.load(texturePath);
+                  }
+                });
+              }
+            });
           } else {
             if (index === paths.length - 1) {
               object.animations[0].tracks.shift(); // Adjust for the last animation
@@ -137,7 +154,9 @@ const WebGLRenderer = ({ progressBarRef, modelPaths }) => {
     return () => {
       window.removeEventListener('resize', onWindowResize);
       mount.removeEventListener('click', handleClick);
-      mount.removeChild(renderer.domElement);
+      if (renderer.domElement.parentNode === mount) {
+        mount.removeChild(renderer.domElement);
+      }
     };
   }, [progressBarRef, modelPaths]);
 

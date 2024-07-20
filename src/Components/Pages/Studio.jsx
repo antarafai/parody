@@ -4,7 +4,7 @@ import WebGLRenderer from '../WebGL/WebGLRenderer';
 const FBXAnimations = () => {
   const progressBarRef = useRef(null);
   const [modelPaths, setModelPaths] = useState([
-    '/models/Y-Bot-T-pose.fbx'
+    '/models/Motions/idle_looking_over_both_shoulders.fbx'
   ]);
 
   const handleButtonClick = () => {
@@ -13,9 +13,9 @@ const FBXAnimations = () => {
     const paths = input.value.split(',').map(path => path.trim());
     console.log('Parsed paths:', paths);
     // Prepend the hardcoded path
-    const updatedPaths = ['/models/Y-Bot-T-pose.fbx', ...paths];
+    const updatedPaths = ['/models/Motions/idle_looking_over_both_shoulders.fbx', ...paths];
     console.log('Updated paths:', updatedPaths);
-    setModelPaths(updatedPaths);
+    setModelPaths(paths);
   };
 
   return (
