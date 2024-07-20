@@ -5,7 +5,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import Stats from 'three/examples/jsm/libs/stats.module';
 import { GUI } from 'dat.gui';
 
-const DesignerStudio = () => {
+const FBXAnimations = () => {
   const mountRef = useRef(null);
   const progressBarRef = useRef(null);
 
@@ -21,11 +21,11 @@ const DesignerStudio = () => {
     light.position.set(2.5, 7.5, 15);
     scene.add(light);
 
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(75, mount.clientWidth / mount.clientHeight, 0.1, 1000);
     camera.position.set(0.8, 1.4, 1.0);
 
     const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(mount.clientWidth, mount.clientHeight);
     mount.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -126,9 +126,9 @@ const DesignerStudio = () => {
     );
 
     function onWindowResize() {
-      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.aspect = mount.clientWidth / mount.clientHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(mount.clientWidth, mount.clientHeight);
       render();
     }
     window.addEventListener('resize', onWindowResize, false);
@@ -190,13 +190,23 @@ const DesignerStudio = () => {
   }, []);
 
   return (
-    <div ref={mountRef}>
-      <progress value="0" max="100" id="progressBar" ref={progressBarRef}></progress>
-      <div id="instructions">
-        Model from <a href="https://www.mixamo.com" target="_blank" rel="nofollow noopener">Mixamo</a>
+    <div className="flex h-screen w-screen flex-col md:flex-row">
+      <div className="flex flex-col bg-gray-200 p-2 w-16">
+        <div className="flex-1 bg-green-500 m-1 rounded"></div>
+        <div className="flex-1 bg-green-500 m-1 rounded"></div>
+        <div className="flex-1 bg-green-500 m-1 rounded"></div>
+        <div className="flex-1 bg-green-500 m-1 rounded"></div>
+        <div className="flex-1 bg-green-500 m-1 rounded"></div>
+      </div>
+      <div className="flex-grow relative bg-gray-300" ref={mountRef}>
+        <progress value="0" max="100" id="progressBar" ref={progressBarRef} className="absolute top-2 left-2"></progress>
+      </div>
+      <div className="flex bg-gray-200 p-2">
+        <input type="text" placeholder="Enter command" className="flex-grow p-2 mr-2 border border-gray-400 rounded" />
+        <button className="p-2 bg-green-500 text-white rounded">Send</button>
       </div>
     </div>
   );
 };
 
-export default DesignerStudio;
+export default FBXAnimations;
