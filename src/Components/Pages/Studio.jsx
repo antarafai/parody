@@ -18,6 +18,7 @@ const FBXAnimations = () => {
 
   // Alert state
   const [showAlert, setShowAlert] = useState(false);
+  const [renderProgress, setRenderProgress] = useState(0); // Track rendering progress
 
   // Frame count state
   const [frameCount, setFrameCount] = useState(0);
@@ -111,8 +112,20 @@ const FBXAnimations = () => {
     }
   };
 
-  const handlePreviewClick = () => {
+  const handlePreviewClick = async () => {
     if (isExecInProgress) {
+      try {
+        // Fetch the rendering progress
+        const response = await fetch(`${server_url}/notification`);
+        if (response.ok) {
+          const { status } = await response.json();
+          setRenderProgress(status);
+        } else {
+          console.error('Failed to fetch progress', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching progress:', error);
+      }
       setShowAlert(true);
     } else if (!hasRenderJob) {
       setShowAlert(true);
@@ -146,7 +159,7 @@ const FBXAnimations = () => {
         </div>
         <div className="relative flex-grow h bg-gray-300">
           <WebGLRenderer progressBarRef={progressBarRef} modelPaths={modelPaths} updateFlag={updateFlag} />
-          <progress value="0" max="100" id="progressBar" ref={progressBarRef} className="absolute top-2 left-2"></progress>
+          <progress value={renderProgress} max="100" id="progressBar" ref={progressBarRef} className="absolute top-2 left-2"></progress>
         </div>
       </div>
       <div id="inputBar" className="flex bg-gray-200 p-2">
@@ -181,7 +194,7 @@ const FBXAnimations = () => {
               d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
           {isExecInProgress ? (
-            <span>Video rendering is still in progress</span>
+            <span>Video rendering is still in progress ({renderProgress}%)</span>
           ) : (
             <span>No rendering job has been given</span>
           )}
