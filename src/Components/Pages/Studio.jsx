@@ -3,7 +3,6 @@ import WebGLRenderer from '../WebGL/WebGLRenderer';
 import ConfigModal from '../WebGL/ConfigModal';
 import PreviewModal from '../WebGL/PreviewModal';
 import runPrompt from '../NLP/Prompt';
-import fs from 'fs';
 
 const server_url = 'http://localhost:5000';
 
