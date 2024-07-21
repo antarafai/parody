@@ -1,20 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
-const PreviewModal = () => {
-    const [showModal, setShowModal] = useState(false);
+const PreviewModal = ({ onClose }) => {
     const [playVideo, setPlayVideo] = useState(false);
 
-    const handleOpenModal = () => {
-        setShowModal(true);
-    };
-
-    const handleCloseModal = () => {
-        setShowModal(false);
-        setPlayVideo(false);
-    };
-
     useEffect(() => {
-        if (playVideo && showModal) {
+        if (playVideo) {
             // Load the Theta video player script
             const script = document.createElement('script');
             script.src = 'https://vjs.zencdn.net/7.15.4/video.js';
@@ -35,7 +25,7 @@ const PreviewModal = () => {
                                 const optionalThetaOpts = {
                                     allowRangeRequests: true,
                                 };
-                                const player = window.player = videojs('my-player', {
+                                const player = window.player = window.videojs('my-player', {
                                     autoplay: true,
                                     muted: false,
                                     techOrder: ["theta_hlsjs", "html5"],
@@ -69,28 +59,21 @@ const PreviewModal = () => {
                 document.body.removeChild(script);
             };
         }
-    }, [playVideo, showModal]);
-
-    const handlePlayVideo = () => {
-        setPlayVideo(true);
-    };
+    }, [playVideo]);
 
     return (
-        <div>
-            <button onClick={handleOpenModal}>Open Modal</button>
-            {showModal && (
-                <div className="modal">
-                    {playVideo && (
-                        <div>
-                            <video id="my-player" controls></video>
-                        </div>
-                    )}
-                    <button onClick={handleCloseModal}>Close Modal</button>
-                </div>
-            )}
-            {showModal && !playVideo && (
-                <button onClick={handlePlayVideo}>Play Video</button>
-            )}
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white p-4 rounded shadow-lg">
+                <h2 className="text-xl mb-4">Preview</h2>
+                {playVideo ? (
+                    <div>
+                        <video id="my-player" controls></video>
+                    </div>
+                ) : (
+                    <button onClick={() => setPlayVideo(true)}>Play Video</button>
+                )}
+                <button onClick={onClose} className="mt-4 p-2 bg-blue-500 text-white rounded">Close</button>
+            </div>
         </div>
     );
 };

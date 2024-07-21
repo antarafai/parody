@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import WebGLRenderer from '../WebGL/WebGLRenderer';
 import ConfigModal from '../WebGL/ConfigModal';
+import PreviewModal from '../WebGL/PreviewModal';
 
 const server_url = 'http://localhost:5000';
 
@@ -13,6 +14,7 @@ const FBXAnimations = () => {
 
   // Modal logic
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false); // State for preview modal
 
   // Alert state
   const [showAlert, setShowAlert] = useState(false);
@@ -21,8 +23,12 @@ const FBXAnimations = () => {
     setIsConfigModalOpen(true);
   };
 
-  const handleCloseModal = () => {
+  const handleCloseConfigModal = () => {
     setIsConfigModalOpen(false);
+  };
+
+  const handleClosePreviewModal = () => {
+    setIsPreviewModalOpen(false);
   };
 
   useEffect(() => {
@@ -103,8 +109,8 @@ const FBXAnimations = () => {
     } else if (!hasRenderJob) {
       setShowAlert(true);
     } else {
-      // Handle the actual preview functionality here
-      console.log('Preview button clicked');
+      // Open the preview modal
+      setIsPreviewModalOpen(true);
     }
   };
 
@@ -146,7 +152,11 @@ const FBXAnimations = () => {
       </div>
 
       {isConfigModalOpen && (
-        <ConfigModal onClose={handleCloseModal} />
+        <ConfigModal onClose={handleCloseConfigModal} />
+      )}
+
+      {isPreviewModalOpen && (
+        <PreviewModal onClose={handleClosePreviewModal} />
       )}
 
       {showAlert && (
