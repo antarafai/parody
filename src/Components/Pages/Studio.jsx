@@ -58,7 +58,13 @@ const FBXAnimations = () => {
   const handleButtonClick = async () => {
     const input = document.getElementById('modelPathsInput');
     const prompt1 = input.value;
-    const filesString = "run-file.txt jump-file.txt"; // Placeholder, update as needed
+        
+        // Fetch the contents of /public/FBXlistings.txt
+        const response = await fetch('/FBXlistings.txt');
+        if (!response.ok) {
+            throw new Error('Failed to fetch FBXlistings.txt');
+        }
+        const filesString = await response.text();
 
     console.log('Input value:', prompt1);
 
