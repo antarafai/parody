@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import WebGLRenderer from '../WebGL/WebGLRenderer';
+import ConfigModal from '../WebGL/ConfigModal';
 
 const server_url = 'http://localhost:5000';
 
@@ -9,6 +10,17 @@ const FBXAnimations = () => {
     '/models/Idle.fbx'
   ]);
   const [updateFlag, setUpdateFlag] = useState(false); // Ensure re-render
+
+  // Modal logic
+  const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+
+  const handleConfigButtonClick = () => {
+    setIsConfigModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsConfigModalOpen(false);
+  };
 
   useEffect(() => {
     console.log('Model paths updated:', modelPaths);
@@ -94,8 +106,14 @@ const FBXAnimations = () => {
     <div className="flex flex-col h-screen">
       <div className="flex flex-row flex-1">
         <div id="sidePanel" className="flex flex-col bg-gray-900 p-4">
-          <button id="preConfig" class="btn bg-accent mb-3 rounded h-10 w-40 text-black">CONFIGURE</button>
-          <button id="preview" class="btn bg-accent mb-3 rounded h-10 w-40 text-black">PREVIEW</button>
+          <button 
+            id="preConfig" 
+            className="btn bg-accent mb-3 rounded h-10 w-40 text-black"
+            onClick={handleConfigButtonClick}
+          >
+            CONFIGURE
+          </button>
+          <button id="preview" className="btn bg-accent mb-3 rounded h-10 w-40 text-black">PREVIEW</button>
           <button className="bg-gray-600 mb-3 rounded h-10 w-40"></button>
           <button className="bg-gray-600 mb-3 rounded h-10 w-40"></button>
           <button className="bg-gray-600 mb-3 rounded h-10 w-40"></button>
@@ -114,6 +132,10 @@ const FBXAnimations = () => {
         />
         <button id="Send" className="p-2 bg-green-500 text-white rounded" onClick={handleButtonClick}>Send</button>
       </div>
+
+      {isConfigModalOpen && (
+        <ConfigModal onClose={handleCloseModal} />
+      )}
     </div>
   );
 };
