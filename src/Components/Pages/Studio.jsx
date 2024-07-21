@@ -6,7 +6,7 @@ const server_url = 'http://localhost:5000';
 const FBXAnimations = () => {
   const progressBarRef = useRef(null);
   const [modelPaths, setModelPaths] = useState([
-    '/models/Breathing_Idle.fbx'
+    '/models/Idle.fbx'
   ]);
   const [updateFlag, setUpdateFlag] = useState(false); // Ensure re-render
 
@@ -20,7 +20,7 @@ const FBXAnimations = () => {
     const paths = input.value.split(',').map(path => path.trim());
     console.log('Parsed paths:', paths);
     // Prepend the hardcoded path and append prefixes/suffixes
-    const updatedPaths = ['/models/Breathing_Idle.fbx', ...paths.map(path => `/models/Motions/${path}.fbx`)];
+    const updatedPaths = ['/models/Idle.fbx', ...paths.map(path => `/models/Motions/${path}.fbx`)];
     console.log('Updated paths:', updatedPaths);
 
     try {
