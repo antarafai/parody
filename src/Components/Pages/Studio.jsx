@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import WebGLRenderer from '../WebGL/WebGLRenderer';
 import ConfigModal from '../WebGL/ConfigModal';
 import PreviewModal from '../WebGL/PreviewModal';
+import runPrompt from '../NLP/Prompt';
 
 const server_url = 'http://localhost:5000';
 
@@ -56,53 +57,62 @@ const FBXAnimations = () => {
 
   const handleButtonClick = async () => {
     const input = document.getElementById('modelPathsInput');
-    console.log('Input value:', input.value);
-    const paths = input.value.split(',').map(path => path.trim());
-    console.log('Parsed paths:', paths);
-    // Prepend the hardcoded path and append prefixes/suffixes
-    const updatedPaths = ['/models/Idle.fbx', ...paths.map(path => `/models/Motions/${path}.fbx`)];
-    console.log('Updated paths:', updatedPaths);
+    const prompt1 = input.value;
+    const filesString = "run-file.txt jump-file.txt"; // Placeholder, update as needed
+
+    console.log('Input value:', prompt1);
 
     try {
-      // Set exec in progress to true
-      setIsExecInProgress(true);
-      setHasRenderJob(true); // Indicate that a render job has been given
+      // Call runPrompt with prompt1 and filesString
+      const paths = await runPrompt(prompt1, filesString);
+      console.log('Parsed paths:', paths);
 
-      // Define the requests related to motions
-      const motionRequest = fetch(`${server_url}/config/motions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ motions: paths })
-      });
+      if (paths && paths.length > 0) {
+        const updatedPaths = ['/models/Idle.fbx', ...paths.map(path => `/models/Motions/${path}.fbx`)];
+        console.log('Updated paths:', updatedPaths);
 
-      // Execute the motions request
-      const motionResponse = await motionRequest;
-      if (!motionResponse.ok) {
-        throw new Error(`Request failed with status ${motionResponse.status}`);
-      }
+        // Set exec in progress to true
+        setIsExecInProgress(true);
+        setHasRenderJob(true); // Indicate that a render job has been given
 
-      console.log('Motions configuration request successful');
-      setModelPaths(updatedPaths);
-      setUpdateFlag((prev) => !prev); // Toggle update flag to force re-render
+        // Define the requests related to motions
+        const motionRequest = fetch(`${server_url}/config/motions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ motions: paths })
+        });
 
-      // Blocking GET request to exec
-      const execResponse = await fetch(`${server_url}/exec`);
-      if (execResponse.ok) {
-        const reader = execResponse.body.getReader();
-        const decoder = new TextDecoder("utf-8");
-        let done = false;
-
-        while (!done) {
-          const { value, done: readerDone } = await reader.read();
-          done = readerDone;
-          if (value) {
-            console.log(decoder.decode(value));
-          }
+        // Execute the motions request
+        const motionResponse = await motionRequest;
+        if (!motionResponse.ok) {
+          throw new Error(`Request failed with status ${motionResponse.status}`);
         }
 
-        console.log('Exec request completed');
+        console.log('Motions configuration request successful');
+        setModelPaths(updatedPaths);
+        setUpdateFlag((prev) => !prev); // Toggle update flag to force re-render
+
+        // Blocking GET request to exec
+        const execResponse = await fetch(`${server_url}/exec`);
+        if (execResponse.ok) {
+          const reader = execResponse.body.getReader();
+          const decoder = new TextDecoder("utf-8");
+          let done = false;
+
+          while (!done) {
+            const { value, done: readerDone } = await reader.read();
+            done = readerDone;
+            if (value) {
+              console.log(decoder.decode(value));
+            }
+          }
+
+          console.log('Exec request completed');
+        } else {
+          console.error('Failed to exec', execResponse.statusText);
+        }
       } else {
-        console.error('Failed to exec', execResponse.statusText);
+        console.error('No valid paths returned from runPrompt');
       }
     } catch (error) {
       console.error('Error during requests:', error);
