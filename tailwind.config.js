@@ -8,5 +8,5 @@ module.exports = withMT({
       roboto: ["Roboto", "sans-serif"],
     },
   },
-  plugins: [],
+  plugins: [require('daisyui'),],
 });
