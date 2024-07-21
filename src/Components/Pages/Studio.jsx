@@ -19,12 +19,20 @@ const FBXAnimations = () => {
   // Alert state
   const [showAlert, setShowAlert] = useState(false);
 
+  // Frame count state
+  const [frameCount, setFrameCount] = useState(0);
+
   const handleConfigButtonClick = () => {
     setIsConfigModalOpen(true);
   };
 
-  const handleCloseConfigModal = () => {
+  const handleCloseConfigModal = (frames) => {
     setIsConfigModalOpen(false);
+    if (frames !== undefined) {
+      // Handle the number of frames returned from ConfigModal
+      console.log('Number of frames received from ConfigModal:', frames);
+      setFrameCount(frames);
+    }
   };
 
   const handleClosePreviewModal = () => {
@@ -156,7 +164,7 @@ const FBXAnimations = () => {
       )}
 
       {isPreviewModalOpen && (
-        <PreviewModal onClose={handleClosePreviewModal} />
+        <PreviewModal onClose={handleClosePreviewModal} frameCount={frameCount} />
       )}
 
       {showAlert && (

@@ -2,20 +2,23 @@ import React, { useEffect, useRef, useState } from 'react';
 import Hls from 'hls.js';
 import 'video.js/dist/video-js.css'; // Ensure Video.js CSS is correctly imported
 
-const PreviewModal = ({ onClose }) => {
+const PreviewModal = ({ onClose, frameCount }) => {
   const videoRef = useRef(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchVideoUrl = async () => {
       try {
+        const formattedFrameCount = String(frameCount).padStart(4, '0');
+        const videoPath = `/home/mizookie/Renders/rendered_animation0001-${formattedFrameCount}.mp4`;
+
         const response = await fetch('http://localhost:5000/upload_video', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            video_path: '/home/mizookie/Renders/rendered_animation0001-0050.mp4'
+            video_path: videoPath
           })
         });
 
@@ -66,7 +69,7 @@ const PreviewModal = ({ onClose }) => {
         videoRef.current.hls.destroy();
       }
     };
-  }, []);
+  }, [frameCount]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">

@@ -57,7 +57,9 @@ class ConfigModal extends Component {
             }
 
             console.log('All configuration requests successful');
-            this.props.onClose(); // Close the modal after successful requests
+
+            // Pass the number of frames back to the parent component
+            this.props.onClose(Number(input1));
         } catch (error) {
             console.error('Error during configuration requests', error);
         }
@@ -93,7 +95,7 @@ class ConfigModal extends Component {
                             Confirm
                         </button>
                         <button 
-                            onClick={this.props.onClose} // Assuming there's a prop to close the modal
+                            onClick={() => this.props.onClose()} // Assuming there's a prop to close the modal
                             className="btn">
                             Cancel
                         </button>
