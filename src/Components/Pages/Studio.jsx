@@ -6,9 +6,7 @@ const server_url = 'http://localhost:5000';
 
 const FBXAnimations = () => {
   const progressBarRef = useRef(null);
-  const [modelPaths, setModelPaths] = useState([
-    '/models/Idle.fbx'
-  ]);
+  const [modelPaths, setModelPaths] = useState(['/models/Idle.fbx']);
   const [updateFlag, setUpdateFlag] = useState(false); // Ensure re-render
 
   // Modal logic
@@ -36,45 +34,20 @@ const FBXAnimations = () => {
     console.log('Updated paths:', updatedPaths);
 
     try {
-      // Define the requests in sequence
-      const requests = [
-        fetch(`${server_url}/config/reset`, { method: 'POST' }),
-        fetch(`${server_url}/config/motions`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ motions: paths })
-        }),
-        fetch(`${server_url}/config/character`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ character: "/home/mizookie/anigen-flask-app/Ybot.blend" })
-        }),
-        fetch(`${server_url}/config/frames`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ total_frames: 50 })
-        }),
-        fetch(`${server_url}/config/import`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ import_path: "/home/mizookie/Motions/Motions/Motions" })
-        }),
-        fetch(`${server_url}/config/render`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ render_path: "/home/mizookie/Renders" })
-        })
-      ];
+      // Define the requests related to motions
+      const motionRequest = fetch(`${server_url}/config/motions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ motions: paths })
+      });
 
-      // Execute the requests sequentially
-      for (const request of requests) {
-        const response = await request;
-        if (!response.ok) {
-          throw new Error(`Request failed with status ${response.status}`);
-        }
+      // Execute the motions request
+      const motionResponse = await motionRequest;
+      if (!motionResponse.ok) {
+        throw new Error(`Request failed with status ${motionResponse.status}`);
       }
 
-      console.log('All configuration requests successful');
+      console.log('Motions configuration request successful');
       setModelPaths(updatedPaths);
       setUpdateFlag((prev) => !prev); // Toggle update flag to force re-render
 
