@@ -15,12 +15,17 @@ const runPrompt = async (prompt1, filesString) => {
       ]
     });
 
-    const formattedPrompt = `${prompt1}. Extract out the key motions in this sentence. ${filesString}
-    This is the list of files. Return me only motion names that match the file names in the filesString 
-    (One file for each motion if it is the same) (If the sentence mentions a person's gender, try to find the file according to that gender). 
-    Lastly, if there are repeated motions, make sure they are included again. (Keep the order of the motions the same as the sentence. 
-    Example: if a person is running and then jumps and continues running. The list of motions should be [run, jump, run]) 
-    If there are none or one of the motions does not exist in the list of files, return "null"`;
+    const formattedPrompt = `${prompt1}. Extract the key motions in this sentence strictly from the available files listed below.
+    ${filesString}
+    The list of available files has file names separated by commas, and motions are separated by underscores (e.g., angry_fists, walk, backflip, back_happy_walk, back_run).
+
+    Return only the motion names that match the file names in the filesString. Each motion should be represented by a single file name if it matches. If the sentence specifies a person's gender, select the file name according to that gender.
+
+    Ensure repeated motions are included again in the order they appear in the sentence. For example, if a person is running, then jumps and continues running, the list of motions should be [run, jump, run].
+
+    If none of the motions or at least one motion does not exist in the filesString, return "null".`;
+    
+    console.log(formattedPrompt);
 
     const result = await model.generateContentStream([formattedPrompt]);
     let text = '';
