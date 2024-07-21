@@ -9,6 +9,7 @@ const FBXAnimations = () => {
   const [modelPaths, setModelPaths] = useState(['/models/Idle.fbx']);
   const [updateFlag, setUpdateFlag] = useState(false); // Ensure re-render
   const [isExecInProgress, setIsExecInProgress] = useState(false); // Track exec request status
+  const [hasRenderJob, setHasRenderJob] = useState(false); // Track if render job has been given
 
   // Modal logic
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
@@ -50,6 +51,7 @@ const FBXAnimations = () => {
     try {
       // Set exec in progress to true
       setIsExecInProgress(true);
+      setHasRenderJob(true); // Indicate that a render job has been given
 
       // Define the requests related to motions
       const motionRequest = fetch(`${server_url}/config/motions`, {
@@ -98,6 +100,8 @@ const FBXAnimations = () => {
   const handlePreviewClick = () => {
     if (isExecInProgress) {
       setShowAlert(true);
+    } else if (!hasRenderJob) {
+      setShowAlert(true);
     } else {
       // Handle the actual preview functionality here
       console.log('Preview button clicked');
@@ -117,7 +121,7 @@ const FBXAnimations = () => {
           </button>
           <button 
             id="preview" 
-            className={`btn ${isExecInProgress ? 'bg-gray-500' : 'bg-accent'} mb-3 rounded h-10 w-40 text-black`}
+            className={`btn ${hasRenderJob ? (isExecInProgress ? 'bg-gray-500' : 'bg-accent') : 'bg-red-500'} mb-3 rounded h-10 w-40 text-black`}
             onClick={handlePreviewClick}
           >
             PREVIEW
@@ -158,7 +162,11 @@ const FBXAnimations = () => {
               strokeWidth="2"
               d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
-          <span>Video rendering is still in progress</span>
+          {isExecInProgress ? (
+            <span>Video rendering is still in progress</span>
+          ) : (
+            <span>No rendering job has been given</span>
+          )}
         </div>
       )}
     </div>
