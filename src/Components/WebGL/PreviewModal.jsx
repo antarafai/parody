@@ -1,84 +1,55 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
+import Hls from 'hls.js';
+import 'video.js/dist/video-js.css'; // Ensure Video.js CSS is correctly imported
 
 const PreviewModal = ({ onClose }) => {
-    const [playVideo, setPlayVideo] = useState(false);
+  const videoRef = useRef(null);
 
-    useEffect(() => {
-        const loadScript = (src, onload) => {
-            const script = document.createElement('script');
-            script.src = src;
-            script.onload = onload;
-            document.body.appendChild(script);
-            return script;
-        };
+  useEffect(() => {
+    const video = videoRef.current;
+    let hls;
 
-        if (playVideo) {
-            const scripts = [
-                'https://vjs.zencdn.net/7.15.4/video.js',
-                'https://cdn.jsdelivr.net/npm/hls.js@0.12.4',
-                'https://d1ktbyo67sh8fw.cloudfront.net/js/theta.umd.min.js',
-                'https://d1ktbyo67sh8fw.cloudfront.net/js/theta-hls-plugin.umd.min.js',
-                'https://d1ktbyo67sh8fw.cloudfront.net/js/videojs-theta-plugin.min.js'
-            ];
+    if (Hls.isSupported()) {
+      hls = new Hls();
+      hls.loadSource('https://media.thetavideoapi.com/srvacc_3z8e4t0g2jkfr57xsz3gqvpj0/video_kzh225ce37vvpsjvpqt8kh8ki5/1631659816016.m3u8');
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        video.play();
+      });
 
-            let loadCount = 0;
-            const scriptElements = [];
+      hls.on(Hls.Events.ERROR, (event, data) => {
+        console.error(`HLS.js error: ${data.type}`, data);
+      });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = 'https://media.thetavideoapi.com/srvacc_3z8e4t0g2jkfr57xsz3gqvpj0/video_kzh225ce37vvpsjvpqt8kh8ki5/1631659816016.m3u8';
+      video.addEventListener('canplay', () => {
+        video.play();
+      });
+    }
 
-            const handleScriptLoad = () => {
-                loadCount += 1;
-                if (loadCount === scripts.length) {
-                    const optionalHlsOpts = null;
-                    const optionalThetaOpts = {
-                        allowRangeRequests: true,
-                    };
-                    const player = window.player = window.videojs('my-player', {
-                        autoplay: true,
-                        muted: false,
-                        techOrder: ["theta_hlsjs", "html5"],
-                        sources: [{
-                            src: "https://media.thetavideoapi.com/org_nbh2rgga2p8g22425pbegwxk1uc6/srvacc_yriv5q2xcaimmhxp0w6jukqw8/video_9kv7d4gxa69dc9b9mggpg5k07c/master.m3u8",
-                            type: "application/vnd.apple.mpegurl",
-                            label: "1080p"
-                        }],
-                        theta_hlsjs: {
-                            videoId: "a video id",
-                            userId: "a user id",
-                            onThetaReady: null,
-                            onStreamReady: null,
-                            hlsOpts: optionalHlsOpts,
-                            thetaOpts: optionalThetaOpts,
-                        }
-                    });
-                }
-            };
+    return () => {
+      if (hls) {
+        hls.destroy();
+      }
+    };
+  }, []);
 
-            scripts.forEach(src => {
-                scriptElements.push(loadScript(src, handleScriptLoad));
-            });
-
-            return () => {
-                scriptElements.forEach(script => {
-                    document.body.removeChild(script);
-                });
-            };
-        }
-    }, [playVideo]);
-
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-4 rounded shadow-lg w-3/4 max-w-lg">
-                <h2 className="text-xl mb-4">Preview</h2>
-                {playVideo ? (
-                    <div className="relative pb-16x9">
-                        <video id="my-player" className="absolute top-0 left-0 w-full h-full" controls></video>
-                    </div>
-                ) : (
-                    <button onClick={() => setPlayVideo(true)} className="p-2 bg-blue-500 text-white rounded">Play Video</button>
-                )}
-                <button onClick={onClose} className="mt-4 p-2 bg-blue-500 text-white rounded">Close</button>
-            </div>
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+      <div className="bg-white p-4 rounded shadow-lg w-full max-w-2xl">
+        <h2 className="text-xl mb-4">Preview</h2>
+        <div className="relative pb-16x9">
+          <video
+            ref={videoRef}
+            className="video-js vjs-big-play-centered w-full h-full"
+            controls
+            style={{ width: '100%', height: 'auto' }}
+          ></video>
         </div>
-    );
+        <button onClick={onClose} className="mt-4 p-2 bg-blue-500 text-white rounded">Close</button>
+      </div>
+    </div>
+  );
 };
 
 export default PreviewModal;
