@@ -40,7 +40,7 @@ const PreviewModal = () => {
                                     muted: false,
                                     techOrder: ["theta_hlsjs", "html5"],
                                     sources: [{
-                                        src: "https://media.thetavideoapi.com/srvacc_3z8e4t0g2jkfr57xsz3gqvpj0/video_kzh225ce37vvpsjvpqt8kh8ki5/1631659816016.m3u8",
+                                        src: "https://media.thetavideoapi.com/org_nbh2rgga2p8g22425pbegwxk1uc6/srvacc_yriv5q2xcaimmhxp0w6jukqw8/video_9kv7d4gxa69dc9b9mggpg5k07c/master.m3u8",
                                         type: "application/vnd.apple.mpegurl",
                                         label: "1080p"
                                     }],
