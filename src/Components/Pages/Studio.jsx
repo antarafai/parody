@@ -8,9 +8,13 @@ const FBXAnimations = () => {
   const progressBarRef = useRef(null);
   const [modelPaths, setModelPaths] = useState(['/models/Idle.fbx']);
   const [updateFlag, setUpdateFlag] = useState(false); // Ensure re-render
+  const [isExecInProgress, setIsExecInProgress] = useState(false); // Track exec request status
 
   // Modal logic
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+
+  // Alert state
+  const [showAlert, setShowAlert] = useState(false);
 
   const handleConfigButtonClick = () => {
     setIsConfigModalOpen(true);
@@ -24,6 +28,16 @@ const FBXAnimations = () => {
     console.log('Model paths updated:', modelPaths);
   }, [modelPaths]);
 
+  useEffect(() => {
+    if (showAlert) {
+      const timer = setTimeout(() => {
+        setShowAlert(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showAlert]);
+
   const handleButtonClick = async () => {
     const input = document.getElementById('modelPathsInput');
     console.log('Input value:', input.value);
@@ -34,6 +48,9 @@ const FBXAnimations = () => {
     console.log('Updated paths:', updatedPaths);
 
     try {
+      // Set exec in progress to true
+      setIsExecInProgress(true);
+
       // Define the requests related to motions
       const motionRequest = fetch(`${server_url}/config/motions`, {
         method: 'POST',
@@ -72,6 +89,18 @@ const FBXAnimations = () => {
       }
     } catch (error) {
       console.error('Error during requests:', error);
+    } finally {
+      // Set exec in progress to false
+      setIsExecInProgress(false);
+    }
+  };
+
+  const handlePreviewClick = () => {
+    if (isExecInProgress) {
+      setShowAlert(true);
+    } else {
+      // Handle the actual preview functionality here
+      console.log('Preview button clicked');
     }
   };
 
@@ -86,7 +115,13 @@ const FBXAnimations = () => {
           >
             CONFIGURE
           </button>
-          <button id="preview" className="btn bg-accent mb-3 rounded h-10 w-40 text-black">PREVIEW</button>
+          <button 
+            id="preview" 
+            className={`btn ${isExecInProgress ? 'bg-gray-500' : 'bg-accent'} mb-3 rounded h-10 w-40 text-black`}
+            onClick={handlePreviewClick}
+          >
+            PREVIEW
+          </button>
           <button className="bg-gray-600 mb-3 rounded h-10 w-40"></button>
           <button className="bg-gray-600 mb-3 rounded h-10 w-40"></button>
           <button className="bg-gray-600 mb-3 rounded h-10 w-40"></button>
@@ -108,6 +143,23 @@ const FBXAnimations = () => {
 
       {isConfigModalOpen && (
         <ConfigModal onClose={handleCloseModal} />
+      )}
+
+      {showAlert && (
+        <div className="fixed top-4 right-4 p-4 bg-yellow-500 text-black rounded-xl shadow-lg flex items-center space-x-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 shrink-0 stroke-current"
+            fill="none"
+            viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span>Video rendering is still in progress</span>
+        </div>
       )}
     </div>
   );
