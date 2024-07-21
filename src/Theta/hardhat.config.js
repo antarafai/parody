@@ -1,15 +1,20 @@
-require("@nomiclabs/hardhat-ethers");
-require("hardhat-deploy");
+require('@nomiclabs/hardhat-waffle');
 
-module.exports = {
-  solidity: "0.8.0",
+
+const config = {
+  solidity: '0.8.0',
   paths: {
-    artifacts: './src/artifacts', // This is where the compiled contracts will be stored
+    artifacts: './src/artifacts',
   },
+  defaultNetwork: "theta_testnet",
   networks: {
-    theta: {
-      url: "https://eth-rpc-api.thetatoken.org/rpc", // Theta RPC URL
-      accounts: [process.env.PRIVATE_KEY], // Private key of the deployer account
+    theta_testnet: {
+      url: 'https://eth-rpc-api-testnet.thetatoken.org/rpc',
+      accounts: ["0xd46d6e2fb31fedceb74ef8286802ea3d2a8b7d81"],
+      chainId: 365,
+      gasPrice: 1000000000,
     },
   },
 };
+
+module.exports = config;
