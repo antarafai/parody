@@ -94,8 +94,8 @@ const FBXAnimations = () => {
     <div className="flex flex-col h-screen">
       <div className="flex flex-row flex-1">
         <div id="sidePanel" className="flex flex-col bg-gray-900 p-4">
-          <button id="preConfig" className="btn bg-orange-300 mb-3 rounded h-10 w-40 text-black">CONFIGURE</button>
-          <button id="preview" className="btn bg-orange-300 mb-3 rounded h-10 w-40 text-black">PREVIEW</button>
+          <button id="preConfig" class="btn bg-accent mb-3 rounded h-10 w-40 text-black">CONFIGURE</button>
+          <button id="preview" class="btn bg-accent mb-3 rounded h-10 w-40 text-black">PREVIEW</button>
           <button className="bg-gray-600 mb-3 rounded h-10 w-40"></button>
           <button className="bg-gray-600 mb-3 rounded h-10 w-40"></button>
           <button className="bg-gray-600 mb-3 rounded h-10 w-40"></button>
