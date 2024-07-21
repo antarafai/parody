@@ -139,18 +139,27 @@ const WebGLRenderer = ({ progressBarRef, modelPaths }) => {
             activeAction.play();
 
             console.log(`Playing animation ${currentAnimationIndex + 1}`);
-
-            // Transition to the next animation after the current one's duration
+    
+            // Determine the duration to wait before playing the next animation
+            let duration;
+            if (currentAnimationIndex === 0) {
+              // Fixed duration of 2 seconds for the first animation
+              duration = 2000;
+            } else {
+              // Use the animation clip's own duration for subsequent animations
+              duration = activeAction.getClip().duration * 1000; // Convert duration to milliseconds
+            }
+    
             setTimeout(() => {
               console.log(`Finished animation ${currentAnimationIndex + 1}`);
               currentAnimationIndex++;
               if (currentAnimationIndex < animationActions.length) {
                 playNextAnimation();
               }
-            }, activeAction.getClip().duration * 1000); // Convert duration to milliseconds
+            }, duration);
           }
         };
-
+    
         playNextAnimation();
       }
     };
