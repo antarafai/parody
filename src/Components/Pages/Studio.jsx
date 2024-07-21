@@ -3,6 +3,7 @@ import WebGLRenderer from '../WebGL/WebGLRenderer';
 import ConfigModal from '../WebGL/ConfigModal';
 import PreviewModal from '../WebGL/PreviewModal';
 import runPrompt from '../NLP/Prompt';
+import fs from 'fs';
 
 const server_url = 'http://localhost:5000';
 
@@ -55,34 +56,19 @@ const FBXAnimations = () => {
         }
     }, [showAlert]);
 
-    const checkPathsExist = async (paths) => {
-        const checkPath = async (path) => {
-            try {
-                const response = await fetch(path, { method: 'HEAD' }); // Use HEAD method to check existence
-                console.log(`Checking path: ${path}, Status: ${response.status}`);
-                return response.status === 200;
-            } catch (error) {
-                console.error(`Error checking path ${path}:`, error);
-                return false;
-            }
-        };
-
-        const results = await Promise.all(paths.map(checkPath));
-        return paths.filter((_, index) => results[index]);
+    const checkPathsExist = (paths, filesString) => {
+        // Split the filesString using regex to handle both commas and spaces
+        const availableFiles = new Set(filesString.split(/[\s,]+/).map(file => file.trim()));
+        return paths.filter(path => availableFiles.has(path));
     };
 
     const handleButtonClick = async () => {
         const input = document.getElementById('modelPathsInput');
         const prompt1 = input.value;
-        
-        // Fetch the contents of /public/FBXlistings.txt
-        const response = await fetch('/FBXlistings.txt');
-        if (!response.ok) {
-            throw new Error('Failed to fetch FBXlistings.txt');
-        }
-        const filesString = await response.text();
+    
+        const filesString = "angry_fists, angry_point, backflip, back_happy_walk, back_run, back_run_turn_right, big_head_hit, blow_kiss, bow_arrow, boxing_idle, boxing_pose, brutal_walk, cabbage_patch, cabinet_open, careful_walk, carry_run, cartwheel, center_block, cheering, cheer_fists, chest_block, clapping, cover_shoot, crawl_forward, crouch_to_stand, crouch_walk, crying, dismiss, dodge_right, dribble_basketball, drink, drinking, elbow_head, embarassed, excited, fight_idle_guard, fish_cast, fist_pump, float_flail, golf_swing, grab_rifle, groin_kick, happy_idle, head_hit, hip_hop_dance, hip_hop_wave, hook_punch, house_dance, hurricane_kick, idle, injured_walk, insult, intent_run, jab, jab_cross, jogging, jog_ring_entry, jog_with_box, jump, jumping, jump_ecstatic, jump_joy, kiss_long, kneel_point, laughing, lead_foot_kick, lead_hand_hook, lean_run, left_block, left_hit_reaction, left_side_step, left_strafe, left_strafe_walk, left_turn, left_turn_walk, light_hit_left, look_both_shoulders, look_down_point, mid_head_hit_left, mid_head_hit_right, mid_hook_punch, mid_straight_punch, military_salute, moonwalk, muay_thai_knee, nervous_look, nervous_look_right, nod, old_man_idle, open_door, paddle_canoe, peek_under_cup, pilot_shove_react, pilot_switches, play_drums, play_guitar, point, pointing, pull_lever, punch_bag, push_button, push_heavy, quick_rifle_walk, rifle_block, rifle_dodge, rifle_walk, right_block, right_turn_run, robot_dance, rub_shoulder, rummage, run, running, running_tired, run_backwards, run_fast, run_heavy, sad_walk_back, salsa_dance5, salsa_dancing_female, salsa_dancing_male, salute, seated_idle, shaking_hands, shaking_head, shame_face, sheath_sword, shim_sham1, shim_sham2, shrugging, sideways_run, sing, sit, sitting, sit_dodge_right, sit_kick_out, sit_knock_off, sit_wait, skinning_test, sneak_left, soccer_header, soccer_idle, soccer_juggle, soccer_receive, spin, stand, standing, standing_idle_holding_briefcase, stand_clap, stand_idle, strafe_left, stretch_arms, strike_jog, strut_walk, swagger_walk, swim_underwater, talking_on_phone, thoughtful_nod, thumbs_up, tread_water, uppercut, uppercut_face, walk, walking, walk_backwards, walk_sad, wave, wave_arms_dance, wave_over_seated, waving, writing, yawn, yawning, zombie_jab";
 
-        console.log('Input value:', prompt1);
+        console.log('Files string:', filesString);
 
         try {
             // Call runPrompt with prompt1 and filesString
@@ -90,52 +76,56 @@ const FBXAnimations = () => {
             console.log('Parsed paths:', paths);
 
             if (paths && paths.length > 0) {
-                let updatedPaths = ['/models/Idle.fbx', ...paths.map(path => `/models/Motions/${path}.fbx`)];
-                console.log('Updated paths (before filtering):', updatedPaths);
+                // Filter paths immediately after runPrompt
+                const filteredPaths = checkPathsExist(paths, filesString);
+                console.log('Filtered paths:', filteredPaths);
 
-                // Check if all paths exist and filter out non-existing paths
-                updatedPaths = await checkPathsExist(updatedPaths);
-                console.log('Filtered paths:', updatedPaths);
+                if (filteredPaths.length > 0) {
+                    let updatedPaths = ['/models/Idle.fbx', ...filteredPaths.map(path => `/models/Motions/${path}.fbx`)];
+                    console.log('Updated paths:', updatedPaths);
 
-                // Set exec in progress to true
-                setIsExecInProgress(true);
-                setHasRenderJob(true); // Indicate that a render job has been given
+                    // Set exec in progress to true
+                    setIsExecInProgress(true);
+                    setHasRenderJob(true); // Indicate that a render job has been given
 
-                // Define the requests related to motions
-                const motionRequest = fetch(`${server_url}/config/motions`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ motions: paths })
-                });
+                    // Define the requests related to motions
+                    const motionRequest = fetch(`${server_url}/config/motions`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ motions: filteredPaths })
+                    });
 
-                // Execute the motions request
-                const motionResponse = await motionRequest;
-                if (!motionResponse.ok) {
-                    throw new Error(`Request failed with status ${motionResponse.status}`);
-                }
-
-                console.log('Motions configuration request successful');
-                setModelPaths(updatedPaths);
-                setUpdateFlag((prev) => !prev); // Toggle update flag to force re-render
-
-                // Blocking GET request to exec
-                const execResponse = await fetch(`${server_url}/exec`);
-                if (execResponse.ok) {
-                    const reader = execResponse.body.getReader();
-                    const decoder = new TextDecoder("utf-8");
-                    let done = false;
-
-                    while (!done) {
-                        const { value, done: readerDone } = await reader.read();
-                        done = readerDone;
-                        if (value) {
-                            console.log(decoder.decode(value));
-                        }
+                    // Execute the motions request
+                    const motionResponse = await motionRequest;
+                    if (!motionResponse.ok) {
+                        throw new Error(`Request failed with status ${motionResponse.status}`);
                     }
 
-                    console.log('Exec request completed');
+                    console.log('Motions configuration request successful');
+                    setModelPaths(updatedPaths);
+                    setUpdateFlag((prev) => !prev); // Toggle update flag to force re-render
+
+                    // Blocking GET request to exec
+                    const execResponse = await fetch(`${server_url}/exec`);
+                    if (execResponse.ok) {
+                        const reader = execResponse.body.getReader();
+                        const decoder = new TextDecoder("utf-8");
+                        let done = false;
+
+                        while (!done) {
+                            const { value, done: readerDone } = await reader.read();
+                            done = readerDone;
+                            if (value) {
+                                console.log(decoder.decode(value));
+                            }
+                        }
+
+                        console.log('Exec request completed');
+                    } else {
+                        console.error('Failed to exec', execResponse.statusText);
+                    }
                 } else {
-                    console.error('Failed to exec', execResponse.statusText);
+                    console.error('No valid paths after filtering');
                 }
             } else {
                 console.error('No valid paths returned from runPrompt');
