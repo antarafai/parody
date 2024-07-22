@@ -8,7 +8,7 @@ const CharacterSelectModal = ({ isOpen, onClose }) => {
     if (selectedCharacter) {
       const characterPath = `/home/mizookie/anigen-flask-app/${selectedCharacter}.blend`;
       try {
-        await axios.post('/config/character', { character: characterPath });
+        await axios.post('http://locahost:5000/config/character', { character: characterPath });
         onClose();
       } catch (error) {
         console.error('Error sending POST request:', error);
@@ -28,14 +28,14 @@ const CharacterSelectModal = ({ isOpen, onClose }) => {
           <label className="block mb-2">
             <input
               type="radio"
-              name="character"
-              value="character1"
+              name="Female Bot"
+              value="Xbot"
               onChange={(e) => setSelectedCharacter(e.target.value)}
             />
-            Character 1
+            Female Bot
           </label>
           <video width="320" height="240" controls>
-            <source src="path_to_character1_video.mp4" type="video/mp4" />
+            <source src="public/character-videos/X-bot-demo.mkv" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         </div>
@@ -43,14 +43,14 @@ const CharacterSelectModal = ({ isOpen, onClose }) => {
           <label className="block mb-2">
             <input
               type="radio"
-              name="character"
-              value="character2"
+              name="Male Bot"
+              value="Ybot"
               onChange={(e) => setSelectedCharacter(e.target.value)}
             />
-            Character 2
+            Male Bot
           </label>
           <video width="320" height="240" controls>
-            <source src="path_to_character2_video.mp4" type="video/mp4" />
+            <source src="public/character-videos/Y-bot-demo.mkv" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         </div>
