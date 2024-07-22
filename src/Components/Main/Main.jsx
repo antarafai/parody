@@ -40,7 +40,7 @@ const Main = () => {
   const { user, userData } = useContext(AuthContext);
   const text = useRef("");
   const scrollRef = useRef("");
-  const [image, setImage] = useState(null);
+  const [media, setMedia] = useState(null);
   const [file, setFile] = useState(null);
   const collectionRef = collection(db, "posts");
   const postRef = doc(collection(db, "posts"));
@@ -64,7 +64,7 @@ const Main = () => {
           name: user?.displayName || userData?.name,
           email: user?.email || userData?.email,
           text: text.current.value,
-          image: image,
+          media: media,
           timestamp: serverTimestamp(),
         });
         text.current.value = "";
@@ -87,15 +87,16 @@ const Main = () => {
       "image/png",
       "image/gif",
       "image/svg+xml",
+      "video/mp4",
     ],
   };
 
-  const submitImage = async () => {
+  const submitMedia = async () => {
     const fileType = metadata.contentType.includes(file["type"]);
     if (!file) return;
     if (fileType) {
       try {
-        const storageRef = ref(storage, `images/${file.name}`);
+        const storageRef = ref(storage, `media/${file.name}`);
         const uploadTask = uploadBytesResumable(
           storageRef,
           file,
@@ -115,7 +116,7 @@ const Main = () => {
           async () => {
             await getDownloadURL(uploadTask.snapshot.ref).then(
               (downloadURL) => {
-                setImage(downloadURL);
+                setMedia(downloadURL);
               }
             );
           }
@@ -137,7 +138,7 @@ const Main = () => {
           posts: doc?.docs?.map((item) => item?.data()),
         });
         scrollRef?.current?.scrollIntoView({ behavior: "smooth" });
-        setImage(null);
+        setMedia(null);
         setFile(null);
         setProgressBar(0);
       });
@@ -171,12 +172,22 @@ const Main = () => {
                 ></input>
               </div>
               <div className="mx-4">
-                {image && (
-                  <img
-                    className="h-24 rounded-xl"
-                    src={image}
-                    alt="previewImage"
-                  ></img>
+                {media && (
+                  <>
+                    {file.type.includes("image") ? (
+                      <img
+                        className="h-24 rounded-xl"
+                        src={media}
+                        alt="previewImage"
+                      ></img>
+                    ) : (
+                      <video
+                        className="h-24 rounded-xl"
+                        src={media}
+                        controls
+                      ></video>
+                    )}
+                  </>
                 )}
               </div>
               <div className="mr-4">
@@ -194,19 +205,19 @@ const Main = () => {
         <div className="flex justify-around items-center pt-4">
           <div className="flex items-center">
             <label
-              htmlFor="addImage"
+              htmlFor="addMedia"
               className="cursor-pointer flex items-center"
             >
-              <img className="h-10 mr-4" src={addImage} alt="addImage"></img>
+              <img className="h-10 mr-4" src={addImage} alt="addMedia"></img>
               <input
-                id="addImage"
+                id="addMedia"
                 type="file"
                 style={{ display: "none" }}
                 onChange={handleUpload}
               ></input>
             </label>
             {file && (
-              <Button variant="text" onClick={submitImage}>
+              <Button variant="text" onClick={submitMedia}>
                 Upload
               </Button>
             )}
@@ -236,6 +247,7 @@ const Main = () => {
           <div>
             {state?.posts?.length > 0 &&
               state?.posts?.map((post, index) => {
+                console.log(post);
                 return (
                   <PostCard
                     key={index}
@@ -244,8 +256,8 @@ const Main = () => {
                     uid={post?.uid}
                     name={post?.name}
                     email={post?.email}
-                    image={post?.image}
-                    text={post?.text}
+                    media={post?.media}
+                    mediaType={post?.media?.includes("mp4") ? "video" : "image"}
                     timestamp={new Date(
                       post?.timestamp?.toDate()
                     )?.toUTCString()}

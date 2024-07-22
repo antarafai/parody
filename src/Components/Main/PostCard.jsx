@@ -26,7 +26,7 @@ import {
 import { db } from "../firebase/firebase";
 import CommentSection from "./CommentSection";
 
-const PostCard = ({ uid, id, logo, name, email, text, image, timestamp }) => {
+const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestamp }) => {
   const { user } = useContext(AuthContext);
   const [state, dispatch] = useReducer(PostsReducer, postsStates);
   const likesRef = doc(collection(db, "posts", id, "likes"));
@@ -34,6 +34,9 @@ const PostCard = ({ uid, id, logo, name, email, text, image, timestamp }) => {
   const singlePostDocument = doc(db, "posts", id);
   const { ADD_LIKE, HANDLE_ERROR } = postActions;
   const [open, setOpen] = useState(false);
+
+  console.log('media', media)
+  console.log('mediaType', mediaType)
 
   const handleOpen = (e) => {
     e.preventDefault();
@@ -144,13 +147,19 @@ const PostCard = ({ uid, id, logo, name, email, text, image, timestamp }) => {
           )}
         </div>
         <div>
-          <p className="ml-4 pb-4 font-roboto font-medium text-sm text-gray-700 no-underline tracking-normal leading-none">
-            {text}
-          </p>
-          {image && (
-            <img className="h-[500px] w-full" src={image} alt="postImage"></img>
-          )}
-        </div>
+        <p className="ml-4 pb-4 font-roboto font-medium text-sm text-gray-700 no-underline tracking-normal leading-none">
+          {text}
+        </p>
+        {mediaType === "image" && (
+          <img className="h-[500px] w-full" src={media} alt="postImage"></img>
+        )}
+        {mediaType === "video" && (
+          <video className="h-[500px] w-full" controls>
+            <source src={media} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        )}
+      </div>
         <div className="flex justify-around items-center pt-4">
           <button
             className="flex items-center cursor-pointer rounded-lg p-2 hover:bg-gray-100"
