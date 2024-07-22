@@ -1,10 +1,11 @@
+// PreviewModal.jsx
 import React, { useEffect, useRef, useState } from 'react';
-import Hls from 'hls.js';
-import 'video.js/dist/video-js.css'; // Ensure Video.js CSS is correctly imported
+import HlsPlayer from '../VideoPlayer/HlsPlayer';
 
 const PreviewModal = ({ onClose, frameCount }) => {
-  const videoRef = useRef(null);
+  const [videoUrl, setVideoUrl] = useState(null);
   const [loading, setLoading] = useState(true);
+  const videoRef = useRef(null);
 
   useEffect(() => {
     const fetchVideoUrl = async () => {
@@ -27,9 +28,8 @@ const PreviewModal = ({ onClose, frameCount }) => {
         }
 
         const data = await response.json();
-        const videoUrl = data.video_url;
-
-        initializePlayer(videoUrl);
+        console.log('Video URL:', data.video_url);
+        setVideoUrl(data.video_url);
       } catch (error) {
         console.error('Error fetching video URL:', error);
       } finally {
@@ -37,38 +37,7 @@ const PreviewModal = ({ onClose, frameCount }) => {
       }
     };
 
-    const initializePlayer = (videoUrl) => {
-      const video = videoRef.current;
-      if (!video) return; // Ensure video ref is not null
-
-      let hls;
-
-      if (Hls.isSupported()) {
-        hls = new Hls();
-        hls.loadSource(videoUrl);
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          video.play();
-        });
-
-        hls.on(Hls.Events.ERROR, (event, data) => {
-          console.error(`HLS.js error: ${data.type}`, data);
-        });
-      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = videoUrl;
-        video.addEventListener('canplay', () => {
-          video.play();
-        });
-      }
-    };
-
     fetchVideoUrl();
-
-    return () => {
-      if (videoRef.current && Hls.isSupported() && videoRef.current.hls) {
-        videoRef.current.hls.destroy();
-      }
-    };
   }, [frameCount]);
 
   return (
@@ -81,14 +50,7 @@ const PreviewModal = ({ onClose, frameCount }) => {
             <p className="ml-4">Video uploading...</p>
           </div>
         ) : (
-          <div className="relative pb-16x9">
-            <video
-              ref={videoRef}
-              className="video-js vjs-big-play-centered w-full h-full"
-              controls
-              style={{ width: '100%', height: 'auto' }}
-            ></video>
-          </div>
+          <HlsPlayer videoUrl={videoUrl} videoRef={videoRef} />
         )}
         <button onClick={onClose} className="mt-4 p-2 bg-blue-500 text-white rounded">Close</button>
       </div>
