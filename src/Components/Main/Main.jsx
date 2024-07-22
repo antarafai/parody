@@ -200,7 +200,7 @@ const Main = () => {
         </div>
         <span
           style={{ width: `${progressBar}%` }}
-          className="bg-blue-700 py-1 rounded-md"
+          className="bg-accent py-1 rounded-md"
         ></span>
         <div className="flex justify-around items-center pt-4">
           <div className="flex items-center">
