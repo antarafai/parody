@@ -37,7 +37,6 @@ const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestam
   const [open, setOpen] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const postRef = useRef(null);
-  const videoRef = useRef(null);
 
   const handleOpen = (e) => {
     e.preventDefault();
@@ -139,6 +138,15 @@ const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestam
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (isInView && mediaType === "video") {
+      const videoElement = postRef.current.querySelector("video");
+      if (videoElement && videoElement.paused) {
+        videoElement.play();
+      }
+    }
+  }, [isInView, mediaType]);
 
   return (
     <div className="mb-4" ref={postRef}>
