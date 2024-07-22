@@ -45,7 +45,7 @@ const CharacterSelectModal = ({ isOpen, onClose }) => {
             Female Bot
           </label>
           <video width="320" height="240" controls>
-            <source src="public/character-videos/X-bot-demo.mkv" type="video/mp4" />
+            <source src="/character-videos/X-bot-demo.mkv" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         </div>
@@ -60,7 +60,7 @@ const CharacterSelectModal = ({ isOpen, onClose }) => {
             Male Bot
           </label>
           <video width="320" height="240" controls>
-            <source src="public/character-videos/Y-bot-demo.mkv" type="video/mp4" />
+            <source src="/character-videos/Y-bot-demo.mkv" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         </div>

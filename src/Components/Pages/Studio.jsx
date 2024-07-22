@@ -190,9 +190,11 @@ const FBXAnimations = () => {
                     </button>
                     <button 
                         id="character" 
-                        className="btn bg-gray-600 mb-3 rounded h-10 w-40"
+                        className="btn bg-accent mb-3 rounded h-10 w-40 text-black"
                         onClick={handleCharacterSelectButtonClick}
-                    ></button>
+                    >
+                        CHARACTER
+                    </button>
                     <button className="bg-gray-600 mb-3 rounded h-10 w-40"></button>
                     <button className="bg-gray-600 mb-3 rounded h-10 w-40"></button>
                 </div>
@@ -220,7 +222,7 @@ const FBXAnimations = () => {
             )}
 
             {isCharacterSelectModalOpen && (
-                <CharacterSelectModal onClose={handleCloseCharacterSelectModal} />
+                <CharacterSelectModal isOpen={isCharacterSelectModalOpen} onClose={handleCloseCharacterSelectModal} />
             )}
 
             {showAlert && (
