@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 
 const CharacterSelectModal = ({ isOpen, onClose }) => {
   const [selectedCharacter, setSelectedCharacter] = useState(null);
@@ -8,8 +7,19 @@ const CharacterSelectModal = ({ isOpen, onClose }) => {
     if (selectedCharacter) {
       const characterPath = `/home/mizookie/anigen-flask-app/${selectedCharacter}.blend`;
       try {
-        await axios.post('http://locahost:5000/config/character', { character: characterPath });
-        onClose();
+        const response = await fetch('http://localhost:5000/config/character', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ character: characterPath }),
+        });
+        
+        if (response.ok) {
+          onClose();
+        } else {
+          console.error('Error sending POST request:', response.statusText);
+        }
       } catch (error) {
         console.error('Error sending POST request:', error);
       }
