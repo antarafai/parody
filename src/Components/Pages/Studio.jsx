@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import WebGLRenderer from '../WebGL/WebGLRenderer';
 import ConfigModal from '../WebGL/ConfigModal';
 import PreviewModal from '../WebGL/PreviewModal';
+import CharacterSelectModal from '../Modals/CharacterSelectModal'; // Import the CharacterSelectModal
 import runPrompt from '../NLP/Prompt';
 
 const server_url = 'http://localhost:5000';
@@ -16,6 +17,7 @@ const FBXAnimations = () => {
     // Modal logic
     const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
     const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false); // State for preview modal
+    const [isCharacterSelectModalOpen, setIsCharacterSelectModalOpen] = useState(false); // State for character select modal
 
     // Alert state
     const [showAlert, setShowAlert] = useState(false);
@@ -39,6 +41,14 @@ const FBXAnimations = () => {
 
     const handleClosePreviewModal = () => {
         setIsPreviewModalOpen(false);
+    };
+
+    const handleCharacterSelectButtonClick = () => {
+        setIsCharacterSelectModalOpen(true);
+    };
+
+    const handleCloseCharacterSelectModal = () => {
+        setIsCharacterSelectModalOpen(false);
     };
 
     useEffect(() => {
@@ -178,7 +188,11 @@ const FBXAnimations = () => {
                     >
                         PREVIEW
                     </button>
-                    <button className="bg-gray-600 mb-3 rounded h-10 w-40"></button>
+                    <button 
+                        id="character" 
+                        className="bg-gray-600 mb-3 rounded h-10 w-40"
+                        onClick={handleCharacterSelectButtonClick}
+                    ></button>
                     <button className="bg-gray-600 mb-3 rounded h-10 w-40"></button>
                     <button className="bg-gray-600 mb-3 rounded h-10 w-40"></button>
                 </div>
@@ -203,6 +217,10 @@ const FBXAnimations = () => {
 
             {isPreviewModalOpen && (
                 <PreviewModal onClose={handleClosePreviewModal} frameCount={frameCount} />
+            )}
+
+            {isCharacterSelectModalOpen && (
+                <CharacterSelectModal onClose={handleCloseCharacterSelectModal} />
             )}
 
             {showAlert && (
