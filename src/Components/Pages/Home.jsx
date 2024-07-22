@@ -4,6 +4,7 @@ import CardSection from "../Main/CardSection";
 import Navbar from "../Navbar/Navbar";
 import RightSide from "../RightSidebar/RightSide";
 import Main from "../Main/Main";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   return (
