@@ -190,7 +190,7 @@ const FBXAnimations = () => {
                     </button>
                     <button 
                         id="character" 
-                        className="bg-gray-600 mb-3 rounded h-10 w-40"
+                        className="btn bg-gray-600 mb-3 rounded h-10 w-40"
                         onClick={handleCharacterSelectButtonClick}
                     ></button>
                     <button className="bg-gray-600 mb-3 rounded h-10 w-40"></button>
