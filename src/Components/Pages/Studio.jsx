@@ -196,12 +196,20 @@ const FBXAnimations = () => {
                             Configure
                         </button>
                         <button 
+                            id="character" 
+                            className="btn btn-outline btn-accent mb-3 h-10 w-40 mx-2 rounded animate-float glow"
+                            onClick={handleCharacterSelectButtonClick}
+                        >
+                            Character
+                        </button>
+                        <button 
                             id="preview" 
-                            className={`btn ${hasRenderJob ? (isExecInProgress ? 'bg-gray-500' : 'btn-outline') : 'btn-accent'} mb-3 rounded-r-full h-10 w-60 text-black animate-float glow`}
+                            className={`btn ${hasRenderJob ? (isExecInProgress ? 'btn-accent' : 'btn-outline btn-accent') : 'btn-accent'} mb-3 rounded-r-full h-10 w-60 text-black animate-float glow`}
                             onClick={handlePreviewClick}
                         >
                             Preview
                         </button>
+                        
                     </div>
                     </div>
                     <progress value={renderProgress} max="100" id="progressBar" ref={progressBarRef} className="absolute top-2 left-2"></progress>
