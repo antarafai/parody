@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useReducer } from "react";
+import React, { useState, useContext, useEffect, useReducer, useRef } from "react";
 import { Avatar } from "@material-tailwind/react";
 import avatar from "../../assets/images/avatar.jpg";
 import like from "../../assets/images/like.png";
@@ -25,6 +25,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import CommentSection from "./CommentSection";
+import HlsPlayer from "../VideoPlayer/HlsPlayer"; // Import the HLS player component
 
 const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestamp }) => {
   const { user } = useContext(AuthContext);
@@ -34,9 +35,8 @@ const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestam
   const singlePostDocument = doc(db, "posts", id);
   const { ADD_LIKE, HANDLE_ERROR } = postActions;
   const [open, setOpen] = useState(false);
-
-  console.log('media', media)
-  console.log('mediaType', mediaType)
+  const [isInView, setIsInView] = useState(false);
+  const postRef = useRef(null);
 
   const handleOpen = (e) => {
     e.preventDefault();
@@ -87,7 +87,7 @@ const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestam
       if (user?.uid === uid) {
         await deleteDoc(singlePostDocument);
       } else {
-        alert("You cant delete other users posts !!!");
+        alert("You can't delete other users' posts!");
       }
     } catch (err) {
       alert(err.message);
@@ -114,8 +114,42 @@ const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestam
     return () => getLikes();
   }, [id, ADD_LIKE, HANDLE_ERROR]);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsInView(true);
+          } else {
+            setIsInView(false);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    if (postRef.current) {
+      observer.observe(postRef.current);
+    }
+
+    return () => {
+      if (postRef.current) {
+        observer.unobserve(postRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isInView && mediaType === "video") {
+      const videoElement = postRef.current.querySelector("video");
+      if (videoElement && videoElement.paused) {
+        videoElement.play();
+      }
+    }
+  }, [isInView, mediaType]);
+
   return (
-    <div className="mb-4">
+    <div className="mb-4" ref={postRef}>
       <div className="flex flex-col py-4 bg-white rounded-t-3xl">
         <div className="flex justify-start items-center pb-4 pl-4 ">
           <Avatar
@@ -147,19 +181,19 @@ const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestam
           )}
         </div>
         <div>
-        <p className="ml-4 pb-4 font-roboto font-medium text-sm text-gray-700 no-underline tracking-normal leading-none">
-          {text}
-        </p>
-        {mediaType === "image" && (
-          <img className="h-[500px] w-full" src={media} alt="postImage"></img>
-        )}
-        {mediaType === "video" && (
-          <video className="h-[500px] w-full" controls>
-            <source src={media} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        )}
-      </div>
+          <p className="ml-4 pb-4 font-roboto font-medium text-sm text-gray-700 no-underline tracking-normal leading-none">
+            {text}
+          </p>
+          {mediaType === "image" && (
+            <img className="h-[500px] w-full" src={media} alt="postImage"></img>
+          )}
+          {mediaType === "video" && (
+            <HlsPlayer
+              videoUrl="https://media.thetavideoapi.com/org_nbh2rgga2p8g22425pbegwxk1uc6/srvacc_yriv5q2xcaimmhxp0w6jukqw8/video_40nypgmbbev2brwjbhf03y8pu6/master.m3u8"
+              play={isInView}
+            />
+          )}
+        </div>
         <div className="flex justify-around items-center pt-4">
           <button
             className="flex items-center cursor-pointer rounded-lg p-2 hover:bg-gray-100"

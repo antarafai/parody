@@ -1,50 +1,56 @@
 // HlsPlayer.jsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Hls from 'hls.js';
 import 'video.js/dist/video-js.css'; // Ensure Video.js CSS is correctly imported
 
-const HlsPlayer = ({ videoUrl, videoRef }) => {
+const HlsPlayer = ({ videoUrl, play }) => {
+  const videoRef = useRef(null);
+
   useEffect(() => {
-    if (!videoUrl) {
-      console.log('No video URL provided');
-      return;
-    }
+    const initializePlayer = () => {
+      const video = videoRef.current;
+      if (!video) {
+        console.log('Video element not found');
+        return;
+      }
 
-    const video = videoRef.current;
-    if (!video) {
-      console.log('Video element not found');
-      return;
-    }
+      console.log("Initializing player with video URL:", videoUrl);
 
-    console.log("Initializing player with video URL:", videoUrl);
+      let hls;
 
-    let hls;
+      if (Hls.isSupported()) {
+        hls = new Hls();
+        hls.loadSource(videoUrl);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          console.log("HLS manifest parsed");
+          if (play) {
+            video.play();
+          }
+        });
 
-    if (Hls.isSupported()) {
-      hls = new Hls();
-      hls.loadSource(videoUrl);
-      hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        console.log("HLS manifest parsed, starting playback...");
-        video.play();
-      });
+        hls.on(Hls.Events.ERROR, (event, data) => {
+          console.error(`HLS.js error: ${data.type}`, data);
+        });
 
-      hls.on(Hls.Events.ERROR, (event, data) => {
-        console.error(`HLS.js error: ${data.type}`, data);
-      });
+        // Attach HLS instance to video element for cleanup
+        video.hls = hls;
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        console.log("Using native HLS support...");
+        video.src = videoUrl;
+        video.addEventListener('canplay', () => {
+          console.log("Native HLS can play");
+          if (play) {
+            video.play();
+          }
+        });
+      }
+    };
 
-      // Attach HLS instance to video element for cleanup
-      video.hls = hls;
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      console.log("Using native HLS support...");
-      video.src = videoUrl;
-      video.addEventListener('canplay', () => {
-        console.log("Native HLS can play, starting playback...");
-        video.play();
-      });
-    }
+    initializePlayer();
 
     return () => {
+      const video = videoRef.current;
       if (video) {
         if (Hls.isSupported() && video.hls) {
           video.hls.destroy();
@@ -55,7 +61,16 @@ const HlsPlayer = ({ videoUrl, videoRef }) => {
         }
       }
     };
-  }, [videoUrl, videoRef]);
+  }, [videoUrl]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (play) {
+      video.play();
+    } else {
+      video.pause();
+    }
+  }, [play]);
 
   return (
     <div className="relative pb-16x9">
