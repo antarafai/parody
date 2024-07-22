@@ -35,10 +35,9 @@ const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestam
   const singlePostDocument = doc(db, "posts", id);
   const { ADD_LIKE, HANDLE_ERROR } = postActions;
   const [open, setOpen] = useState(false);
+  const [isInView, setIsInView] = useState(false);
+  const postRef = useRef(null);
   const videoRef = useRef(null);
-
-  console.log('media', media);
-  console.log('mediaType', mediaType);
 
   const handleOpen = (e) => {
     e.preventDefault();
@@ -116,8 +115,33 @@ const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestam
     return () => getLikes();
   }, [id, ADD_LIKE, HANDLE_ERROR]);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsInView(true);
+          } else {
+            setIsInView(false);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    if (postRef.current) {
+      observer.observe(postRef.current);
+    }
+
+    return () => {
+      if (postRef.current) {
+        observer.unobserve(postRef.current);
+      }
+    };
+  }, []);
+
   return (
-    <div className="mb-4">
+    <div className="mb-4" ref={postRef}>
       <div className="flex flex-col py-4 bg-white rounded-t-3xl">
         <div className="flex justify-start items-center pb-4 pl-4 ">
           <Avatar
@@ -158,7 +182,7 @@ const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestam
           {mediaType === "video" && (
             <HlsPlayer
               videoUrl="https://media.thetavideoapi.com/org_nbh2rgga2p8g22425pbegwxk1uc6/srvacc_yriv5q2xcaimmhxp0w6jukqw8/video_40nypgmbbev2brwjbhf03y8pu6/master.m3u8"
-              videoRef={videoRef}
+              play={isInView}
             />
           )}
         </div>
