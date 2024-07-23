@@ -150,6 +150,7 @@ const WebGLRenderer = ({ progressBarRef, modelPaths }) => {
 
         const playNextAnimation = () => {
           if (currentAnimationIndex < animationActions.length) {
+            setPlaying(true);
             setAction(animationActions[currentAnimationIndex]);
             activeAction.play();
 
@@ -170,6 +171,9 @@ const WebGLRenderer = ({ progressBarRef, modelPaths }) => {
               currentAnimationIndex++;
               if (currentAnimationIndex < animationActions.length) {
                 playNextAnimation();
+              }
+              else {
+                setPlaying(false);
               }
             }, duration);
           }
@@ -198,6 +202,7 @@ const WebGLRenderer = ({ progressBarRef, modelPaths }) => {
     // Clean up the scene when the component unmounts
     return () => {
       window.removeEventListener('resize', onWindowResize);
+      clearInterval(flashInterval);
       if (renderer.domElement.parentNode === mount) {
         mount.removeChild(renderer.domElement);
       }
@@ -207,8 +212,63 @@ const WebGLRenderer = ({ progressBarRef, modelPaths }) => {
   return (
     <div
       ref={mountRef}
-      className="w-[800px] h-[600px] overflow-hidden mx-auto p-0 border border-gray-300"
-    />
+      className="w-[800px] h-[600px] rounded overflow-hidden mx-auto p-0 relative bg-gray-100 mt-8"
+    >
+      {/* Top left corner */}
+      <div className="border-animation absolute top-0 left-0 w-6 h-0.5 bg-yellow-500"></div>
+      <div className="border-animation absolute top-0 left-0 w-0.5 h-6 bg-yellow-500"></div>
+
+      {/* Top right corner */}
+      <div className="border-animation absolute top-0 right-0 w-6 h-0.5 bg-yellow-500"></div>
+      <div className="border-animation absolute top-0 right-0 w-0.5 h-6 bg-yellow-500"></div>
+
+      {/* Bottom left corner */}
+      <div className="border-animation absolute bottom-0 left-0 w-6 h-0.5 bg-yellow-500"></div>
+      <div className="border-animation absolute bottom-0 left-0 w-0.5 h-6 bg-yellow-500"></div>
+
+      {/* Bottom right corner */}
+      <div className="border-animation absolute bottom-0 right-0 w-6 h-0.5 bg-yellow-500"></div>
+      <div className="border-animation absolute bottom-0 right-0 w-0.5 h-6 bg-yellow-500"></div>
+
+      <style jsx>{`
+        @keyframes focusInOut {
+          0%, 100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(4);
+          }
+        }
+        .border-animation {
+          animation: focusInOut 2s infinite;
+        }
+        
+        .flash-animation {
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: rgba(255, 255, 0, 0.5);
+          transform: rotate(45deg);
+          animation: flash 0.5s forwards;
+        }
+        @keyframes flash {
+          0% {
+            opacity: 0;
+            transform: translateX(-100%) translateY(-100%) rotate(45deg);
+          }
+          50% {
+            opacity: 1;
+            transform: translateX(0) translateY(0) rotate(45deg);
+          }
+          100% {
+            opacity: 0;
+            transform: translateX(100%) translateY(100%) rotate(45deg);
+          }
+        }
+      `}</style>
+    </div>
   );
 };
 
