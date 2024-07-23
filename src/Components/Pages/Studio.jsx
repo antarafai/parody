@@ -171,46 +171,51 @@ const FBXAnimations = () => {
     };
 
     return (
-        <div className="flex flex-col h-screen">
-            <div className="flex flex-row flex-1">
-                <div id="sidePanel" className="flex flex-col bg-gray-900 p-4">
-                    <button 
-                        id="preConfig" 
-                        className="btn bg-accent mb-3 rounded h-10 w-40 text-black"
-                        onClick={handleConfigButtonClick}
-                    >
-                        CONFIGURE
-                    </button>
-                    <button 
-                        id="preview" 
-                        className={`btn ${hasRenderJob ? (isExecInProgress ? 'bg-gray-500' : 'bg-accent') : 'bg-red-500'} mb-3 rounded h-10 w-40 text-black`}
-                        onClick={handlePreviewClick}
-                    >
-                        PREVIEW
-                    </button>
-                    <button 
-                        id="character" 
-                        className="btn bg-accent mb-3 rounded h-10 w-40 text-black"
-                        onClick={handleCharacterSelectButtonClick}
-                    >
-                        CHARACTER
-                    </button>
-                    <button className="bg-gray-600 mb-3 rounded h-10 w-40"></button>
-                    <button className="bg-gray-600 mb-3 rounded h-10 w-40"></button>
-                </div>
-                <div className="relative flex-grow h bg-gray-300">
-                    <WebGLRenderer progressBarRef={progressBarRef} modelPaths={modelPaths} updateFlag={updateFlag} />
+        <div className="flex flex-col h-full bg-black">
+            <div className="flex flex-row h-full flex-1">
+                <div className="relative flex-grow h-full bg-black">
+                <div style={{ marginRight: '0px' }}> {/* Adjust this value to move the component left or right */}
+                        <WebGLRenderer progressBarRef={progressBarRef} modelPaths={modelPaths} updateFlag={updateFlag} />
+                        <div id="webGLpanel" className="flex bg-black justify-center mt-10 p-4">
+                        <button 
+                            id="preConfig" 
+                            className="btn btn-outline btn-accent mb-3 rounded-l-full h-10 w-60 text-yellow-50 mx-2 animate-float glow"
+                            onClick={handleConfigButtonClick}
+                        >
+                            Configure
+                        </button>
+                        <button 
+                            id="character" 
+                            className="btn btn-outline btn-accent mb-3 h-10 w-40 mx-2 rounded animate-float glow"
+                            onClick={handleCharacterSelectButtonClick}
+                        >
+                            Character
+                        </button>
+                        <button 
+                            id="preview" 
+                            className={`btn ${hasRenderJob ? (isExecInProgress ? 'btn-accent' : 'btn-outline btn-accent') : 'btn-accent'} mb-3 rounded-r-full h-10 w-60 text-black animate-float glow`}
+                            onClick={handlePreviewClick}
+                        >
+                            Preview
+                        </button>
+                        
+                    </div>
+                    </div>
                     <progress value={renderProgress} max="100" id="progressBar" ref={progressBarRef} className="absolute top-2 left-2"></progress>
+                    
                 </div>
             </div>
-            <div id="inputBar" className="flex bg-gray-200 p-2">
+            <div id="inputBar" className="flex justify-center h-full w-full glow">
+            <div className="flex justify-center items-center h-full w-3/4">
                 <input
                     type="text"
                     id="modelPathsInput"
                     placeholder="Enter model paths separated by commas"
-                    className="flex-grow p-2 mr-2 border border-gray-400 rounded"
+                    className="flex-grow p-2 mr-2 border border-accent rounded-l-full glow"
+                    style={{ fontSize: '12px' }} // Adjust this value to change the font size
                 />
-                <button id="Send" className="p-2 bg-green-500 text-white rounded" onClick={handleButtonClick}>Send</button>
+                <button id="Send" className="btn glass p-2 bg-accent text-black rounded-r-full glow" onClick={handleButtonClick}>Send</button>
+            </div>
             </div>
 
             {isConfigModalOpen && (
@@ -245,6 +250,36 @@ const FBXAnimations = () => {
                     )}
                 </div>
             )}
+            <style jsx>{`
+                .spotlight {
+                    position: absolute;
+                    bottom: 0;
+                    width: 100px;
+                    height: 300px;
+                    background: radial-gradient(circle, rgba(255,255,255,0.6) 20%, rgba(255,255,255,0) 70%);
+                    pointer-events: none;
+                }
+                .spotlight.left-0 {
+                    left: 10%;
+                }
+                .spotlight.right-0 {
+                    right: 10%;
+                }
+                .animate-float {
+                    animation: float 3s ease-in-out infinite;
+                }
+                .glow {
+                    box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+                }
+                @keyframes float {
+                    0%, 100% {
+                        transform: translateY(0);
+                    }
+                    50% {
+                        transform: translateY(-10px);
+                    }
+                }
+            `}</style>
         </div>
     );
 };
