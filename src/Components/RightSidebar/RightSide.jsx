@@ -38,16 +38,7 @@ const RightSide = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-white shadow-lg border-2 rounded-l-xl">
-      <div className="flex flex-col items-center relative pt-10">
-        <img className="h-48 rounded-md" src={waterslide} alt="nature"></img>
-      </div>
-      <p className="font-roboto font-normal text-sm text-gray-700 max-w-fit no-underline tracking-normal leading-tight py-2 mx-2">
-        Through photography, the beauty of Mother Nature can be frozen in time.
-        This category celebrates the magic of our planet and beyond — from the
-        immensity of the great outdoors, to miraculous moments in your own
-        backyard.
-      </p>
+    <div className="flex flex-col h-screen bg-black shadow-lg border-2 rounded-l-xl">
       <div className="mx-2 mt-10">
         <p className="font-roboto font-medium text-sm text-gray-700 no-underline tracking-normal leading-none">
           Friends:{" "}
@@ -76,7 +67,7 @@ const RightSide = () => {
                         src={friend?.image || avatar}
                         alt="avatar"
                       ></Avatar>
-                      <p className="ml-4 font-roboto font-medium text-sm text-gray-700 no-underline tracking-normal leading-none">
+                      <p className="ml-4 font-roboto font-medium text-sm text-white no-underline tracking-normal leading-none">
                         {friend.name}
                       </p>
                     </div>
@@ -96,7 +87,7 @@ const RightSide = () => {
             );
           })
         ) : (
-          <p className="mt-10 font-roboto font-medium text-sm text-gray-700 no-underline tracking-normal leading-none">
+          <p className="mt-10 font-roboto font-medium text-sm text-white no-underline tracking-normal leading-none">
             Add friends to check their profile
           </p>
         )}

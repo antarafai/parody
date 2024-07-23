@@ -9,9 +9,8 @@ const Navbar = () => {
       <Link to="/">
         <div className="text-3xl font-extrabold text-gray-900 dark:text-white font-roboto">
           <span className="text-transparent bg-clip-text bg-gradient-to-r to-red-600 from-blue-400">
-            Social Media
-          </span>{" "}
-          App
+            Parody
+          </span>{""}
         </div>
       </Link>
       <div className="flex justify-center item-center mx-auto">

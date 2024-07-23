@@ -1,7 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const CharacterSelectModal = ({ isOpen, onClose }) => {
   const [selectedCharacter, setSelectedCharacter] = useState(null);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+
+  const videos = [
+    {
+      name: "Female Bot",
+      value: "Xbot",
+      src: "/character-videos/X-bot-demo.mkv"
+    },
+    {
+      name: "Male Bot",
+      value: "Ybot",
+      src: "/character-videos/Y-bot-demo.mkv"
+    }
+  ];
+
+  useEffect(() => {
+    setSelectedCharacter(videos[currentVideoIndex].value);
+  }, [currentVideoIndex]);
 
   const handleConfirm = async () => {
     if (selectedCharacter) {
@@ -28,45 +46,47 @@ const CharacterSelectModal = ({ isOpen, onClose }) => {
     }
   };
 
+  const handlePrevious = () => {
+    setCurrentVideoIndex((prevIndex) => (prevIndex === 0 ? videos.length - 1 : prevIndex - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentVideoIndex((prevIndex) => (prevIndex === videos.length - 1 ? 0 : prevIndex + 1));
+  };
+
   if (!isOpen) return null;
+
+  const currentVideo = videos[currentVideoIndex];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg">
-        <h2 className="text-xl mb-4">Select a Character Video</h2>
-        <div className="mb-4">
-          <label className="block mb-2">
+      <div className="bg-white p-6 rounded-lg w-96">
+        <h2 className="text-xl mb-4 text-center">Select a Character Video</h2>
+        <div className="flex justify-center mb-4">
+          <label className="block text-center">
             <input
               type="radio"
-              name="Female Bot"
-              value="Xbot"
+              name="character"
+              value={currentVideo.value}
               onChange={(e) => setSelectedCharacter(e.target.value)}
+              checked={selectedCharacter === currentVideo.value}
             />
-            Female Bot
+            {currentVideo.name}
           </label>
-          <video width="320" height="240" controls>
-            <source src="/character-videos/X-bot-demo.mkv" type="video/mp4" />
+        </div>
+        <div className="flex flex-col items-center mb-4">
+          <video key={currentVideo.src} width="320" height="240" controls>
+            <source src={currentVideo.src} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         </div>
-        <div className="mb-4">
-          <label className="block mb-2">
-            <input
-              type="radio"
-              name="Male Bot"
-              value="Ybot"
-              onChange={(e) => setSelectedCharacter(e.target.value)}
-            />
-            Male Bot
-          </label>
-          <video width="320" height="240" controls>
-            <source src="/character-videos/Y-bot-demo.mkv" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
+        <div className="flex justify-between mb-4">
+          <button onClick={handlePrevious} className="btn btn-secondary">Previous</button>
+          <button onClick={handleNext} className="btn btn-secondary">Next</button>
         </div>
         <button
           onClick={handleConfirm}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="btn btn-primary w-full"
         >
           Confirm
         </button>
