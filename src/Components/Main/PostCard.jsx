@@ -150,7 +150,7 @@ const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestam
 
   return (
     <div className="mb-4" ref={postRef}>
-      <div className="flex flex-col py-4 bg-white rounded-t-3xl">
+      <div className="flex flex-col py-4 bg-white rounded-3xl">
         <div className="flex justify-start items-center pb-4 pl-4 ">
           <Avatar
             size="sm"

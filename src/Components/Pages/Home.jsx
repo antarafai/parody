@@ -4,19 +4,18 @@ import CardSection from "../Main/CardSection";
 import Navbar from "../Navbar/Navbar";
 import RightSide from "../RightSidebar/RightSide";
 import Main from "../Main/Main";
-import { Link } from "react-router-dom";
 
 const Home = () => {
   return (
     <div className="w-full">
-      <div className="fixed top-0 z-10 w-full bg-white">
+      <div className="fixed top-0 z-10 w-full bg-black">
         <Navbar></Navbar>
       </div>
-      <div className="flex bg-gray-100">
+      <div className="flex bg-black">
         <div className="flex-auto w-[20%] fixed top-12">
           <LeftSide></LeftSide>
         </div>
-        <div className="flex-auto w-[60%] absolute left-[20%] top-14 bg-gray-100 rounded-xl">
+        <div className="flex-auto w-[60%] absolute left-[20%] top-14 bg-black rounded-xl">
           <div className="w-[80%] mx-auto">
             <CardSection></CardSection>
             <Main></Main>
