@@ -2,12 +2,27 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import { useState } from 'react';
 
 const WebGLRenderer = ({ progressBarRef, modelPaths }) => {
   const mountRef = useRef(null);
+  const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
     const mount = mountRef.current;
+
+    // Flash logic
+    const flashInterval = setInterval(() => {
+      const flashElement = document.createElement("div");
+      flashElement.className = "flash-animation";
+      mountRef.current.appendChild(flashElement);
+      playing ? mountRef.current.removeChild(flashElement) : mountRef.current.appendChild(flashElement);
+
+
+      setTimeout(() => {
+        mountRef.current.removeChild(flashElement);
+      }, 1000); // Flash duration
+    }, 3000); // Flash interval
 
     // Scene setup
     const scene = new THREE.Scene();
