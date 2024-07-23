@@ -205,7 +205,7 @@ const FBXAnimations = () => {
                     
                 </div>
             </div>
-            <div id="inputBar" className="flex justify-center h-full w-full">
+            <div id="inputBar" className="flex justify-center h-full w-full glow">
             <div className="flex justify-center items-center h-full w-3/4">
                 <input
                     type="text"
@@ -214,7 +214,7 @@ const FBXAnimations = () => {
                     className="flex-grow p-2 mr-2 border border-accent rounded-l-full glow"
                     style={{ fontSize: '12px' }} // Adjust this value to change the font size
                 />
-                <button id="Send" className="btn glass p-2 bg-accent text-black rounded-r-full animate-float glow" onClick={handleButtonClick}>Send</button>
+                <button id="Send" className="btn glass p-2 bg-accent text-black rounded-r-full glow" onClick={handleButtonClick}>Send</button>
             </div>
             </div>
 
@@ -250,6 +250,36 @@ const FBXAnimations = () => {
                     )}
                 </div>
             )}
+            <style jsx>{`
+                .spotlight {
+                    position: absolute;
+                    bottom: 0;
+                    width: 100px;
+                    height: 300px;
+                    background: radial-gradient(circle, rgba(255,255,255,0.6) 20%, rgba(255,255,255,0) 70%);
+                    pointer-events: none;
+                }
+                .spotlight.left-0 {
+                    left: 10%;
+                }
+                .spotlight.right-0 {
+                    right: 10%;
+                }
+                .animate-float {
+                    animation: float 3s ease-in-out infinite;
+                }
+                .glow {
+                    box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+                }
+                @keyframes float {
+                    0%, 100% {
+                        transform: translateY(0);
+                    }
+                    50% {
+                        transform: translateY(-10px);
+                    }
+                }
+            `}</style>
         </div>
     );
 };
