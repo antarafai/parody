@@ -5,11 +5,11 @@ import PreviewModal from '../WebGL/PreviewModal';
 import CharacterSelectModal from '../Modals/CharacterSelectModal'; // Import the CharacterSelectModal
 import runPrompt from '../NLP/Prompt';
 
-const server_url = 'http://localhost:5000';
+const server_url = 'https://anigenflaso2kz6rlvqm-93b8870c31f58ea6.tec-s1.onthetaedgecloud.com';
 
 const FBXAnimations = () => {
     const progressBarRef = useRef(null);
-    const [modelPaths, setModelPaths] = useState(['/models/Idle.fbx']);
+    const [modelPaths, setModelPaths] = useState(['/models/Ybot-Idle.fbx']);
     const [updateFlag, setUpdateFlag] = useState(false); // Ensure re-render
     const [isExecInProgress, setIsExecInProgress] = useState(false); // Track exec request status
     const [hasRenderJob, setHasRenderJob] = useState(false); // Track if render job has been given
@@ -21,10 +21,13 @@ const FBXAnimations = () => {
 
     // Alert state
     const [showAlert, setShowAlert] = useState(false);
-    const [renderProgress, setRenderProgress] = useState(0); // Track rendering progress
+    const [selectedCharacter, setSelectedCharacter] = useState('Ybot'); // Default to Ybot
 
     // Frame count state
     const [frameCount, setFrameCount] = useState(0);
+    const [renderProgress, setRenderProgress] = useState(0); // Track rendering progress
+    // Character state
+    const [character, setCharacter] = useState(null);
 
     const handleConfigButtonClick = () => {
         setIsConfigModalOpen(true);
@@ -47,8 +50,12 @@ const FBXAnimations = () => {
         setIsCharacterSelectModalOpen(true);
     };
 
-    const handleCloseCharacterSelectModal = () => {
+    const handleCloseCharacterSelectModal = (character) => {
         setIsCharacterSelectModalOpen(false);
+        setModelPaths([`/models/${selectedCharacter}-Idle.fbx`]);
+        if (character) {
+            setSelectedCharacter(character);
+        }
     };
 
     useEffect(() => {
@@ -75,9 +82,11 @@ const FBXAnimations = () => {
         const input = document.getElementById('modelPathsInput');
         const prompt1 = input.value;
     
-        const filesString = "angry_fists, angry_point, backflip, back_happy_walk, back_run, back_run_turn_right, big_head_hit, blow_kiss, bow_arrow, boxing_idle, boxing_pose, brutal_walk, cabbage_patch, cabinet_open, careful_walk, carry_run, cartwheel, center_block, cheering, cheer_fists, chest_block, clapping, cover_shoot, crawl_forward, crouch_to_stand, crouch_walk, crying, dismiss, dodge_right, dribble_basketball, drink, drinking, elbow_head, embarassed, excited, fight_idle_guard, fish_cast, fist_pump, float_flail, golf_swing, grab_rifle, groin_kick, happy_idle, head_hit, hip_hop_dance, hip_hop_wave, hook_punch, house_dance, hurricane_kick, idle, injured_walk, insult, intent_run, jab, jab_cross, jogging, jog_ring_entry, jog_with_box, jump, jumping, jump_ecstatic, jump_joy, kiss_long, kneel_point, laughing, lead_foot_kick, lead_hand_hook, lean_run, left_block, left_hit_reaction, left_side_step, left_strafe, left_strafe_walk, left_turn, left_turn_walk, light_hit_left, look_both_shoulders, look_down_point, mid_head_hit_left, mid_head_hit_right, mid_hook_punch, mid_straight_punch, military_salute, moonwalk, muay_thai_knee, nervous_look, nervous_look_right, nod, old_man_idle, open_door, paddle_canoe, peek_under_cup, pilot_shove_react, pilot_switches, play_drums, play_guitar, point, pointing, pull_lever, punch_bag, push_button, push_heavy, quick_rifle_walk, rifle_block, rifle_dodge, rifle_walk, right_block, right_turn_run, robot_dance, rub_shoulder, rummage, run, running, running_tired, run_backwards, run_fast, run_heavy, sad_walk_back, salsa_dance5, salsa_dancing_female, salsa_dancing_male, salute, seated_idle, shaking_hands, shaking_head, shame_face, sheath_sword, shim_sham1, shim_sham2, shrugging, sideways_run, sing, sit, sitting, sit_dodge_right, sit_kick_out, sit_knock_off, sit_wait, skinning_test, sneak_left, soccer_header, soccer_idle, soccer_juggle, soccer_receive, spin, stand, standing, standing_idle_holding_briefcase, stand_clap, stand_idle, strafe_left, stretch_arms, strike_jog, strut_walk, swagger_walk, swim_underwater, talking_on_phone, thoughtful_nod, thumbs_up, tread_water, uppercut, uppercut_face, walk, walking, walk_backwards, walk_sad, wave, wave_arms_dance, wave_over_seated, waving, writing, yawn, yawning, zombie_jab";
-
-        console.log('Files string:', filesString);
+        const YfilesString = "angry_fists, angry_point, backflip, back_happy_walk, back_run, back_run_turn_right, big_head_hit, blow_kiss, bow_arrow, boxing_idle, boxing_pose, brutal_walk, cabbage_patch, cabinet_open, careful_walk, carry_run, cartwheel, center_block, cheering, cheer_fists, chest_block, clapping, cover_shoot, crawl_forward, crouch_to_stand, crouch_walk, crying, dismiss, dodge_right, dribble_basketball, drink, drinking, elbow_head, embarassed, excited, fight_idle_guard, fish_cast, fist_pump, float_flail, golf_swing, grab_rifle, groin_kick, happy_idle, head_hit, hip_hop_dance, hip_hop_wave, hook_punch, house_dance, hurricane_kick, idle, injured_walk, insult, intent_run, jab, jab_cross, jogging, jog_ring_entry, jog_with_box, jump, jumping, jump_ecstatic, jump_joy, kiss_long, kneel_point, laughing, lead_foot_kick, lead_hand_hook, lean_run, left_block, left_hit_reaction, left_side_step, left_strafe, left_strafe_walk, left_turn, left_turn_walk, light_hit_left, look_both_shoulders, look_down_point, mid_head_hit_left, mid_head_hit_right, mid_hook_punch, mid_straight_punch, military_salute, moonwalk, muay_thai_knee, nervous_look, nervous_look_right, nod, old_man_idle, open_door, paddle_canoe, peek_under_cup, pilot_shove_react, pilot_switches, play_drums, play_guitar, point, pointing, pull_lever, punch_bag, push_button, push_heavy, quick_rifle_walk, rifle_block, rifle_dodge, rifle_walk, right_block, right_turn_run, robot_dance, rub_shoulder, rummage, run, running, running_tired, run_backwards, run_fast, run_heavy, sad_walk_back, salsa_dance5, salsa_dancing_female, salsa_dancing_male, salute, seated_idle, shaking_hands, shaking_head, shame_face, sheath_sword, shim_sham1, shim_sham2, shrugging, sideways_run, sing, sit, sitting, sit_dodge_right, sit_kick_out, sit_knock_off, sit_wait, skinning_test, sneak_left, soccer_header, soccer_idle, soccer_juggle, soccer_receive, spin, stand, standing, standing_idle_holding_briefcase, stand_clap, stand_idle, strafe_left, stretch_arms, strike_jog, strut_walk, swagger_walk, swim_underwater, talking_on_phone, thoughtful_nod, thumbs_up, tread_water, uppercut, uppercut_face, walk, walking, walk_backwards, walk_sad, wave, wave_arms_dance, wave_over_seated, waving, writing, yawn, yawning, zombie_jab";
+        const XfilesString = "indian, ballerina, belly, booty_hip_hop, breakdance_ending_1, breakdance_ending_2, breakdance_ending_3, breakdance_footwork_1, breakdance_footwork_2, breakdance_footwork_3, breakdance_ready, breakdance_spin, breakdance_spin_2, breakdance_spin_head, breakdance_up, brooklyn_uprock, cross_leg_freeze, flair, flair_3, footwork_to_freeze, footwork_to_idle, footwork_to_idle_2, freezes, freeze_1, freeze_2, freeze_3, freeze_4, jazz, moonwalk_1, nerd_ymca, ready_pose, ready_pose_3, robot_hip_hop, salsa, samba, shopping_cart, shuffling, silly, slide_hip_hop, snake_hip_hop, swipes, thriller_2, twerk, twist, uprock, uprock_1, uprock_2, uprock_end_1, uprock_start_1, uprock_to_ground, uprock_to_ground_2, wave_hip_hop";
+        
+        // TODO: Make this YfilesString if Y-bot is selected or XfilesString if X-bot is selected
+        const filesString = selectedCharacter === 'Xbot' ? XfilesString : YfilesString;
 
         try {
             // Call runPrompt with prompt1 and filesString
@@ -90,7 +99,7 @@ const FBXAnimations = () => {
                 console.log('Filtered paths:', filteredPaths);
 
                 if (filteredPaths.length > 0) {
-                    let updatedPaths = ['/models/Idle.fbx', ...filteredPaths.map(path => `/models/Motions/${path}.fbx`)];
+                    let updatedPaths = [`/models/${selectedCharacter}-Idle.fbx`, ...filteredPaths.map(path => `/models/${selectedCharacter}/${path}.fbx`)];
                     console.log('Updated paths:', updatedPaths);
 
                     // Set exec in progress to true
@@ -227,7 +236,11 @@ const FBXAnimations = () => {
             )}
 
             {isCharacterSelectModalOpen && (
-                <CharacterSelectModal isOpen={isCharacterSelectModalOpen} onClose={handleCloseCharacterSelectModal} />
+                <CharacterSelectModal 
+                    isOpen={isCharacterSelectModalOpen} 
+                    onClose={handleCloseCharacterSelectModal}
+                    onSelectCharacter={(character) => setSelectedCharacter(character)}
+                />
             )}
 
             {showAlert && (
