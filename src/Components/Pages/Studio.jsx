@@ -203,14 +203,17 @@ const FBXAnimations = () => {
                     <progress value={renderProgress} max="100" id="progressBar" ref={progressBarRef} className="absolute top-2 left-2"></progress>
                 </div>
             </div>
-            <div id="inputBar" className="flex bg-gray-200 p-2">
+            <div id="inputBar" className="flex justify-center h-full w-full">
+            <div className="flex justify-center items-center h-full w-3/4">
                 <input
                     type="text"
                     id="modelPathsInput"
                     placeholder="Enter model paths separated by commas"
-                    className="flex-grow p-2 mr-2 border border-gray-400 rounded"
+                    className="flex-grow p-2 mr-2 border border-accent rounded-l-full glow"
+                    style={{ fontSize: '12px' }} // Adjust this value to change the font size
                 />
-                <button id="Send" className="p-2 bg-green-500 text-white rounded" onClick={handleButtonClick}>Send</button>
+                <button id="Send" className="btn glass p-2 bg-accent text-black rounded-r-full animate-float glow" onClick={handleButtonClick}>Send</button>
+            </div>
             </div>
 
             {isConfigModalOpen && (
