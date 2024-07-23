@@ -15,7 +15,7 @@ class ConfigModal extends Component {
 
     handleConfirm = async () => {
         const { input1, input2 } = this.state;
-        const server_url = 'http://localhost:5000'; // Replace with your server URL
+        const server_url = 'https://anigenflaseqdo5usv9m-132cbef2955621b9.tec-s1.onthetaedgecloud.com'; // Replace with your server URL
 
         // Define the requests in sequence
         const requests = [

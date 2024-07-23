@@ -13,7 +13,7 @@ const PreviewModal = ({ onClose, frameCount }) => {
         const formattedFrameCount = String(frameCount).padStart(4, '0');
         const videoPath = `/home/mizookie/Renders/rendered_animation0001-${formattedFrameCount}.mp4`;
 
-        const response = await fetch('http://localhost:5000/upload_video', {
+        const response = await fetch('https://anigenflaseqdo5usv9m-132cbef2955621b9.tec-s1.onthetaedgecloud.com/upload_video', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

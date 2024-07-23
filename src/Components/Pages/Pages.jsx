@@ -6,6 +6,7 @@ import Register from "./Regsiter";
 import Reset from "./Reset";
 import FriendProfile from "./FriendProfile";
 import DesignerStudio from "./Studio";
+import ThetaEdgeStoreUploader from "./VideoUpload";
 
 const Pages = () => {
   return (
@@ -16,6 +17,9 @@ const Pages = () => {
         <Route path="/register" element={<Register></Register>}></Route>
         <Route path="reset" element={<Reset></Reset>}></Route>
         <Route path="/studio" element={<DesignerStudio></DesignerStudio>}></Route>
+        <Route
+          path="/upload"
+          element={<ThetaEdgeStoreUploader></ThetaEdgeStoreUploader>}></Route>
         <Route
           path="/profile/:id"
           element={<FriendProfile></FriendProfile>}

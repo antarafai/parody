@@ -25,7 +25,7 @@ const CharacterSelectModal = ({ isOpen, onClose }) => {
     if (selectedCharacter) {
       const characterPath = `/home/mizookie/anigen-flask-app/${selectedCharacter}.blend`;
       try {
-        const response = await fetch('http://localhost:5000/config/character', {
+        const response = await fetch('https://anigenflaseqdo5usv9m-132cbef2955621b9.tec-s1.onthetaedgecloud.com/config/character', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
