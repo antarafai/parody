@@ -15,7 +15,7 @@ class ConfigModal extends Component {
 
     handleConfirm = async () => {
         const { input1, input2 } = this.state;
-        const server_url = 'https://anigenflaso2kz6rlvqm-93b8870c31f58ea6.tec-s1.onthetaedgecloud.com';
+        const server_url = 'http://localhost:5000';
 
         // Define the requests in sequence
         const requests = [
@@ -38,7 +38,7 @@ class ConfigModal extends Component {
             fetch(`${server_url}/config/import`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ import_path: "/home/mizookie/Motions" })
+                body: JSON.stringify({ import_path: "/home/mizookie/Motions/Motions/Motions" })
             }),
             fetch(`${server_url}/config/render`, {
                 method: 'POST',
