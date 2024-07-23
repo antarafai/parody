@@ -6,6 +6,7 @@ const PreviewModal = ({ onClose, frameCount }) => {
   const [videoUrl, setVideoUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const videoRef = useRef(null);
+  const serverUrl = 'https://anigenflaso2kz6rlvqm-93b8870c31f58ea6.tec-s1.onthetaedgecloud.com/';
 
   useEffect(() => {
     const fetchVideoUrl = async () => {
@@ -13,7 +14,7 @@ const PreviewModal = ({ onClose, frameCount }) => {
         const formattedFrameCount = String(frameCount).padStart(4, '0');
         const videoPath = `/home/mizookie/Renders/rendered_animation0001-${formattedFrameCount}.mp4`;
 
-        const response = await fetch('http://localhost:5000/upload_video', {
+        const response = await fetch(`${serverUrl}/upload_video`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
