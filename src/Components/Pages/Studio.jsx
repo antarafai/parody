@@ -193,7 +193,7 @@ const FBXAnimations = () => {
                         </button>
                         <button 
                             id="preview" 
-                            className={`btn ${hasRenderJob ? (isExecInProgress ? 'btn-accent' : 'btn-outline btn-accent') : 'btn btn-outline btn-accent mx-2 rounded'} mb-3 rounded-r-full h-10 w-60 text-black animate-float glow`}
+                            className={`btn ${hasRenderJob ? (isExecInProgress ? 'btn-accent' : 'btn-outline btn-accent') : 'btn-disabled btn-outline btn-accent mx-2 rounded'} mb-3 rounded-r-full h-10 w-60 text-black animate-float glow`}
                             onClick={handlePreviewClick}
                         >
                             Preview
