@@ -27,7 +27,7 @@ class ConfigModal extends Component {
             fetch(`${server_url}/config/import`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ import_path: "/home/mizookie/Motions" })
+                body: JSON.stringify({ import_path: "/home/mizookie/Motions/Motions/Motions" })
             }),
             fetch(`${server_url}/config/render`, {
                 method: 'POST',

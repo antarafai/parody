@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const CharacterSelectModal = ({ isOpen, onClose }) => {
+const CharacterSelectModal = ({ isOpen, onClose, onSelectCharacter}) => {
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const server_url = 'http://localhost:5000';
@@ -17,6 +17,7 @@ const CharacterSelectModal = ({ isOpen, onClose }) => {
       src: "/character-videos/Y-bot-demo.mkv"
     }
   ];
+  //onVideo(videos)
 
   useEffect(() => {
     setSelectedCharacter(videos[currentVideoIndex].value);
@@ -27,6 +28,7 @@ const CharacterSelectModal = ({ isOpen, onClose }) => {
       const characterPath = `/home/mizookie/anigen-flask-app/${selectedCharacter}.blend`;
       try {
         const response = await fetch(`${server_url}/config/character`, {
+        const response = await fetch(`${server_url}/config/character`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -35,6 +37,7 @@ const CharacterSelectModal = ({ isOpen, onClose }) => {
         });
         
         if (response.ok) {
+          onSelectCharacter(selectedCharacter); // Pass the selected character to the parent
           onClose();
         } else {
           console.error('Error sending POST request:', response.statusText);
