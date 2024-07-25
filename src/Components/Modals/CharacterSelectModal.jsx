@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 const CharacterSelectModal = ({ isOpen, onClose, onSelectCharacter}) => {
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const server_url = 'https://anigenflaso2kz6rlvqm-93b8870c31f58ea6.tec-s1.onthetaedgecloud.com';
+  const server_url = 'http://localhost:5000';
+
   const videos = [
     {
       name: "Female Bot",

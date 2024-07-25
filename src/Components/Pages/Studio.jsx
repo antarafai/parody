@@ -202,7 +202,7 @@ const FBXAnimations = () => {
                         </button>
                         <button 
                             id="preview" 
-                            className={`btn ${hasRenderJob ? (isExecInProgress ? 'btn-accent' : 'btn-outline btn-accent') : 'btn-accent'} mb-3 rounded-r-full h-10 w-60 text-black animate-float glow`}
+                            className={`btn ${hasRenderJob ? (isExecInProgress ? 'btn-accent' : 'btn-outline btn-accent') : 'btn-disabled btn-outline btn-accent mx-2 rounded'} mb-3 rounded-r-full h-10 w-60 text-black animate-float glow`}
                             onClick={handlePreviewClick}
                         >
                             Preview
@@ -223,7 +223,7 @@ const FBXAnimations = () => {
                     className="flex-grow p-2 mr-2 border border-accent rounded-l-full glow"
                     style={{ fontSize: '12px' }} // Adjust this value to change the font size
                 />
-                <button id="Send" className="btn glass p-2 bg-accent text-black rounded-r-full glow" onClick={handleButtonClick}>Send</button>
+                <button id="Animate" className="btn glass p-2 bg-accent text-black rounded-r-full glow" onClick={handleButtonClick}>Animate</button>
             </div>
             </div>
 
