@@ -53,7 +53,9 @@ const PreviewModal = ({ onClose, frameCount }) => {
         ) : (
           <HlsPlayer videoUrl={videoUrl} videoRef={videoRef} />
         )}
-        <button onClick={onClose} className="mt-4 p-2 bg-blue-500 text-white rounded">Close</button>
+        <button onClick={onClose} className="btn-accent mt-4 p-2 mr-4 bg-blue-500 text-white rounded">Close</button>
+        <button onClick={onClose} className='btn-accent mt-4 p-2 mr-4 bg-blue-500 text-white rounded'>Post</button>
+        <button onClick={onClose} className='btn-accent mt-4 p-2 bg-blue-500 text-white rounded'>Download</button>
       </div>
     </div>
   );
