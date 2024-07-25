@@ -47,8 +47,8 @@ const PreviewModal = ({ onClose, frameCount }) => {
         <h2 className="text-xl mb-4">Preview</h2>
         {loading ? (
           <div className="flex justify-center items-center">
-            <span className="loading loading-spinner loading-lg"></span> {/* DaisyUI loading symbol */}
-            <p className="ml-4">Video uploading...</p>
+            <span className="loading loading-spinner loading-lg bg-purple-400"></span> {/* DaisyUI loading symbol */}
+            <p className="ml-4 text-purple-400">Video uploading...</p>
           </div>
         ) : (
           <HlsPlayer videoUrl={videoUrl} videoRef={videoRef} />
