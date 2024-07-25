@@ -28,7 +28,6 @@ const CharacterSelectModal = ({ isOpen, onClose, onSelectCharacter}) => {
       const characterPath = `/home/mizookie/anigen-flask-app/${selectedCharacter}.blend`;
       try {
         const response = await fetch(`${server_url}/config/character`, {
-        const response = await fetch(`${server_url}/config/character`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
