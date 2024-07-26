@@ -60,7 +60,7 @@ const Main = () => {
                   name={post?.name}
                   email={post?.email}
                   media={post?.media}
-                  mediaType={post?.media?.includes("mp4") ? "video" : "image"}
+                  mediaType={post?.media?.includes("mp4") || post?.media?.includes("m3u8") ? "video" : "image"}
                   timestamp={new Date(post?.timestamp?.toDate())?.toUTCString()}
                 />
               ))}

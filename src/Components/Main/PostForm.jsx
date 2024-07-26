@@ -1,4 +1,4 @@
-import React, { useRef, useState, useContext } from "react";
+import React, { useRef, useState, useContext, useEffect } from "react";
 import { Button, Avatar } from "@material-tailwind/react";
 import addImage from "../../assets/images/add-image.png";
 import live from "../../assets/images/live.png";
@@ -9,12 +9,18 @@ import { doc, setDoc, serverTimestamp, collection } from "firebase/firestore";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import avatar from "../../assets/images/avatar.jpg";  // Ensure this path is correct
 
-const PostForm = ({ onPostSubmit, setProgressBar }) => {
+const PostForm = ({ onPostSubmit, setProgressBar, initialMediaUrl }) => {
   const { user, userData } = useContext(AuthContext);
   const text = useRef("");
-  const [media, setMedia] = useState(null);
+  const [media, setMedia] = useState(initialMediaUrl || null);
   const [file, setFile] = useState(null);
   const [progressBar, setLocalProgressBar] = useState(0); // Local state for progress bar
+
+  useEffect(() => {
+    if (initialMediaUrl) {
+      setMedia(initialMediaUrl);
+    }
+  }, [initialMediaUrl]);
 
   const handleUpload = (e) => {
     setFile(e.target.files[0]);
@@ -118,7 +124,7 @@ const PostForm = ({ onPostSubmit, setProgressBar }) => {
             <div className="mx-4">
               {media && (
                 <>
-                  {file.type.includes("image") ? (
+                  {media.includes("image") ? (
                     <img
                       className="h-24 rounded-xl"
                       src={media}
