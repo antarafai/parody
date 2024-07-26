@@ -5,7 +5,7 @@ import PreviewModal from '../WebGL/PreviewModal';
 import CharacterSelectModal from '../Modals/CharacterSelectModal'; // Import the CharacterSelectModal
 import runPrompt from '../NLP/Prompt';
 
-const server_url = 'https://anigenflaso2kz6rlvqm-93b8870c31f58ea6.tec-s1.onthetaedgecloud.com';
+const server_url = 'http://localhost:5000'; // Replace with your server URL
 
 const FBXAnimations = () => {
     const progressBarRef = useRef(null);
