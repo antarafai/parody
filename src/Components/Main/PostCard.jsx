@@ -189,7 +189,7 @@ const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestam
           )}
           {mediaType === "video" && (
             <HlsPlayer
-              videoUrl="https://media.thetavideoapi.com/org_nbh2rgga2p8g22425pbegwxk1uc6/srvacc_yriv5q2xcaimmhxp0w6jukqw8/video_40nypgmbbev2brwjbhf03y8pu6/master.m3u8"
+              videoUrl={media}
               play={isInView}
             />
           )}
