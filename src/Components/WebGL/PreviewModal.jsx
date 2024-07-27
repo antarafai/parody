@@ -1,10 +1,13 @@
 // PreviewModal.jsx
 import React, { useEffect, useRef, useState } from 'react';
 import HlsPlayer from '../VideoPlayer/HlsPlayer';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 const PreviewModal = ({ onClose, frameCount }) => {
   const [videoUrl, setVideoUrl] = useState(null);
+  const [firebaseUrl, setFirebaseUrl] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [progressBar, setProgressBar] = useState(0);
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -30,6 +33,18 @@ const PreviewModal = ({ onClose, frameCount }) => {
         const data = await response.json();
         console.log('Video URL:', data.video_url);
         setVideoUrl(data.video_url);
+
+        // Decode the Base64 encoded video data
+        const decodedData = atob(data.encoded_video_data);
+        const byteNumbers = new Array(decodedData.length);
+        for (let i = 0; i < decodedData.length; i++) {
+          byteNumbers[i] = decodedData.charCodeAt(i);
+        }
+
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'video/mp4' });
+        await uploadBytestream(blob);
+
       } catch (error) {
         console.error('Error fetching video URL:', error);
       } finally {
@@ -39,6 +54,29 @@ const PreviewModal = ({ onClose, frameCount }) => {
 
     fetchVideoUrl();
   }, [frameCount]);
+
+  const uploadBytestream = async (blob) => {
+    const storage = getStorage();
+    const storageRef = ref(storage, `videos/${new Date().getTime()}.mp4`);
+    
+    const uploadTask = uploadBytesResumable(storageRef, blob);
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        setProgressBar(progress);
+      },
+      (error) => {
+        console.error("Upload failed:", error);
+      },
+      async () => {
+        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+        console.log("Uploaded firebase URL:", downloadURL);
+        setFirebaseUrl(downloadURL); // Optionally update the video URL with the Firebase storage URL
+      }
+    );
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">

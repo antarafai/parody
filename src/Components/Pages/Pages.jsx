@@ -7,6 +7,7 @@ import Reset from "./Reset";
 import FriendProfile from "./FriendProfile";
 import DesignerStudio from "./Studio";
 import ThetaEdgeStoreUploader from "./VideoUpload";
+import MintNFT from "./MintNFT";
 
 const Pages = () => {
   return (
@@ -17,6 +18,7 @@ const Pages = () => {
         <Route path="/register" element={<Register></Register>}></Route>
         <Route path="reset" element={<Reset></Reset>}></Route>
         <Route path="/studio" element={<DesignerStudio></DesignerStudio>}></Route>
+        <Route path="/mint" element={<MintNFT></MintNFT>}></Route>
         <Route
           path="/upload"
           element={<ThetaEdgeStoreUploader></ThetaEdgeStoreUploader>}></Route>

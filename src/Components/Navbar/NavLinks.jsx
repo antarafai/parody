@@ -58,7 +58,7 @@ const NavLinks = () => {
         </Link>
       </div>
       <div className="hover:translate-y-1 duration-500 ease-in-out hover:text-blue-500">
-        <Link to="/upload" className="inline-block">
+        <Link to="/mint" className="inline-block">
           <svg
             id="awards"
             xmlns="http://www.w3.org/2000/svg"

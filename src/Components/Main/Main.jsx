@@ -112,6 +112,7 @@ const Main = () => {
           },
           (error) => {
             alert(error);
+            console.log(error);
           },
           async () => {
             await getDownloadURL(uploadTask.snapshot.ref).then(
