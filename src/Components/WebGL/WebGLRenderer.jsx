@@ -27,11 +27,48 @@ const WebGLRenderer = ({ progressBarRef, modelPaths }) => {
     // Scene setup
     const scene = new THREE.Scene();
     scene.add(new THREE.AxesHelper(5));
-
     // Light setup
-    const light = new THREE.PointLight(0xffffff, 1000);
-    light.position.set(2.5, 7.5, 15);
-    scene.add(light);
+    const whiteSpotlight = new THREE.PointLight(0xffffff, 800);
+    whiteSpotlight.position.set(2.5, 7.5, 15);
+    scene.add(whiteSpotlight);
+
+    // Purple spotlight
+    const pinkSpotlight = new THREE.SpotLight(0xff66cc, 200);
+    pinkSpotlight.position.set(-5, 5, 5);
+    pinkSpotlight.target.position.set(0, 0, 0);
+    scene.add(pinkSpotlight);
+    scene.add(pinkSpotlight.target);
+
+    const yellowSpotlight = new THREE.SpotLight(0xffff00, 200);
+    yellowSpotlight.position.set(5, 5, -5);
+    yellowSpotlight.target.position.set(0, 0, 0);
+    scene.add(yellowSpotlight);
+    scene.add(yellowSpotlight.target);
+
+    // Animation loop for moving the target of the spotlights
+    const animateSpotlightTargets = () => {
+      const time = Date.now() * 0.002; // Increase the time factor to make the animation faster
+
+      // Calculate the new target position for the pink spotlight
+      const pinkTargetX = Math.sin(time) * 5;
+      const pinkTargetY = Math.cos(time) * 5;
+      const pinkTargetZ = Math.sin(time) * Math.cos(time) * 10;
+      const pinkTargetPosition = new THREE.Vector3(pinkTargetX, pinkTargetY, pinkTargetZ);
+      pinkSpotlight.target.position.lerp(pinkTargetPosition, 0.05); // Smoothly interpolate the position
+
+      // Calculate the new target position for the yellow spotlight
+      const yellowTargetX = Math.cos(time) * 5;
+      const yellowTargetY = Math.sin(time) * 5;
+      const yellowTargetZ = Math.cos(time) * Math.sin(time) * 10;
+      const yellowTargetPosition = new THREE.Vector3(yellowTargetX, yellowTargetY, yellowTargetZ);
+      yellowSpotlight.target.position.lerp(yellowTargetPosition, 0.05); // Smoothly interpolate the position
+
+      // Call the animation loop recursively
+      requestAnimationFrame(animateSpotlightTargets);
+    };
+
+    // Start the animation loop for moving the spotlight targets
+    animateSpotlightTargets();
 
     // Camera setup
     const camera = new THREE.PerspectiveCamera(75, mount.clientWidth / mount.clientHeight, 0.1, 1000);

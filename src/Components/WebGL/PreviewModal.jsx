@@ -1,14 +1,17 @@
-// PreviewModal.jsx
 import React, { useEffect, useRef, useState } from 'react';
 import HlsPlayer from '../VideoPlayer/HlsPlayer';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import PostForm from '../Main/PostForm';
 
 const PreviewModal = ({ onClose, frameCount }) => {
   const [videoUrl, setVideoUrl] = useState(null);
   const [firebaseUrl, setFirebaseUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [progressBar, setProgressBar] = useState(0);
+  const [isPostFormOpen, setIsPostFormOpen] = useState(false);
+  const [initialMediaUrl, setInitialMediaUrl] = useState(null); // State to hold initial media URL
   const videoRef = useRef(null);
+  const server_url = 'http://localhost:5000';
 
   useEffect(() => {
     const fetchVideoUrl = async () => {
@@ -16,7 +19,7 @@ const PreviewModal = ({ onClose, frameCount }) => {
         const formattedFrameCount = String(frameCount).padStart(4, '0');
         const videoPath = `/home/mizookie/Renders/rendered_animation0001-${formattedFrameCount}.mp4`;
 
-        const response = await fetch('https://anigenflaseqdo5usv9m-132cbef2955621b9.tec-s1.onthetaedgecloud.com/upload_video', {
+        const response = await fetch(`${server_url}/upload_video`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -78,19 +81,32 @@ const PreviewModal = ({ onClose, frameCount }) => {
     );
   };
 
+  const handlePostClick = () => {
+    setInitialMediaUrl(videoUrl); // Set the video URL as initial media URL for PostForm
+    setIsPostFormOpen(true);
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
       <div className="bg-white p-4 rounded shadow-lg w-full max-w-2xl">
         <h2 className="text-xl mb-4">Preview</h2>
         {loading ? (
           <div className="flex justify-center items-center">
-            <span className="loading loading-spinner loading-lg"></span> {/* DaisyUI loading symbol */}
-            <p className="ml-4">Video uploading...</p>
+            <span className="loading loading-spinner loading-lg bg-purple-400"></span> {/* DaisyUI loading symbol */}
+            <p className="ml-4 text-purple-400">Video uploading...</p>
           </div>
         ) : (
           <HlsPlayer videoUrl={videoUrl} videoRef={videoRef} />
         )}
-        <button onClick={onClose} className="mt-4 p-2 bg-blue-500 text-white rounded">Close</button>
+        {!isPostFormOpen ? (
+          <div>
+            <button onClick={onClose} className="btn-accent mt-4 p-2 mr-4 bg-blue-500 text-white rounded">Close</button>
+            <button onClick={handlePostClick} className="btn-accent mt-4 p-2 mr-4 bg-blue-500 text-white rounded">Post</button>
+            <button onClick={onClose} className="btn-accent mt-4 p-2 bg-blue-500 text-white rounded">Download</button>
+          </div>
+        ) : (
+          <PostForm onPostSubmit={() => { setIsPostFormOpen(false); onClose(); }} setProgressBar={setProgressBar} initialMediaUrl={initialMediaUrl} />
+        )}
       </div>
     </div>
   );
