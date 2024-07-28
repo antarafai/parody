@@ -1,9 +1,23 @@
 import React, { useState } from 'react';
 
+/**
+ * A modal component for the Musicify feature.
+ *
+ * @component
+ * @param {Object} props - The component props.
+ * @param {Function} props.onClose - The function to be called when the modal is closed.
+ * @returns {JSX.Element} The MusicifyModal component.
+ */
 const MusicifyModal = ({ onClose }) => {
+  // State variables
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedSample, setSelectedSample] = useState('');
 
+  /**
+   * Handles the change event when a file is selected.
+   *
+   * @param {Object} e - The event object.
+   */
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file && (file.type === 'audio/mpeg' || file.type === 'audio/wav')) {
@@ -13,10 +27,16 @@ const MusicifyModal = ({ onClose }) => {
     }
   };
 
+  /**
+   * Handles the change event when a sample is selected.
+   *
+   * @param {Object} e - The event object.
+   */
   const handleSampleChange = (e) => {
     setSelectedSample(e.target.value);
   };
 
+  // Available samples
   const samples = [
     { name: 'Sample 1', value: 'sample1.mp3' },
     { name: 'Sample 2', value: 'sample2.mp3' },
@@ -29,6 +49,7 @@ const MusicifyModal = ({ onClose }) => {
         <h2 className="text-xl text-black mb-4">Musicify Feature</h2>
         <p className="text-black mb-4">Welcome to the Musicify feature!</p>
 
+        {/* File upload */}
         <div className="mb-4">
           <label className="block text-black mb-2" htmlFor="music-upload">
             Upload Custom Music:
@@ -47,6 +68,7 @@ const MusicifyModal = ({ onClose }) => {
           )}
         </div>
 
+        {/* Sample selection */}
         <div className="mb-4">
           <label className="block text-black mb-2" htmlFor="music-samples">
             Choose from Samples:
@@ -69,6 +91,7 @@ const MusicifyModal = ({ onClose }) => {
           )}
         </div>
 
+        {/* Close button */}
         <button onClick={onClose} className="btn btn-primary mt-4">
           Close
         </button>
