@@ -24,6 +24,7 @@ const MusicifyModal = ({ onClose }) => {
     const file = e.target.files[0];
     if (file && (file.type === 'audio/mpeg' || file.type === 'audio/wav')) {
       setSelectedFile(file);
+      setSelectedSample(''); // Clear selected sample
       setAudioSrc(URL.createObjectURL(file));
     } else {
       alert('Please upload a valid MP3 or WAV file.');
@@ -38,6 +39,7 @@ const MusicifyModal = ({ onClose }) => {
   const handleSampleChange = (e) => {
     const selectedSampleValue = e.target.value;
     setSelectedSample(selectedSampleValue);
+    setSelectedFile(null); // Clear selected file
     setAudioSrc(selectedSampleValue ? `/sample-music/${selectedSampleValue}` : '');
   };
 
