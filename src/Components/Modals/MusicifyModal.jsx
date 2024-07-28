@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 /**
  * A modal component for the Musicify feature.
@@ -13,6 +13,7 @@ const MusicifyModal = ({ onClose }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedSample, setSelectedSample] = useState('');
   const [audioSrc, setAudioSrc] = useState('');
+  const audioRef = useRef(null);
 
   /**
    * Handles the change event when a file is selected.
@@ -56,6 +57,12 @@ const MusicifyModal = ({ onClose }) => {
       }
     };
   }, [selectedFile, audioSrc]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.load();
+    }
+  }, [audioSrc]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
@@ -107,7 +114,7 @@ const MusicifyModal = ({ onClose }) => {
 
         {/* Audio player */}
         {audioSrc && (
-          <audio controls className="w-full mt-4">
+          <audio controls className="w-full mt-4" ref={audioRef}>
             <source src={audioSrc} type="audio/mpeg" />
             Your browser does not support the audio element.
           </audio>
