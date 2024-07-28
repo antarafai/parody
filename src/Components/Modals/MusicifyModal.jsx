@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 /**
  * A modal component for the Musicify feature.
@@ -12,6 +12,7 @@ const MusicifyModal = ({ onClose }) => {
   // State variables
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedSample, setSelectedSample] = useState('');
+  const [audioSrc, setAudioSrc] = useState('');
 
   /**
    * Handles the change event when a file is selected.
@@ -22,6 +23,7 @@ const MusicifyModal = ({ onClose }) => {
     const file = e.target.files[0];
     if (file && (file.type === 'audio/mpeg' || file.type === 'audio/wav')) {
       setSelectedFile(file);
+      setAudioSrc(URL.createObjectURL(file));
     } else {
       alert('Please upload a valid MP3 or WAV file.');
     }
@@ -33,15 +35,27 @@ const MusicifyModal = ({ onClose }) => {
    * @param {Object} e - The event object.
    */
   const handleSampleChange = (e) => {
-    setSelectedSample(e.target.value);
+    const selectedSampleValue = e.target.value;
+    setSelectedSample(selectedSampleValue);
+    setAudioSrc(selectedSampleValue ? `/sample-music/${selectedSampleValue}` : '');
   };
 
   // Available samples
   const samples = [
-    { name: 'Sample 1', value: 'sample1.mp3' },
-    { name: 'Sample 2', value: 'sample2.mp3' },
-    { name: 'Sample 3', value: 'sample3.mp3' },
+    { name: 'All That', value: 'allthat.mp3' },
+    { name: 'Common Ground', value: 'common-ground.mp3' },
+    { name: 'Keep It Real', value: 'keepitreal.mp3' },
+    { name: 'Private Party', value: 'private-party.mp3' },
   ];
+
+  useEffect(() => {
+    // Cleanup URL object for the uploaded file
+    return () => {
+      if (selectedFile) {
+        URL.revokeObjectURL(audioSrc);
+      }
+    };
+  }, [selectedFile, audioSrc]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
@@ -90,6 +104,14 @@ const MusicifyModal = ({ onClose }) => {
             <p className="text-black mt-2">Selected sample: {selectedSample}</p>
           )}
         </div>
+
+        {/* Audio player */}
+        {audioSrc && (
+          <audio controls className="w-full mt-4">
+            <source src={audioSrc} type="audio/mpeg" />
+            Your browser does not support the audio element.
+          </audio>
+        )}
 
         {/* Close button */}
         <button onClick={onClose} className="btn btn-primary mt-4">
