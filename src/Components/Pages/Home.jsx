@@ -8,9 +8,6 @@ import Main from "../Main/Main";
 const Home = () => {
   return (
     <div className="w-full">
-      <div className="fixed top-0 z-10 w-full bg-black">
-        <Navbar></Navbar>
-      </div>
       <div className="flex bg-black">
         <div className="flex-auto w-[20%] fixed top-12">
           <LeftSide></LeftSide>
