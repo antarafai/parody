@@ -48,43 +48,77 @@ const MusicifyModal = ({ onClose }) => {
    */
   const handleAnalyzeClick = async () => {
     const query = `
-    query LibraryTracksQuery {
-      libraryTracks(first: 10) {
-        edges {
-          node {
+      query LibraryTrackQuery($id: ID!) {
+        libraryTrack(id: $id) {
+          __typename
+          ... on LibraryTrack {
             id
+            audioAnalysisV6 {
+              __typename
+              ... on AudioAnalysisV6Finished {
+                result {
+                  genreTags
+                  transformerCaption
+                }
+              }
+            }
+          }
+          ... on LibraryTrackNotFoundError {
+            message
           }
         }
       }
-    }
-  `;
+    `;
 
-  try {
-    const response = await fetch('https://api.cyanite.ai/graphql', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer <token>', // Replace with your actual token
-      },
-      body: JSON.stringify({
-        query,
-        variables: {
-          first: 10,
+    // Get the selected sample's ID
+    const selectedSampleData = samples.find(sample => sample.value === selectedSample);
+    const trackId = selectedSampleData ? selectedSampleData.id : null;
+
+    if (!trackId) {
+      alert('Please select a sample to analyze.');
+      return;
+    }
+
+    const variables = { id: trackId };
+
+    try {
+      const response = await fetch('https://api.cyanite.ai/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer <token>', // Replace with your actual token
         },
-      }),
-    });
+        body: JSON.stringify({ query, variables }),
+      });
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(errorText);
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
 
-      const data = await response.json();
-      console.log('Library tracks:', data);
-      alert('Library tracks fetched successfully. Check console for details.');
+      const responseData = await response.json();
+
+      if (responseData.errors) {
+        console.error('GraphQL errors:', responseData.errors);
+        alert('Error fetching library track. Please check the console for more details.');
+      } else {
+        const libraryTrack = responseData.data.libraryTrack;
+        if (libraryTrack.__typename === 'LibraryTrack') {
+          const { genreTags, transformerCaption } = libraryTrack.audioAnalysisV6.result;
+          console.log('Genre Tags:', genreTags);
+          console.log('Transformer Caption:', transformerCaption);
+          alert(`Genre Tags: ${genreTags.join(', ')}\nTransformer Caption: ${transformerCaption}`);
+        } else if (libraryTrack.__typename === 'LibraryTrackNotFoundError') {
+          console.error('Error:', libraryTrack.message);
+          alert(`Error: ${libraryTrack.message}`);
+        } else {
+          console.error('Unexpected response:', libraryTrack);
+          alert('Unexpected response. Please check the console for more details.');
+        }
+      }
     } catch (error) {
-      console.error('Error fetching library tracks:', error);
-      alert('Error fetching library tracks. Please try again later.');
+      console.error('Error fetching library track:', error);
+      alert('Error fetching library track. Please try again later.');
     }
   };
 
