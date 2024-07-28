@@ -47,42 +47,44 @@ const MusicifyModal = ({ onClose }) => {
    * Handles the click event for the "Analyze" button.
    */
   const handleAnalyzeClick = async () => {
-    if (!selectedSample) {
-      alert('Please select a sample to analyze.');
-      return;
-    }
-
-    const sample = samples.find(sample => sample.value === selectedSample);
-    const sampleId = sample?.id;
-
-    if (!sampleId) {
-      alert('Sample ID not found.');
-      return;
-    }
-
     const query = `
-      mutation {
-        analyzeMusic(sampleId: "${sampleId}") {
-          result
+    query LibraryTracksQuery {
+      libraryTracks(first: 10) {
+        edges {
+          node {
+            id
+          }
         }
       }
-    `;
+    }
+  `;
 
-    try {
-      const response = await fetch('https://your-graphql-endpoint.com/graphql', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+  try {
+    const response = await fetch('https://api.cyanite.ai/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer <token>', // Replace with your actual token
+      },
+      body: JSON.stringify({
+        query,
+        variables: {
+          first: 10,
         },
-        body: JSON.stringify({ query }),
-      });
+      }),
+    });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText);
+      }
 
       const data = await response.json();
-      console.log('Analysis result:', data);
-      alert('Analysis completed successfully. Check console for details.');
+      console.log('Library tracks:', data);
+      alert('Library tracks fetched successfully. Check console for details.');
     } catch (error) {
-      console.error('Error analyzing music:', error);
-      alert('Error analyzing music. Please try again later.');
+      console.error('Error fetching library tracks:', error);
+      alert('Error fetching library tracks. Please try again later.');
     }
   };
 
