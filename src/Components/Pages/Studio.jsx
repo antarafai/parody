@@ -200,6 +200,13 @@ const FBXAnimations = () => {
                         >
                             Character
                         </button>
+                        <button
+                            id="musicify (experimental)"
+                            className="btn btn-outline btn-accent mb-3 h-10 w-60 mx-2 rounded animate-float glow"
+                            onClick={() => alert('Musicify feature is currently under development')}
+                        >
+                            Musicify
+                        </button>
                         <button 
                             id="preview" 
                             className={`btn ${hasRenderJob ? (isExecInProgress ? 'btn-accent' : 'btn-outline btn-accent') : 'btn-disabled btn-outline btn-accent mx-2 rounded'} mb-3 rounded-r-full h-10 w-60 text-black animate-float glow`}
