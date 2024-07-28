@@ -75,7 +75,7 @@ const MusicifyModal = ({ onClose }) => {
           </label>
           <select
             id="music-samples"
-            className="block w-full text-black"
+            className="block w-full text-white"
             value={selectedSample}
             onChange={handleSampleChange}
           >
