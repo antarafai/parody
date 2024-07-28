@@ -13,20 +13,85 @@ const MusicifyModal = ({ onClose }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedSample, setSelectedSample] = useState('');
   const [audioSrc, setAudioSrc] = useState('');
+  const [uploading, setUploading] = useState(false);
   const audioRef = useRef(null);
   const music_url = 'https://api.cyanite.ai/graphql';
+  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiSW50ZWdyYXRpb25BY2Nlc3NUb2tlbiIsInZlcnNpb24iOiIxLjAiLCJpbnRlZ3JhdGlvbklkIjoxMTUwLCJ1c2VySWQiOjEzNTI2NywiYWNjZXNzVG9rZW5TZWNyZXQiOiJiNDg3OThhOTUzNGVlN2I4M2ZiZmFmNWNkOTY4YTQwODU4OGI5ODdmMDBmNjUwYjhjZDM2MThlNDU0N2JlODlhIiwiaWF0IjoxNzIyMTg5Njg3fQ.p5OGUjShzW-572M3uB21Lj87RjVJYNhAOiJw5XB_g2A';
 
   /**
    * Handles the change event when a file is selected.
    *
    * @param {Object} e - The event object.
    */
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file && (file.type === 'audio/mpeg' || file.type === 'audio/wav')) {
       setSelectedFile(file);
       setSelectedSample(''); // Clear selected sample
       setAudioSrc(URL.createObjectURL(file));
+
+      try {
+        setUploading(true);
+
+        // Execute the file upload request mutation
+        const mutation = `
+          mutation FileUploadRequestMutation {
+            fileUploadRequest {
+              id
+              uploadUrl
+            }
+          }
+        `;
+
+        const response = await fetch(music_url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`, // Replace with your actual token
+          },
+          body: JSON.stringify({ query: mutation }),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+        }
+
+        const responseData = await response.json();
+
+        if (responseData.errors) {
+          console.error('GraphQL errors:', responseData.errors);
+          alert('Error requesting file upload URL. Please check the console for more details.');
+          return;
+        }
+
+        const { id, uploadUrl } = responseData.data.fileUploadRequest;
+        console.log('Upload ID:', id);
+        console.log('Upload URL:', uploadUrl);
+
+        // Now upload the file to the obtained upload URL
+        // const fileBody = await file.arrayBuffer(); // Read the file as an array buffer
+        // const uploadResponse = await fetch(uploadUrl, {
+        //   method: 'PUT',
+        //   body: fileBody,
+        //   headers: {
+        //     'Content-Type': 'audio/mpeg', // Assuming the file type is audio/mpeg, adjust if necessary
+        //   },
+        // });
+
+        // if (!uploadResponse.ok) {
+        //   const errorText = await uploadResponse.text();
+        //   throw new Error(`HTTP error! status: ${uploadResponse.status}, message: ${errorText}`);
+        // }
+
+        // console.log('File uploaded successfully.');
+
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        alert('Error uploading file. Please try again later.');
+      } finally {
+        setUploading(false);
+      }
     } else {
       alert('Please upload a valid MP3 or WAV file.');
     }
@@ -45,9 +110,11 @@ const MusicifyModal = ({ onClose }) => {
   };
 
   /**
-   * Handles the click event for the "Analyze" button.
+   * Handles the analysis of the track.
+   *
+   * @param {string} trackId - The ID of the track to analyze.
    */
-  const handleAnalyzeClick = async () => {
+  const handleAnalyzeTrack = async (trackId) => {
     const query = `
       query LibraryTrackQuery($id: ID!) {
         libraryTrack(id: $id) {
@@ -71,15 +138,6 @@ const MusicifyModal = ({ onClose }) => {
       }
     `;
 
-    // Get the selected sample's ID
-    const selectedSampleData = samples.find(sample => sample.value === selectedSample);
-    const trackId = selectedSampleData ? selectedSampleData.id : null;
-
-    if (!trackId) {
-      alert('Please select a sample to analyze.');
-      return;
-    }
-
     const variables = { id: trackId };
 
     try {
@@ -87,7 +145,7 @@ const MusicifyModal = ({ onClose }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer <token>', // Replace with your actual token
+          'Authorization': `Bearer ${token}`, // Replace with your actual token
         },
         body: JSON.stringify({ query, variables }),
       });
@@ -163,6 +221,7 @@ const MusicifyModal = ({ onClose }) => {
             accept="audio/*"
             className="block w-full text-black"
             onChange={handleFileChange}
+            disabled={uploading}
           />
           {selectedFile && (
             <p className="text-black mt-2">
@@ -201,11 +260,6 @@ const MusicifyModal = ({ onClose }) => {
             Your browser does not support the audio element.
           </audio>
         )}
-
-        {/* Analyze button */}
-        <button onClick={handleAnalyzeClick} className="btn btn-secondary mt-4">
-          Analyze
-        </button>
 
         {/* Close button */}
         <button onClick={onClose} className="btn btn-primary mt-4">
