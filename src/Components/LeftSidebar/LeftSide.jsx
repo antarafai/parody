@@ -11,7 +11,7 @@ const LeftSide = () => {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen bg-black pb-4 border-2 rounded-r-xl shadow-lg">
+    <div className="flex flex-col h-screen bg-black pb-4 border-2 border-black rounded-r-xl shadow-lg">
       <div className="flex flex-col items-center relative">
         <div className="mt-2">
           <Tooltip content="Profile" placement="top">

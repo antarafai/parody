@@ -38,9 +38,9 @@ const Main = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="flex flex-col py-4 w-full bg-white rounded-3xl shadow-lg">
+      {/*<div className="flex flex-col py-4 w-full bg-white rounded-3xl shadow-lg">
         <PostForm onPostSubmit={handlePostSubmit} setProgressBar={setProgressBar} />
-      </div>
+      </div> */}
       <div className="flex flex-col py-4 w-full">
         {state?.error ? (
           <div className="flex justify-center items-center">
@@ -50,21 +50,22 @@ const Main = () => {
           </div>
         ) : (
           <div>
-            {state?.posts?.length > 0 &&
-              state?.posts?.map((post, index) => (
-                <PostCard
-                  key={index}
-                  logo={post?.logo}
-                  id={post?.documentId}
-                  uid={post?.uid}
-                  name={post?.name}
-                  email={post?.email}
-                  media={post?.media}
-                  mediaType={post?.media?.includes("mp4") || post?.media?.includes("m3u8") ? "video" : "image"}
-                  timestamp={new Date(post?.timestamp?.toDate())?.toUTCString()}
-                />
-              ))}
-          </div>
+  {state?.posts?.length > 0 &&
+    state?.posts?.map((post, index) => (
+      <div key={index} style={{ marginBottom: '120px' }}>
+        <PostCard
+          logo={post?.logo}
+          id={post?.documentId}
+          uid={post?.uid}
+          name={post?.name}
+          email={post?.email}
+          media={post?.media}
+          mediaType={post?.media?.includes("mp4") || post?.media?.includes("m3u8") ? "video" : "image"}
+          timestamp={new Date(post?.timestamp?.toDate())?.toUTCString()}
+        />
+      </div>
+    ))}
+</div>
         )}
       </div>
       <div ref={scrollRef}>{/* reference for later */}</div>

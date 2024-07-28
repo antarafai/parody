@@ -5,6 +5,8 @@ import like from "../../assets/images/like.png";
 import comment from "../../assets/images/comment.png";
 import remove from "../../assets/images/delete.png";
 import addFriend from "../../assets/images/add-friend.png";
+import { FaHeart, FaRegComment, FaTrash} from "react-icons/fa";
+import { IoPersonAdd } from "react-icons/io5";
 import { AuthContext } from "../AppContext/AppContext";
 import {
   PostsReducer,
@@ -149,82 +151,69 @@ const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestam
   }, [isInView, mediaType]);
 
   return (
-    <div className="mb-4" ref={postRef}>
-      <div className="flex flex-col py-4 bg-white rounded-3xl">
-        <div className="flex justify-start items-center pb-4 pl-4 ">
-          <Avatar
-            size="sm"
-            variant="circular"
-            src={logo || avatar}
-            alt="avatar"
-          ></Avatar>
-
-          <div className="flex flex-col ml-4">
-            <p className=" py-2 font-roboto font-medium text-sm text-gray-700 no-underline tracking-normal leading-none">
-              {email}
-            </p>
-            <p className=" font-roboto font-medium text-sm text-gray-700 no-underline tracking-normal leading-none">
-              Published: {timestamp}
-            </p>
+    <div className="mb-20 relative" ref={postRef}>
+        <div className="absolute top-0 left-0 right-0 flex justify-between items-center p-1 bg-opacity-50 bg-black z-10">
+          <div className="flex items-center">
+            <Avatar
+              size="sm"
+              variant="circular"
+              src={logo || avatar}
+              alt="avatar"
+            />
+            <div className="ml-2">
+              <p className="text-xs text-white">{email}</p>
+              <p className="text-xs text-gray-300">Published: {timestamp}</p>
+            </div>
           </div>
           {user?.uid !== uid && (
             <div
               onClick={addUser}
-              className="w-full flex justify-end cursor-pointer mr-10"
+              className="cursor-pointer"
             >
-              <img
-                className="hover:bg-blue-100 rounded-xl p-2"
-                src={addFriend}
+              <IoPersonAdd
+                className="w-6 h-6"
                 alt="addFriend"
-              ></img>
+              />
             </div>
           )}
         </div>
-        <div>
-          <p className="ml-4 pb-4 font-roboto font-medium text-sm text-gray-700 no-underline tracking-normal leading-none">
-            {text}
-          </p>
+        <div className="relative">
           {mediaType === "image" && (
-            <img className="h-[500px] w-full" src={media} alt="postImage"></img>
+            <img className="w-full object-cover" src={media} alt="postImage" />
           )}
           {mediaType === "video" && (
             <HlsPlayer
               videoUrl={media}
               play={isInView}
+              className="w-full"
             />
           )}
         </div>
-        <div className="flex justify-around items-center pt-4">
+        <div className="p-0">
+          <p className="text-sm text-gray-300">{text}</p>
+        </div>
+        <div className="flex justify-around items-center p-1 bg-black">
           <button
-            className="flex items-center cursor-pointer rounded-lg p-2 hover:bg-gray-100"
+            className="flex items-center cursor-pointer text-white"
             onClick={handleLike}
           >
-            <img className="h-8 mr-4" src={like} alt=""></img>
+            <FaHeart className="w-6 h-6 mr-1" alt="like" />
             {state.likes?.length > 0 && state?.likes?.length}
           </button>
           <div
-            className="flex items-center cursor-pointer rounded-lg p-2 hover:bg-gray-100"
+            className="flex items-center cursor-pointer text-white"
             onClick={handleOpen}
           >
-            <div className="flex items-center cursor-pointer">
-              <img className="h-8 mr-4" src={comment} alt="comment"></img>
-              <p className="font-roboto font-medium text-md text-gray-700 no-underline tracking-normal leading-none">
-                Comments
-              </p>
-            </div>
+            <FaRegComment className="w-6 h-6 mr-1" alt="comment" />
           </div>
           <div
-            className="flex items-center cursor-pointer rounded-lg p-2 hover:bg-gray-100"
+            className="flex items-center cursor-pointer text-white"
             onClick={deletePost}
           >
-            <img className="h-8 mr-4" src={remove} alt="delete"></img>
-            <p className="font-roboto font-medium text-md text-gray-700 no-underline tracking-normal leading-none">
-              Delete
-            </p>
+            <FaTrash className="w-6 h-6 mr-1" alt="delete" />
           </div>
         </div>
-      </div>
-      {open && <CommentSection postId={id}></CommentSection>}
+      {open && <CommentSection postId={id} />}
     </div>
   );
 };

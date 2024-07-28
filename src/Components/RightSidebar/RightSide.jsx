@@ -38,7 +38,7 @@ const RightSide = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-black shadow-lg border-2 rounded-l-xl">
+    <div className="flex flex-col h-screen bg-black shadow-lg border-2 border-black rounded-l-xl">
       <div className="mx-2 mt-10">
         <p className="font-roboto font-medium text-sm text-gray-700 no-underline tracking-normal leading-none">
           Friends:{" "}
