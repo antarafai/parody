@@ -14,6 +14,7 @@ const MusicifyModal = ({ onClose }) => {
   const [selectedSample, setSelectedSample] = useState('');
   const [audioSrc, setAudioSrc] = useState('');
   const audioRef = useRef(null);
+  const music_url = 'https://api.cyanite.ai/graphql';
 
   /**
    * Handles the change event when a file is selected.
@@ -82,7 +83,7 @@ const MusicifyModal = ({ onClose }) => {
     const variables = { id: trackId };
 
     try {
-      const response = await fetch('https://api.cyanite.ai/graphql', {
+      const response = await fetch(music_url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
