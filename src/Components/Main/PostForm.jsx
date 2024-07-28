@@ -15,6 +15,7 @@ const PostForm = ({ onPostSubmit, setProgressBar, initialMediaUrl }) => {
   const [media, setMedia] = useState(initialMediaUrl || null);
   const [file, setFile] = useState(null);
   const [progressBar, setLocalProgressBar] = useState(0); // Local state for progress bar
+  const [alertVisible, setAlertVisible] = useState(false); // State for alert visibility
 
   useEffect(() => {
     if (initialMediaUrl) {
@@ -43,6 +44,8 @@ const PostForm = ({ onPostSubmit, setProgressBar, initialMediaUrl }) => {
         });
         text.current.value = "";
         onPostSubmit();
+        setAlertVisible(true); // Show success alert
+        setTimeout(() => setAlertVisible(false), 3000); // Hide alert after 3 seconds
       } catch (err) {
         alert(err.message);
         console.log(err.message);
@@ -100,6 +103,11 @@ const PostForm = ({ onPostSubmit, setProgressBar, initialMediaUrl }) => {
 
   return (
     <>
+      {alertVisible && (
+        <div className="alert-success">
+          Post successful!
+        </div>
+      )}
       <div className="flex items-center border-b-2 border-gray-300 pb-4 pl-4 w-full">
         <Avatar
           size="sm"
