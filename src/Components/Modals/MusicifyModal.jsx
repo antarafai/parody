@@ -45,10 +45,10 @@ const MusicifyModal = ({ onClose }) => {
 
   // Available samples
   const samples = [
-    { name: 'All That', value: 'allthat.mp3' },
-    { name: 'Common Ground', value: 'common-ground.mp3' },
-    { name: 'Keep It Real', value: 'keepitreal.mp3' },
-    { name: 'Private Party', value: 'private-party.mp3' },
+    { name: 'All That', value: 'allthat.mp3', id: '19225501' },
+    { name: 'Common Ground', value: 'common-ground.mp3', id: '19225504' },
+    { name: 'Keep It Real', value: 'keepitreal.mp3', id: '19225503' },
+    { name: 'Private Party', value: 'private-party.mp3', id: '19225502' },
   ];
 
   useEffect(() => {
@@ -105,7 +105,7 @@ const MusicifyModal = ({ onClose }) => {
             <option value="">Select a sample</option>
             {samples.map((sample) => (
               <option key={sample.value} value={sample.value}>
-                {sample.name}
+                {sample.name} (ID: {sample.id})
               </option>
             ))}
           </select>
