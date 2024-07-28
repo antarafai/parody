@@ -43,6 +43,49 @@ const MusicifyModal = ({ onClose }) => {
     setAudioSrc(selectedSampleValue ? `/sample-music/${selectedSampleValue}` : '');
   };
 
+  /**
+   * Handles the click event for the "Analyze" button.
+   */
+  const handleAnalyzeClick = async () => {
+    if (!selectedSample) {
+      alert('Please select a sample to analyze.');
+      return;
+    }
+
+    const sample = samples.find(sample => sample.value === selectedSample);
+    const sampleId = sample?.id;
+
+    if (!sampleId) {
+      alert('Sample ID not found.');
+      return;
+    }
+
+    const query = `
+      mutation {
+        analyzeMusic(sampleId: "${sampleId}") {
+          result
+        }
+      }
+    `;
+
+    try {
+      const response = await fetch('https://your-graphql-endpoint.com/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query }),
+      });
+
+      const data = await response.json();
+      console.log('Analysis result:', data);
+      alert('Analysis completed successfully. Check console for details.');
+    } catch (error) {
+      console.error('Error analyzing music:', error);
+      alert('Error analyzing music. Please try again later.');
+    }
+  };
+
   // Available samples
   const samples = [
     { name: 'All That', value: 'allthat.mp3', id: '19225501' },
@@ -121,6 +164,11 @@ const MusicifyModal = ({ onClose }) => {
             Your browser does not support the audio element.
           </audio>
         )}
+
+        {/* Analyze button */}
+        <button onClick={handleAnalyzeClick} className="btn btn-secondary mt-4">
+          Analyze
+        </button>
 
         {/* Close button */}
         <button onClick={onClose} className="btn btn-primary mt-4">
