@@ -16,7 +16,7 @@ const MusicifyModal = ({ onClose }) => {
   const [uploading, setUploading] = useState(false);
   const audioRef = useRef(null);
   const music_url = 'https://api.cyanite.ai/graphql';
-  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiSW50ZWdyYXRpb25BY2Nlc3NUb2tlbiIsInZlcnNpb24iOiIxLjAiLCJpbnRlZ3JhdGlvbklkIjoxMTUwLCJ1c2VySWQiOjEzNTI2NywiYWNjZXNzVG9rZW5TZWNyZXQiOiJiNDg3OThhOTUzNGVlN2I4M2ZiZmFmNWNkOTY4YTQwODU4OGI5ODdmMDBmNjUwYjhjZDM2MThlNDU0N2JlODlhIiwiaWF0IjoxNzIyMTg5Njg3fQ.p5OGUjShzW-572M3uB21Lj87RjVJYNhAOiJw5XB_g2A';
+  const token = '<token>';
 
   /**
    * Handles the change event when a file is selected.
@@ -34,7 +34,7 @@ const MusicifyModal = ({ onClose }) => {
         setUploading(true);
 
         // Execute the file upload request mutation
-        const mutation = `
+        const fileUploadMutation = `
           mutation FileUploadRequestMutation {
             fileUploadRequest {
               id
@@ -47,9 +47,9 @@ const MusicifyModal = ({ onClose }) => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`, // Replace with your actual token
+            'Authorization': `Bearer ${token}`,
           },
-          body: JSON.stringify({ query: mutation }),
+          body: JSON.stringify({ query: fileUploadMutation }),
         });
 
         if (!response.ok) {
@@ -70,22 +70,82 @@ const MusicifyModal = ({ onClose }) => {
         console.log('Upload URL:', uploadUrl);
 
         // Now upload the file to the obtained upload URL
-        // const fileBody = await file.arrayBuffer(); // Read the file as an array buffer
-        // const uploadResponse = await fetch(uploadUrl, {
-        //   method: 'PUT',
-        //   body: fileBody,
-        //   headers: {
-        //     'Content-Type': 'audio/mpeg', // Assuming the file type is audio/mpeg, adjust if necessary
-        //   },
-        // });
+        const fileBody = await file.arrayBuffer(); // Read the file as an array buffer
+        const uploadResponse = await fetch(uploadUrl, {
+          method: 'PUT',
+          body: fileBody,
+          headers: {
+            'Content-Type': 'audio/mpeg', // Assuming the file type is audio/mpeg, adjust if necessary
+          },
+        });
 
-        // if (!uploadResponse.ok) {
-        //   const errorText = await uploadResponse.text();
-        //   throw new Error(`HTTP error! status: ${uploadResponse.status}, message: ${errorText}`);
-        // }
+        if (!uploadResponse.ok) {
+          const errorText = await uploadResponse.text();
+          throw new Error(`HTTP error! status: ${uploadResponse.status}, message: ${errorText}`);
+        }
 
-        // console.log('File uploaded successfully.');
+        console.log('File uploaded successfully:', await uploadResponse.text());
 
+        // Create a library track using the uploaded file
+        const libraryTrackCreateMutation = `
+          mutation LibraryTrackCreateMutation($input: LibraryTrackCreateInput!) {
+            libraryTrackCreate(input: $input) {
+              __typename
+              ... on LibraryTrackCreateSuccess {
+                createdLibraryTrack {
+                  id
+                }
+              }
+              ... on LibraryTrackCreateError {
+                code
+                message
+              }
+            }
+          }
+        `;
+
+        const variables = {
+          input: {
+            uploadId: id,
+            title: file.name,
+          },
+        };
+
+        const createTrackResponse = await fetch(music_url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({ query: libraryTrackCreateMutation, variables }),
+        });
+
+        if (!createTrackResponse.ok) {
+          const errorText = await createTrackResponse.text();
+          throw new Error(`HTTP error! status: ${createTrackResponse.status}, message: ${errorText}`);
+        }
+
+        const createTrackResponseData = await createTrackResponse.json();
+
+        if (createTrackResponseData.errors) {
+          console.error('GraphQL errors:', createTrackResponseData.errors);
+          alert('Error creating library track. Please check the console for more details.');
+          return;
+        }
+
+        const libraryTrackCreate = createTrackResponseData.data.libraryTrackCreate;
+        if (libraryTrackCreate.__typename === 'LibraryTrackCreateSuccess') {
+          const { id } = libraryTrackCreate.createdLibraryTrack;
+          console.log('Library Track Created Successfully. Track ID:', id);
+          alert(`Library Track Created Successfully. Track ID: ${id}`);
+        } else if (libraryTrackCreate.__typename === 'LibraryTrackCreateError') {
+          const { code, message } = libraryTrackCreate;
+          console.error('Error creating library track:', code, message);
+          alert(`Error creating library track: ${message}`);
+        } else {
+          console.error('Unexpected response:', libraryTrackCreate);
+          alert('Unexpected response. Please check the console for more details.');
+        }
       } catch (error) {
         console.error('Error uploading file:', error);
         alert('Error uploading file. Please try again later.');
@@ -145,7 +205,7 @@ const MusicifyModal = ({ onClose }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Replace with your actual token
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ query, variables }),
       });
