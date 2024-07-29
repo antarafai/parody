@@ -39,6 +39,9 @@ export const libraryTrackQuery = `
               genreTags
               transformerCaption
               moodTags
+              segments {
+                representativeSegmentIndex            
+              }
             }
           }
         }

@@ -116,11 +116,13 @@ const MusicifyModal = ({ onClose }) => {
       const libraryTrack = await fetchLibraryTrack(trackId);
 
       if (libraryTrack.__typename === 'LibraryTrack') {
-        const { genreTags, transformerCaption, moodTags } = libraryTrack.audioAnalysisV6.result;
+        const { genreTags, transformerCaption, moodTags, segments } = libraryTrack.audioAnalysisV6.result;
+        const significantTime = segments.representativeSegmentIndex * 15;
         console.log('Genre Tags:', genreTags);
         console.log('Transformer Caption:', transformerCaption);
         console.log('Mood Tags:', moodTags);
-        alert(`Genre Tags: ${genreTags.join(', ')}\nTransformer Caption: ${transformerCaption}\nMood Tags: ${moodTags.join(', ')}`);
+        console.log('Significant Time Start:', significantTime);
+        alert(`Genre Tags: ${genreTags.join(', ')}\nTransformer Caption: ${transformerCaption}\nMood Tags: ${moodTags.join(', ')}\nSignificant Time Start: ${significantTime}`);
 
         // Store analysis result in state
         setAnalysisResult({ genreTags, transformerCaption, moodTags });
