@@ -20,7 +20,7 @@ const NavLinks = () => {
         </AiOutlineHome>
       </div>
       <div className="hover:translate-y-1 duration-500 ease-in-out hover:text-yellow-500">
-      <Link to="/mint" className="inline-block">
+      <Link to="/walletFunctions" className="inline-block">
         <GiMonkey
           id="mint"
           className="w-6 h-6 mx-4"
