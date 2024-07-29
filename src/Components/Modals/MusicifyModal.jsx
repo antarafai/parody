@@ -135,7 +135,7 @@ const MusicifyModal = ({ onClose }) => {
         alert(`Genre Tags: ${genreTags.join(', ')}\nTransformer Caption: ${transformerCaption}\nMood Tags: ${moodTags.join(', ')}\nSignificant Time Start: ${significantTime}`);
 
         // Store analysis result in state
-        setAnalysisResult({ genreTags, transformerCaption, moodTags });
+        setAnalysisResult({ genreTags, transformerCaption, moodTags, significantTime });
       } else if (libraryTrack.__typename === 'LibraryTrackNotFoundError') {
         console.error('Error:', libraryTrack.message);
         alert(`Error: ${libraryTrack.message}`);
