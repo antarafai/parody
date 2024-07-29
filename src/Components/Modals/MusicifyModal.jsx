@@ -114,10 +114,11 @@ const MusicifyModal = ({ onClose }) => {
       const libraryTrack = await fetchLibraryTrack(trackId);
 
       if (libraryTrack.__typename === 'LibraryTrack') {
-        const { genreTags, transformerCaption } = libraryTrack.audioAnalysisV6.result;
+        const { genreTags, transformerCaption, moodTags } = libraryTrack.audioAnalysisV6.result;
         console.log('Genre Tags:', genreTags);
         console.log('Transformer Caption:', transformerCaption);
-        alert(`Genre Tags: ${genreTags.join(', ')}\nTransformer Caption: ${transformerCaption}`);
+        console.log('Mood Tags:', libraryTrack.audioAnalysisV6.result.moodTags);
+        alert(`Genre Tags: ${genreTags.join(', ')}\nTransformer Caption: ${transformerCaption}\nMood Tags: ${moodTags.join(', ')}`);
       } else if (libraryTrack.__typename === 'LibraryTrackNotFoundError') {
         console.error('Error:', libraryTrack.message);
         alert(`Error: ${libraryTrack.message}`);
