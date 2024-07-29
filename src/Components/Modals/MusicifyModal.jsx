@@ -143,18 +143,19 @@ const MusicifyModal = ({ onClose }) => {
    * Handles the generation action.
    */
   const handleGenerate = async () => {
-    if (!analysisResult) {
-      alert('Please analyze a track before generating.');
+    if (!analysisResult || !selectedFile) {
+      alert('Please analyze a track and select a file before generating.');
       return;
     }
 
     try {
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('analysisResult', JSON.stringify(analysisResult));
+
       const response = await fetch(`${server_url}/generate`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(analysisResult),
+        body: formData,
       });
 
       if (!response.ok) {
