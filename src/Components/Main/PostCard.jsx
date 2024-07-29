@@ -1,10 +1,6 @@
 import React, { useState, useContext, useEffect, useReducer, useRef } from "react";
 import { Avatar } from "@material-tailwind/react";
 import avatar from "../../assets/images/avatar.jpg";
-import like from "../../assets/images/like.png";
-import comment from "../../assets/images/comment.png";
-import remove from "../../assets/images/delete.png";
-import addFriend from "../../assets/images/add-friend.png";
 import { FaHeart, FaRegComment, FaTrash} from "react-icons/fa";
 import { IoPersonAdd } from "react-icons/io5";
 import { AuthContext } from "../AppContext/AppContext";
