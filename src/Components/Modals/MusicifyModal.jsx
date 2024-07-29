@@ -16,10 +16,10 @@ const MusicifyModal = ({ onClose }) => {
   const [audioSrc, setAudioSrc] = useState('');
   const [uploading, setUploading] = useState(false);
   const [samples, setSamples] = useState([
-    { name: 'All That', value: 'allthat.mp3', id: '19225501' },
-    { name: 'Common Ground', value: 'common-ground.mp3', id: '19225504' },
-    { name: 'Keep It Real', value: 'keepitreal.mp3', id: '19225503' },
-    { name: 'Private Party', value: 'private-party.mp3', id: '19225502' },
+    { name: 'All That', value: 'allthat.mp3', id: '19225501', isCustom: false },
+    { name: 'Common Ground', value: 'common-ground.mp3', id: '19225504', isCustom: false },
+    { name: 'Keep It Real', value: 'keepitreal.mp3', id: '19225503', isCustom: false },
+    { name: 'Private Party', value: 'private-party.mp3', id: '19225502', isCustom: false },
   ]);
   const [analysisResult, setAnalysisResult] = useState(null);
   const audioRef = useRef(null);
@@ -60,7 +60,7 @@ const MusicifyModal = ({ onClose }) => {
           // Add the new track to the samples list
           setSamples((prevSamples) => [
             ...prevSamples,
-            { name: file.name, value: file.name, id: trackId },
+            { name: file.name, value: file.name, id: trackId, filePath: URL.createObjectURL(file), isCustom: true },
           ]);
         } else if (libraryTrackCreate.__typename === 'LibraryTrackCreateError') {
           const { code, message } = libraryTrackCreate;
@@ -91,15 +91,26 @@ const MusicifyModal = ({ onClose }) => {
     setSelectedSample(selectedSampleValue);
     setSelectedFile(null); // Clear selected file
 
-    try {
-      // Fetch the sample file data
-      const response = await fetch(`/sample-music/${selectedSampleValue}`);
-      const blob = await response.blob();
+    const selectedSampleData = samples.find(sample => sample.value === selectedSampleValue);
 
-      setAudioSrc(URL.createObjectURL(blob));
-    } catch (error) {
-      console.error('Error fetching sample file:', error);
-      alert('Error fetching sample file. Please try again later.');
+    if (!selectedSampleData) {
+      alert('Selected sample not found.');
+      return;
+    }
+
+    if (selectedSampleData.isCustom) {
+      // Load custom track from its original file path
+      setAudioSrc(selectedSampleData.filePath);
+    } else {
+      try {
+        // Fetch the sample file data
+        const response = await fetch(`/sample-music/${selectedSampleValue}`);
+        const blob = await response.blob();
+        setAudioSrc(URL.createObjectURL(blob));
+      } catch (error) {
+        console.error('Error fetching sample file:', error);
+        alert('Error fetching sample file. Please try again later.');
+      }
     }
   };
 
