@@ -22,27 +22,8 @@ const MusicifyModal = ({ onClose }) => {
     { name: 'Private Party', value: 'private-party.mp3', id: '19225502' },
   ]);
   const [analysisResult, setAnalysisResult] = useState(null);
-  const [audioBase64, setAudioBase64] = useState('');
   const audioRef = useRef(null);
   const server_url = 'http://localhost:5000';
-
-  /**
-   * Converts a file to a base64 string.
-   *
-   * @param {File} file - The file to convert.
-   * @returns {Promise<string>} - The base64 encoded string.
-   */
-  const convertToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        const base64String = reader.result.split(',')[1]; // Remove the data URL prefix
-        resolve(base64String);
-      };
-      reader.onerror = (error) => reject(error);
-    });
-  };
 
   /**
    * Handles the change event when a file is selected.
@@ -58,10 +39,6 @@ const MusicifyModal = ({ onClose }) => {
 
       try {
         setUploading(true);
-
-        // Convert file to base64
-        const base64 = await convertToBase64(file);
-        setAudioBase64(base64);
 
         // Step 1: Request file upload URL
         const { id, uploadUrl } = await fetchFileUploadRequest();
@@ -109,11 +86,21 @@ const MusicifyModal = ({ onClose }) => {
    *
    * @param {Object} e - The event object.
    */
-  const handleSampleChange = (e) => {
+  const handleSampleChange = async (e) => {
     const selectedSampleValue = e.target.value;
     setSelectedSample(selectedSampleValue);
     setSelectedFile(null); // Clear selected file
-    setAudioSrc(selectedSampleValue ? `/sample-music/${selectedSampleValue}` : '');
+
+    try {
+      // Fetch the sample file data
+      const response = await fetch(`/sample-music/${selectedSampleValue}`);
+      const blob = await response.blob();
+
+      setAudioSrc(URL.createObjectURL(blob));
+    } catch (error) {
+      console.error('Error fetching sample file:', error);
+      alert('Error fetching sample file. Please try again later.');
+    }
   };
 
   /**
@@ -148,7 +135,7 @@ const MusicifyModal = ({ onClose }) => {
         alert(`Genre Tags: ${genreTags.join(', ')}\nTransformer Caption: ${transformerCaption}\nMood Tags: ${moodTags.join(', ')}\nSignificant Time Start: ${significantTime}`);
 
         // Store analysis result in state
-        setAnalysisResult({ genreTags, transformerCaption, moodTags, audioBase64 });
+        setAnalysisResult({ genreTags, transformerCaption, moodTags });
       } else if (libraryTrack.__typename === 'LibraryTrackNotFoundError') {
         console.error('Error:', libraryTrack.message);
         alert(`Error: ${libraryTrack.message}`);
@@ -175,10 +162,18 @@ const MusicifyModal = ({ onClose }) => {
       const formData = new FormData();
       if (selectedFile) {
         formData.append('file', selectedFile);
-      } else {
-        formData.append('sample', selectedSample);
+      } else if (selectedSample) {
+        // Fetch the sample file data and append it to the form data
+        const response = await fetch(`/sample-music/${selectedSample}`);
+        const blob = await response.blob();
+        formData.append('file_from_react', blob, selectedSample);
       }
       formData.append('analysisResult', JSON.stringify(analysisResult));
+
+      // Debugging: Log the formData contents
+      for (let pair of formData.entries()) {
+        console.log(`${pair[0]}: ${pair[1]}`);
+      }
 
       const response = await fetch(`${server_url}/generate`, {
         method: 'POST',
