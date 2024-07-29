@@ -37,11 +37,8 @@ const Main = () => {
   }, [SUBMIT_POST]);
 
   return (
-    <div className="flex flex-col items-center">
-      {/*<div className="flex flex-col py-4 w-full bg-white rounded-3xl shadow-lg">
-        <PostForm onPostSubmit={handlePostSubmit} setProgressBar={setProgressBar} />
-      </div> */}
-      <div className="flex flex-col py-4 w-full">
+    <div className="flex bg-neutral flex-col items-center">
+      <div className="flex flex-col rounded-full py-4 w-4/5">
         {state?.error ? (
           <div className="flex justify-center items-center">
             <Alert color="red">
@@ -55,7 +52,7 @@ const Main = () => {
                 console.log("Post Data:", post); // Log the post data
 
                 return (
-                  <div key={index} style={{ marginBottom: '120px' }}>
+                  <div className="p-4 rounded-3xl shadow-4xl bg-black" key={index} style={{ marginBottom: '120px' }}>
                     <PostCard
                       logo={post?.logo}
                       id={post?.documentId}

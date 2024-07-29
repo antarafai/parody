@@ -14,8 +14,8 @@ module.exports = withMT({
     themes: [
         {synthwave: {
           ...require("daisyui/src/theming/themes")["synthwave"],
-          "base-100": "black",
-          neutral: "#44403c",
+          "base-100": "#12100f",
+          neutral: "#12100f",
         },},
       ], // false: only light + dark | true: all themes | array: specific themes like this ["light", "dark", "cupcake"]
     darkTheme: "synthwave", // name of one of the included themes for dark mode
