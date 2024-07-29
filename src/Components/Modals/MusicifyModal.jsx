@@ -22,8 +22,27 @@ const MusicifyModal = ({ onClose }) => {
     { name: 'Private Party', value: 'private-party.mp3', id: '19225502' },
   ]);
   const [analysisResult, setAnalysisResult] = useState(null);
+  const [audioBase64, setAudioBase64] = useState('');
   const audioRef = useRef(null);
   const server_url = 'http://localhost:5000';
+
+  /**
+   * Converts a file to a base64 string.
+   *
+   * @param {File} file - The file to convert.
+   * @returns {Promise<string>} - The base64 encoded string.
+   */
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const base64String = reader.result.split(',')[1]; // Remove the data URL prefix
+        resolve(base64String);
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };
 
   /**
    * Handles the change event when a file is selected.
@@ -39,6 +58,10 @@ const MusicifyModal = ({ onClose }) => {
 
       try {
         setUploading(true);
+
+        // Convert file to base64
+        const base64 = await convertToBase64(file);
+        setAudioBase64(base64);
 
         // Step 1: Request file upload URL
         const { id, uploadUrl } = await fetchFileUploadRequest();
@@ -99,8 +122,8 @@ const MusicifyModal = ({ onClose }) => {
    * @param {string} trackId - The ID of the track to analyze.
    */
   const handleAnalyzeTrack = async () => {
-    if (!selectedSample) {
-      alert('Please select a sample to analyze.');
+    if (!selectedSample && !selectedFile) {
+      alert('Please select a sample or upload a file to analyze.');
       return;
     }
 
@@ -125,7 +148,7 @@ const MusicifyModal = ({ onClose }) => {
         alert(`Genre Tags: ${genreTags.join(', ')}\nTransformer Caption: ${transformerCaption}\nMood Tags: ${moodTags.join(', ')}\nSignificant Time Start: ${significantTime}`);
 
         // Store analysis result in state
-        setAnalysisResult({ genreTags, transformerCaption, moodTags });
+        setAnalysisResult({ genreTags, transformerCaption, moodTags, audioBase64 });
       } else if (libraryTrack.__typename === 'LibraryTrackNotFoundError') {
         console.error('Error:', libraryTrack.message);
         alert(`Error: ${libraryTrack.message}`);
@@ -143,14 +166,18 @@ const MusicifyModal = ({ onClose }) => {
    * Handles the generation action.
    */
   const handleGenerate = async () => {
-    if (!analysisResult || !selectedFile) {
-      alert('Please analyze a track and select a file before generating.');
+    if (!analysisResult) {
+      alert('Please analyze a track before generating.');
       return;
     }
 
     try {
       const formData = new FormData();
-      formData.append('file', selectedFile);
+      if (selectedFile) {
+        formData.append('file', selectedFile);
+      } else {
+        formData.append('sample', selectedSample);
+      }
       formData.append('analysisResult', JSON.stringify(analysisResult));
 
       const response = await fetch(`${server_url}/generate`, {
