@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext, useReducer, useEffect } from "react";
+import React, { useState, useRef, useContext, useReducer, useEffect, useCallback } from "react";
 import { AuthContext } from "../AppContext/AppContext";
 import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase/firebase";
@@ -50,22 +50,27 @@ const Main = () => {
           </div>
         ) : (
           <div>
-  {state?.posts?.length > 0 &&
-    state?.posts?.map((post, index) => (
-      <div key={index} style={{ marginBottom: '120px' }}>
-        <PostCard
-          logo={post?.logo}
-          id={post?.documentId}
-          uid={post?.uid}
-          name={post?.name}
-          email={post?.email}
-          media={post?.media}
-          mediaType={post?.media?.includes("mp4") || post?.media?.includes("m3u8") ? "video" : "image"}
-          timestamp={new Date(post?.timestamp?.toDate())?.toUTCString()}
-        />
-      </div>
-    ))}
-</div>
+            {state?.posts?.length > 0 &&
+              state?.posts?.map((post, index) => {
+                console.log("Post Data:", post); // Log the post data
+
+                return (
+                  <div key={index} style={{ marginBottom: '120px' }}>
+                    <PostCard
+                      logo={post?.logo}
+                      id={post?.documentId}
+                      uid={post?.uid}
+                      name={post?.name}
+                      email={post?.email}
+                      media={post?.media}
+                      mediaType={post?.media?.includes("mp4") || post?.media?.includes("m3u8") ? "video" : "image"}
+                      metadataUrl={post?.metadataUrl}
+                      timestamp={new Date(post?.timestamp?.toDate())?.toUTCString()}
+                    />
+                  </div>
+                );
+              })}
+          </div>
         )}
       </div>
       <div ref={scrollRef}>{/* reference for later */}</div>

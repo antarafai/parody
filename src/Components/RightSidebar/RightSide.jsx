@@ -15,6 +15,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../firebase/firebase";
+import { MdOutlinePersonRemove } from "react-icons/md";
 
 const RightSide = () => {
   const [input, setInput] = useState("");
@@ -73,15 +74,15 @@ const RightSide = () => {
                     </div>
                   </div>
                 </Link>
-                <div className="mr-4">
-                  <img
+                <div className="mr-8">
+                  <MdOutlinePersonRemove
+                    className="text-accent w-5 h-5"
                     onClick={() =>
                       removeFriend(friend.id, friend.name, friend.image)
                     }
-                    className="cursor-pointer"
                     src={remove}
                     alt="deleteFriend"
-                  ></img>
+                  ></MdOutlinePersonRemove>
                 </div>
               </div>
             );
@@ -89,6 +90,59 @@ const RightSide = () => {
         ) : (
           <p className="mt-10 font-roboto font-medium text-sm text-white no-underline tracking-normal leading-none">
             Add friends to check their profile
+          </p>
+        )}
+      </div>
+      <div className="mx-2 mt-10">
+        <p className="font-roboto font-medium text-sm text-gray-700 no-underline tracking-normal leading-none">
+          Collaborations:{" "}
+        </p>
+        <input
+          className="border-0 outline-none mt-4"
+          name="input"
+          value={input}
+          type="text"
+          placeholder="Search Collaborations"
+          onChange={(e) => setInput(e.target.value)}
+        ></input>
+        {friendList?.length > 0 ? (
+          searchFriends(friendList)?.map((friend) => {
+            return (
+              <div
+                className="flex items-center justify-between hover:bg-gray-100 duration-300 ease-in-out"
+                key={friend.id}
+              >
+                <Link to={`/profile/${friend.id}`}>
+                  <div className="flex items-center my-2 cursor-pointer">
+                    <div className="flex items-center">
+                      <Avatar
+                        size="sm"
+                        variant="circular"
+                        src={friend?.image || avatar}
+                        alt="avatar"
+                      ></Avatar>
+                      <p className="ml-4 font-roboto font-medium text-sm text-white no-underline tracking-normal leading-none">
+                        {friend.name}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+                <div className="mr-8">
+                  <MdOutlinePersonRemove
+                    className="text-accent w-5 h-5"
+                    onClick={() =>
+                      removeFriend(friend.id, friend.name, friend.image)
+                    }
+                    src={remove}
+                    alt="deleteFriend"
+                  ></MdOutlinePersonRemove>
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          <p className="mt-10 font-roboto font-medium text-sm text-white no-underline tracking-normal leading-none">
+            No Collaborations yet
           </p>
         )}
       </div>

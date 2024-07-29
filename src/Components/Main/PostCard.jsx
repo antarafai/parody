@@ -3,6 +3,7 @@ import { Avatar } from "@material-tailwind/react";
 import avatar from "../../assets/images/avatar.jpg";
 import { FaHeart, FaRegComment, FaTrash} from "react-icons/fa";
 import { IoPersonAdd } from "react-icons/io5";
+import { GiMonkey } from "react-icons/gi";
 import { AuthContext } from "../AppContext/AppContext";
 import {
   PostsReducer,
@@ -24,8 +25,9 @@ import {
 import { db } from "../firebase/firebase";
 import CommentSection from "./CommentSection";
 import HlsPlayer from "../VideoPlayer/HlsPlayer"; // Import the HLS player component
+import  MintNFT  from '../Pages/mint-nft'
 
-const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestamp }) => {
+const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestamp, metadataUrl}) => {
   const { user } = useContext(AuthContext);
   const [state, dispatch] = useReducer(PostsReducer, postsStates);
   const likesRef = doc(collection(db, "posts", id, "likes"));
@@ -58,6 +60,20 @@ const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestam
       console.log(err.message);
     }
   };
+
+  const mintVideo = async (e) => {
+    e.preventDefault();
+    try {
+      if (user?.uid === uid) {
+        // Mint video
+      } else {
+        alert("You can't mint other users' posts!");
+      }
+    } catch (err) {
+      alert(err.message);
+      console.log(err.message);
+    }
+  }  
 
   const handleLike = async (e) => {
     e.preventDefault();
@@ -170,6 +186,25 @@ const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestam
                 className="w-6 h-6"
                 alt="addFriend"
               />
+            </div>
+          )}
+          {user?.uid === uid && (
+            <div className="tooltip font-orbitron" data-tip="NFT your Parody">
+              <div className="dropdown dropdown-left">
+                <div tabIndex={0} role="button" className="btn bg-accent text-black glass m-1 font-thin p-1">
+                  <GiMonkey className="w-6 h-6 text-black" style={{marginRight:'-5px'}} alt="monkey" />
+                  <div className="" style={{marginRight:'5px'}}>
+                  Mint
+                  </div>
+                </div>
+                  <div
+                    tabIndex={0}
+                    className=" flex flex-col dropdown-content card items-center card-compact bg-black bg-opacity-80  text-primary-content z-[1] w-64 h-44 p-0 shadow-2xl">
+                    <div className="card-body">
+                      <MintNFT metadataUrl={metadataUrl}  />
+                    </div>
+                  </div>
+              </div>
             </div>
           )}
         </div>

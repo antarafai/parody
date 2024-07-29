@@ -9,7 +9,7 @@ import { doc, setDoc, serverTimestamp, collection } from "firebase/firestore";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import avatar from "../../assets/images/avatar.jpg";  // Ensure this path is correct
 
-const PostForm = ({ onPostSubmit, setProgressBar, initialMediaUrl }) => {
+const PostForm = ({ onPostSubmit, setProgressBar, initialMediaUrl, metadataUrl }) => {
   const { user, userData } = useContext(AuthContext);
   const text = useRef("");
   const [media, setMedia] = useState(initialMediaUrl || null);
@@ -41,6 +41,7 @@ const PostForm = ({ onPostSubmit, setProgressBar, initialMediaUrl }) => {
           text: text.current.value,
           media: media,
           timestamp: serverTimestamp(),
+          metadataUrl: metadataUrl,
         });
         text.current.value = "";
         onPostSubmit();
@@ -92,6 +93,7 @@ const PostForm = ({ onPostSubmit, setProgressBar, initialMediaUrl }) => {
                 setMedia(downloadURL);
               }
             );
+            console.log("File uploaded in PostForm successfully, download URL: ", media);
           }
         );
       } catch (err) {
