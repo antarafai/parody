@@ -38,24 +38,24 @@ const MusicifyModal = ({ onClose }) => {
         console.log('Upload URL:', uploadUrl);
 
         // Step 2: Upload the file
-        await uploadFile(uploadUrl, file);
-        console.log('File uploaded successfully.');
+        // await uploadFile(uploadUrl, file);
+        // console.log('File uploaded successfully.');
 
-        // Step 3: Create a library track
-        const libraryTrackCreate = await createLibraryTrack(id, file.name);
+        // // Step 3: Create a library track
+        // const libraryTrackCreate = await createLibraryTrack(id, file.name);
 
-        if (libraryTrackCreate.__typename === 'LibraryTrackCreateSuccess') {
-          const { id: trackId } = libraryTrackCreate.createdLibraryTrack;
-          console.log('Library Track Created Successfully. Track ID:', trackId);
-          alert(`Library Track Created Successfully. Track ID: ${trackId}`);
-        } else if (libraryTrackCreate.__typename === 'LibraryTrackCreateError') {
-          const { code, message } = libraryTrackCreate;
-          console.error('Error creating library track:', code, message);
-          alert(`Error creating library track: ${message}`);
-        } else {
-          console.error('Unexpected response:', libraryTrackCreate);
-          alert('Unexpected response. Please check the console for more details.');
-        }
+        // if (libraryTrackCreate.__typename === 'LibraryTrackCreateSuccess') {
+        //   const { id: trackId } = libraryTrackCreate.createdLibraryTrack;
+        //   console.log('Library Track Created Successfully. Track ID:', trackId);
+        //   alert(`Library Track Created Successfully. Track ID: ${trackId}`);
+        // } else if (libraryTrackCreate.__typename === 'LibraryTrackCreateError') {
+        //   const { code, message } = libraryTrackCreate;
+        //   console.error('Error creating library track:', code, message);
+        //   alert(`Error creating library track: ${message}`);
+        // } else {
+        //   console.error('Unexpected response:', libraryTrackCreate);
+        //   alert('Unexpected response. Please check the console for more details.');
+        // }
       } catch (error) {
         console.error('Error uploading file:', error);
         alert('Error uploading file. Please try again later.');
@@ -84,15 +84,29 @@ const MusicifyModal = ({ onClose }) => {
    *
    * @param {string} trackId - The ID of the track to analyze.
    */
-  const handleAnalyzeTrack = async (trackId) => {
+  const handleAnalyzeTrack = async () => {
+    if (!selectedSample) {
+      alert('Please select a sample to analyze.');
+      return;
+    }
+
+    const selectedSampleData = samples.find(sample => sample.value === selectedSample);
+    const trackId = selectedSampleData ? selectedSampleData.id : null;
+
+    if (!trackId) {
+      alert('Track ID not found for the selected sample.');
+      return;
+    }
+
     try {
       const libraryTrack = await fetchLibraryTrack(trackId);
 
       if (libraryTrack.__typename === 'LibraryTrack') {
-        const { genreTags, transformerCaption } = libraryTrack.audioAnalysisV6.result;
+        const { genreTags, transformerCaption, moodTags } = libraryTrack.audioAnalysisV6.result;
         console.log('Genre Tags:', genreTags);
         console.log('Transformer Caption:', transformerCaption);
-        alert(`Genre Tags: ${genreTags.join(', ')}\nTransformer Caption: ${transformerCaption}`);
+        console.log('Mood Tags:', moodTags);
+        alert(`Genre Tags: ${genreTags.join(', ')}\nTransformer Caption: ${transformerCaption}\nMood Tags: ${moodTags.join(', ')}`);
       } else if (libraryTrack.__typename === 'LibraryTrackNotFoundError') {
         console.error('Error:', libraryTrack.message);
         alert(`Error: ${libraryTrack.message}`);
@@ -186,10 +200,15 @@ const MusicifyModal = ({ onClose }) => {
           </audio>
         )}
 
-        {/* Close button */}
-        <button onClick={onClose} className="btn btn-primary mt-4">
-          Close
-        </button>
+        {/* Buttons */}
+        <div className="flex justify-end mt-4">
+          <button onClick={handleAnalyzeTrack} className="btn btn-secondary mr-2">
+            Analyze
+          </button>
+          <button onClick={onClose} className="btn btn-primary">
+            Close
+          </button>
+        </div>
       </div>
     </div>
   );
