@@ -15,6 +15,12 @@ const MusicifyModal = ({ onClose }) => {
   const [selectedSample, setSelectedSample] = useState('');
   const [audioSrc, setAudioSrc] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [samples, setSamples] = useState([
+    { name: 'All That', value: 'allthat.mp3', id: '19225501' },
+    { name: 'Common Ground', value: 'common-ground.mp3', id: '19225504' },
+    { name: 'Keep It Real', value: 'keepitreal.mp3', id: '19225503' },
+    { name: 'Private Party', value: 'private-party.mp3', id: '19225502' },
+  ]);
   const audioRef = useRef(null);
 
   /**
@@ -38,24 +44,30 @@ const MusicifyModal = ({ onClose }) => {
         console.log('Upload URL:', uploadUrl);
 
         // Step 2: Upload the file
-        // await uploadFile(uploadUrl, file);
-        // console.log('File uploaded successfully.');
+        await uploadFile(uploadUrl, file);
+        console.log('File uploaded successfully.');
 
-        // // Step 3: Create a library track
-        // const libraryTrackCreate = await createLibraryTrack(id, file.name);
+        // Step 3: Create a library track
+        const libraryTrackCreate = await createLibraryTrack(id, file.name);
 
-        // if (libraryTrackCreate.__typename === 'LibraryTrackCreateSuccess') {
-        //   const { id: trackId } = libraryTrackCreate.createdLibraryTrack;
-        //   console.log('Library Track Created Successfully. Track ID:', trackId);
-        //   alert(`Library Track Created Successfully. Track ID: ${trackId}`);
-        // } else if (libraryTrackCreate.__typename === 'LibraryTrackCreateError') {
-        //   const { code, message } = libraryTrackCreate;
-        //   console.error('Error creating library track:', code, message);
-        //   alert(`Error creating library track: ${message}`);
-        // } else {
-        //   console.error('Unexpected response:', libraryTrackCreate);
-        //   alert('Unexpected response. Please check the console for more details.');
-        // }
+        if (libraryTrackCreate.__typename === 'LibraryTrackCreateSuccess') {
+          const { id: trackId } = libraryTrackCreate.createdLibraryTrack;
+          console.log('Library Track Created Successfully. Track ID:', trackId);
+          alert(`Library Track Created Successfully. Track ID: ${trackId}`);
+
+          // Add the new track to the samples list
+          setSamples((prevSamples) => [
+            ...prevSamples,
+            { name: file.name, value: file.name, id: trackId },
+          ]);
+        } else if (libraryTrackCreate.__typename === 'LibraryTrackCreateError') {
+          const { code, message } = libraryTrackCreate;
+          console.error('Error creating library track:', code, message);
+          alert(`Error creating library track: ${message}`);
+        } else {
+          console.error('Unexpected response:', libraryTrackCreate);
+          alert('Unexpected response. Please check the console for more details.');
+        }
       } catch (error) {
         console.error('Error uploading file:', error);
         alert('Error uploading file. Please try again later.');
@@ -102,11 +114,10 @@ const MusicifyModal = ({ onClose }) => {
       const libraryTrack = await fetchLibraryTrack(trackId);
 
       if (libraryTrack.__typename === 'LibraryTrack') {
-        const { genreTags, transformerCaption, moodTags } = libraryTrack.audioAnalysisV6.result;
+        const { genreTags, transformerCaption } = libraryTrack.audioAnalysisV6.result;
         console.log('Genre Tags:', genreTags);
         console.log('Transformer Caption:', transformerCaption);
-        console.log('Mood Tags:', moodTags);
-        alert(`Genre Tags: ${genreTags.join(', ')}\nTransformer Caption: ${transformerCaption}\nMood Tags: ${moodTags.join(', ')}`);
+        alert(`Genre Tags: ${genreTags.join(', ')}\nTransformer Caption: ${transformerCaption}`);
       } else if (libraryTrack.__typename === 'LibraryTrackNotFoundError') {
         console.error('Error:', libraryTrack.message);
         alert(`Error: ${libraryTrack.message}`);
@@ -119,14 +130,6 @@ const MusicifyModal = ({ onClose }) => {
       alert('Error fetching library track. Please try again later.');
     }
   };
-
-  // Available samples
-  const samples = [
-    { name: 'All That', value: 'allthat.mp3', id: '19225501' },
-    { name: 'Common Ground', value: 'common-ground.mp3', id: '19225504' },
-    { name: 'Keep It Real', value: 'keepitreal.mp3', id: '19225503' },
-    { name: 'Private Party', value: 'private-party.mp3', id: '19225502' },
-  ];
 
   useEffect(() => {
     // Cleanup URL object for the uploaded file
