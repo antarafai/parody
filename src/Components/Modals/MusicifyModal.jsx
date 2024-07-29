@@ -21,7 +21,9 @@ const MusicifyModal = ({ onClose }) => {
     { name: 'Keep It Real', value: 'keepitreal.mp3', id: '19225503' },
     { name: 'Private Party', value: 'private-party.mp3', id: '19225502' },
   ]);
+  const [analysisResult, setAnalysisResult] = useState(null);
   const audioRef = useRef(null);
+  const server_url = 'http://localhost:5000';
 
   /**
    * Handles the change event when a file is selected.
@@ -117,8 +119,11 @@ const MusicifyModal = ({ onClose }) => {
         const { genreTags, transformerCaption, moodTags } = libraryTrack.audioAnalysisV6.result;
         console.log('Genre Tags:', genreTags);
         console.log('Transformer Caption:', transformerCaption);
-        console.log('Mood Tags:', libraryTrack.audioAnalysisV6.result.moodTags);
+        console.log('Mood Tags:', moodTags);
         alert(`Genre Tags: ${genreTags.join(', ')}\nTransformer Caption: ${transformerCaption}\nMood Tags: ${moodTags.join(', ')}`);
+
+        // Store analysis result in state
+        setAnalysisResult({ genreTags, transformerCaption, moodTags });
       } else if (libraryTrack.__typename === 'LibraryTrackNotFoundError') {
         console.error('Error:', libraryTrack.message);
         alert(`Error: ${libraryTrack.message}`);
@@ -129,6 +134,38 @@ const MusicifyModal = ({ onClose }) => {
     } catch (error) {
       console.error('Error fetching library track:', error);
       alert('Error fetching library track. Please try again later.');
+    }
+  };
+
+  /**
+   * Handles the generation action.
+   */
+  const handleGenerate = async () => {
+    if (!analysisResult) {
+      alert('Please analyze a track before generating.');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${server_url}/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(analysisResult),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log('Generate API result:', result);
+      alert('Generation request completed successfully.');
+    } catch (error) {
+      console.error('Error generating content:', error);
+      alert('Error generating content. Please try again later.');
     }
   };
 
@@ -208,6 +245,9 @@ const MusicifyModal = ({ onClose }) => {
         <div className="flex justify-end mt-4">
           <button onClick={handleAnalyzeTrack} className="btn btn-secondary mr-2">
             Analyze
+          </button>
+          <button onClick={handleGenerate} className="btn btn-secondary mr-2">
+            Generate
           </button>
           <button onClick={onClose} className="btn btn-primary">
             Close
