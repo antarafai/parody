@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { fetchFileUploadRequest, uploadFile, createLibraryTrack, fetchLibraryTrack } from '../Music/api';
 
 /**
  * A modal component for the Musicify feature.
@@ -15,8 +16,6 @@ const MusicifyModal = ({ onClose }) => {
   const [audioSrc, setAudioSrc] = useState('');
   const [uploading, setUploading] = useState(false);
   const audioRef = useRef(null);
-  const music_url = 'https://api.cyanite.ai/graphql';
-  const token = '<token>';
 
   /**
    * Handles the change event when a file is selected.
@@ -33,111 +32,22 @@ const MusicifyModal = ({ onClose }) => {
       try {
         setUploading(true);
 
-        // Execute the file upload request mutation
-        const fileUploadMutation = `
-          mutation FileUploadRequestMutation {
-            fileUploadRequest {
-              id
-              uploadUrl
-            }
-          }
-        `;
-
-        const response = await fetch(music_url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify({ query: fileUploadMutation }),
-        });
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-        }
-
-        const responseData = await response.json();
-
-        if (responseData.errors) {
-          console.error('GraphQL errors:', responseData.errors);
-          alert('Error requesting file upload URL. Please check the console for more details.');
-          return;
-        }
-
-        const { id, uploadUrl } = responseData.data.fileUploadRequest;
+        // Step 1: Request file upload URL
+        const { id, uploadUrl } = await fetchFileUploadRequest();
         console.log('Upload ID:', id);
         console.log('Upload URL:', uploadUrl);
 
-        // Now upload the file to the obtained upload URL
-        const fileBody = await file.arrayBuffer(); // Read the file as an array buffer
-        const uploadResponse = await fetch(uploadUrl, {
-          method: 'PUT',
-          body: fileBody,
-          headers: {
-            'Content-Type': 'audio/mpeg', // Assuming the file type is audio/mpeg, adjust if necessary
-          },
-        });
+        // Step 2: Upload the file
+        await uploadFile(uploadUrl, file);
+        console.log('File uploaded successfully.');
 
-        if (!uploadResponse.ok) {
-          const errorText = await uploadResponse.text();
-          throw new Error(`HTTP error! status: ${uploadResponse.status}, message: ${errorText}`);
-        }
+        // Step 3: Create a library track
+        const libraryTrackCreate = await createLibraryTrack(id, file.name);
 
-        console.log('File uploaded successfully:', await uploadResponse.text());
-
-        // Create a library track using the uploaded file
-        const libraryTrackCreateMutation = `
-          mutation LibraryTrackCreateMutation($input: LibraryTrackCreateInput!) {
-            libraryTrackCreate(input: $input) {
-              __typename
-              ... on LibraryTrackCreateSuccess {
-                createdLibraryTrack {
-                  id
-                }
-              }
-              ... on LibraryTrackCreateError {
-                code
-                message
-              }
-            }
-          }
-        `;
-
-        const variables = {
-          input: {
-            uploadId: id,
-            title: file.name,
-          },
-        };
-
-        const createTrackResponse = await fetch(music_url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify({ query: libraryTrackCreateMutation, variables }),
-        });
-
-        if (!createTrackResponse.ok) {
-          const errorText = await createTrackResponse.text();
-          throw new Error(`HTTP error! status: ${createTrackResponse.status}, message: ${errorText}`);
-        }
-
-        const createTrackResponseData = await createTrackResponse.json();
-
-        if (createTrackResponseData.errors) {
-          console.error('GraphQL errors:', createTrackResponseData.errors);
-          alert('Error creating library track. Please check the console for more details.');
-          return;
-        }
-
-        const libraryTrackCreate = createTrackResponseData.data.libraryTrackCreate;
         if (libraryTrackCreate.__typename === 'LibraryTrackCreateSuccess') {
-          const { id } = libraryTrackCreate.createdLibraryTrack;
-          console.log('Library Track Created Successfully. Track ID:', id);
-          alert(`Library Track Created Successfully. Track ID: ${id}`);
+          const { id: trackId } = libraryTrackCreate.createdLibraryTrack;
+          console.log('Library Track Created Successfully. Track ID:', trackId);
+          alert(`Library Track Created Successfully. Track ID: ${trackId}`);
         } else if (libraryTrackCreate.__typename === 'LibraryTrackCreateError') {
           const { code, message } = libraryTrackCreate;
           console.error('Error creating library track:', code, message);
@@ -175,65 +85,20 @@ const MusicifyModal = ({ onClose }) => {
    * @param {string} trackId - The ID of the track to analyze.
    */
   const handleAnalyzeTrack = async (trackId) => {
-    const query = `
-      query LibraryTrackQuery($id: ID!) {
-        libraryTrack(id: $id) {
-          __typename
-          ... on LibraryTrack {
-            id
-            audioAnalysisV6 {
-              __typename
-              ... on AudioAnalysisV6Finished {
-                result {
-                  genreTags
-                  transformerCaption
-                }
-              }
-            }
-          }
-          ... on LibraryTrackNotFoundError {
-            message
-          }
-        }
-      }
-    `;
-
-    const variables = { id: trackId };
-
     try {
-      const response = await fetch(music_url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ query, variables }),
-      });
+      const libraryTrack = await fetchLibraryTrack(trackId);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-      }
-
-      const responseData = await response.json();
-
-      if (responseData.errors) {
-        console.error('GraphQL errors:', responseData.errors);
-        alert('Error fetching library track. Please check the console for more details.');
+      if (libraryTrack.__typename === 'LibraryTrack') {
+        const { genreTags, transformerCaption } = libraryTrack.audioAnalysisV6.result;
+        console.log('Genre Tags:', genreTags);
+        console.log('Transformer Caption:', transformerCaption);
+        alert(`Genre Tags: ${genreTags.join(', ')}\nTransformer Caption: ${transformerCaption}`);
+      } else if (libraryTrack.__typename === 'LibraryTrackNotFoundError') {
+        console.error('Error:', libraryTrack.message);
+        alert(`Error: ${libraryTrack.message}`);
       } else {
-        const libraryTrack = responseData.data.libraryTrack;
-        if (libraryTrack.__typename === 'LibraryTrack') {
-          const { genreTags, transformerCaption } = libraryTrack.audioAnalysisV6.result;
-          console.log('Genre Tags:', genreTags);
-          console.log('Transformer Caption:', transformerCaption);
-          alert(`Genre Tags: ${genreTags.join(', ')}\nTransformer Caption: ${transformerCaption}`);
-        } else if (libraryTrack.__typename === 'LibraryTrackNotFoundError') {
-          console.error('Error:', libraryTrack.message);
-          alert(`Error: ${libraryTrack.message}`);
-        } else {
-          console.error('Unexpected response:', libraryTrack);
-          alert('Unexpected response. Please check the console for more details.');
-        }
+        console.error('Unexpected response:', libraryTrack);
+        alert('Unexpected response. Please check the console for more details.');
       }
     } catch (error) {
       console.error('Error fetching library track:', error);
