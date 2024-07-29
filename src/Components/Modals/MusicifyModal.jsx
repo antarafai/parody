@@ -23,7 +23,7 @@ const MusicifyModal = ({ onClose }) => {
   ]);
   const [analysisResult, setAnalysisResult] = useState(null);
   const audioRef = useRef(null);
-  const server_url = 'http://localhost:5000';
+  const server_url = 'http://127.0.0.1:5000';
 
   /**
    * Handles the change event when a file is selected.
@@ -89,7 +89,6 @@ const MusicifyModal = ({ onClose }) => {
   const handleSampleChange = async (e) => {
     const selectedSampleValue = e.target.value;
     setSelectedSample(selectedSampleValue);
-    setSelectedFile(null); // Clear selected file
 
     const selectedSampleData = samples.find(sample => sample.value === selectedSampleValue);
 
@@ -101,7 +100,9 @@ const MusicifyModal = ({ onClose }) => {
     if (selectedSampleData.isCustom) {
       // Load custom track from its original file path
       setAudioSrc(selectedSampleData.filePath);
+      setSelectedFile(selectedSampleData.filePath); // Keep track of the custom file
     } else {
+      setSelectedFile(null); // Clear selected file if a predefined sample is selected
       try {
         // Fetch the sample file data
         const response = await fetch(`/sample-music/${selectedSampleValue}`);
@@ -172,12 +173,29 @@ const MusicifyModal = ({ onClose }) => {
     try {
       const formData = new FormData();
       if (selectedFile) {
-        formData.append('file', selectedFile);
+        if (typeof selectedFile === 'string') {
+          console.log('Fetching blob for custom file path:', selectedFile);
+          // If selectedFile is a custom file path (string), fetch the blob
+          const response = await fetch(selectedFile);
+          const blob = await response.blob();
+          formData.append('file_from_react', blob, selectedSample);
+        } else {
+          formData.append('file', selectedFile);
+        }
       } else if (selectedSample) {
-        // Fetch the sample file data and append it to the form data
-        const response = await fetch(`/sample-music/${selectedSample}`);
-        const blob = await response.blob();
-        formData.append('file_from_react', blob, selectedSample);
+        const selectedSampleData = samples.find(sample => sample.value === selectedSample);
+        if (selectedSampleData.isCustom) {
+          console.log('Fetching blob for selected custom sample:', selectedSampleData.filePath);
+          const response = await fetch(selectedSampleData.filePath);
+          const blob = await response.blob();
+          formData.append('file_from_react', blob, selectedSample);
+        } else {
+          console.log('Fetching blob for selected predefined sample:', selectedSample);
+          // Fetch the sample file data and append it to the form data
+          const response = await fetch(`/sample-music/${selectedSample}`);
+          const blob = await response.blob();
+          formData.append('file_from_react', blob, selectedSample);
+        }
       }
       formData.append('analysisResult', JSON.stringify(analysisResult));
 
@@ -186,6 +204,7 @@ const MusicifyModal = ({ onClose }) => {
         console.log(`${pair[0]}: ${pair[1]}`);
       }
 
+      console.log('Sending request to /generate with formData:');
       const response = await fetch(`${server_url}/generate`, {
         method: 'POST',
         body: formData,
@@ -208,7 +227,7 @@ const MusicifyModal = ({ onClose }) => {
   useEffect(() => {
     // Cleanup URL object for the uploaded file
     return () => {
-      if (selectedFile) {
+      if (selectedFile && typeof selectedFile !== 'string') {
         URL.revokeObjectURL(audioSrc);
       }
     };
@@ -239,7 +258,7 @@ const MusicifyModal = ({ onClose }) => {
             onChange={handleFileChange}
             disabled={uploading}
           />
-          {selectedFile && (
+          {selectedFile && typeof selectedFile !== 'string' && (
             <p className="text-black mt-2">
               Selected file: {selectedFile.name}
             </p>
