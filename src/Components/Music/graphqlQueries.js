@@ -38,6 +38,7 @@ export const libraryTrackQuery = `
             result {
               genreTags
               transformerCaption
+              moodTags
             }
           }
         }
