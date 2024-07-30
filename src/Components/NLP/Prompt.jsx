@@ -62,8 +62,9 @@ const runPrompt2 = async (prompt1, filesString) => {
   try {
     const formattedPrompt = `Available dance motions: ${filesString}\n\nExtract the key dance motions from the following sentence and return only the motion array.`;
 
-    console.log(formattedPrompt);
-
+    console.log("Formatted Prompt:", formattedPrompt);
+    console.log("Prompt1:", prompt1);
+    console.log("Files String:", filesString);
     const response = await fetch(
       inference_endpoint,
       {
@@ -76,7 +77,7 @@ const runPrompt2 = async (prompt1, filesString) => {
           messages: [
             {
               role: 'system',
-              content: 'Analyse the mood, genres and accordingly, matching these, extract the key relevant dance motions available and return only the motion array in the format ["motion1", "motion2", ...]. Do not include any additional text or characters, not even introductory phrases or explanations.'
+              content: 'Analyse the mood, genres and short description of the song, and accordingly, matching these properties, extract only the key relevant dance motions (try to be very relevant and specific, rather than generalising) available and return only the motion array in the format ["motion1", "motion2", ...]. Do not include any additional text or characters, not even introductory phrases or explanations.'
             },
             {
               role: 'user',
