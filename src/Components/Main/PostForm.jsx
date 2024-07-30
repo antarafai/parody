@@ -121,7 +121,7 @@ const PostForm = ({ onPostSubmit, setProgressBar, initialMediaUrl, metadataUrl }
         ></Avatar>
         <form className="w-full" onSubmit={handleSubmitPost}>
           <div className="flex justify-between items-center">
-            <div className="w-full ml-4">
+            <div className="w-full ml-4 text-accent">
               <input
                 type="text"
                 name="text"
@@ -129,7 +129,7 @@ const PostForm = ({ onPostSubmit, setProgressBar, initialMediaUrl, metadataUrl }
                   user?.displayName?.split(" ")[0] ||
                   userData?.name?.charAt(0).toUpperCase() + userData?.name?.slice(1)
                 }`}
-                className="outline-none w-full bg-white rounded-md"
+                className="outline-none w-full bg-black text-accent rounded-md"
                 ref={text}
               ></input>
             </div>

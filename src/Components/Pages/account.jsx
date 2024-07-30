@@ -9,8 +9,9 @@ export function Account() {
   return (
     <div>
       {ensAvatar && <img alt="ENS Avatar" src={ensAvatar} />}
+      Wallet Address:
       {address && <div>{ensName ? `${ensName} (${address})` : address}</div>}
-      <button onClick={() => disconnect()}>Disconnect</button>
+      <button className="font-orbitron" onClick={() => disconnect()}>Disconnect</button>
     </div>
   )
 }

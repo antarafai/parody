@@ -1,7 +1,11 @@
-import { useWeb3Modal, createWeb3Modal, defaultConfig } from '@web3modal/ethers/react'
-import React from 'react'
-import { ConnectWallet } from '../../App'
-import  MintNFT  from './mint-nft'
+import { useWeb3Modal, createWeb3Modal, defaultConfig } from '@web3modal/ethers/react';
+import React from 'react';
+import { ConnectWallet } from '../../App';
+import etherLogo from '../../assets/images/etherLogo.png';
+import theta from '../../assets/images/theta.png';
+import walletconnect from '../../assets/images/walletconnect.png';
+import metamask from '../../assets/images/metamask.png';
+import coinbase from '../../assets/images/coinbase.png';
 
 const projectId = '6edbdfe6202f9696377b991124957015';
 
@@ -30,7 +34,6 @@ const ethersConfig = defaultConfig({
     defaultChainId: 365
 });
 
-
 // 5. Create a Web3Modal instance
 createWeb3Modal({
     ethersConfig,
@@ -39,6 +42,8 @@ createWeb3Modal({
     enableAnalytics: true,
     defaultChain: testnet
 });
+
+const logos = [etherLogo, theta, walletconnect, metamask, coinbase];
 
 function WalletFunctions() {
     const { open } = useWeb3Modal();
@@ -52,12 +57,15 @@ function WalletFunctions() {
     };
 
     return (
-        <div style={{ marginTop: '100px' }}>
-            <ConnectWallet />
-            <div style={{ marginTop: '40px' }}>
-                <button style={{ marginRight: '200px' }} onClick={handleOpenModal}>Open Connect Modal</button>
-                <button style={{ marginRight: '200px' }} onClick={() => open({ view: 'Networks' })}>Open Network Modal</button>
-            </div>
+        <div className="flex flex-col" style={{ display:'flex', marginTop: '50px', justifyContent: 'center'}}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom:'-100px'}}>
+                <div>
+                <ConnectWallet />
+                </div>
+            </div> 
+            
+            <button className="font-orbitron" style={{ marginTop: '-150px'}}  onClick={() => open({ view: 'Networks' })}>View Networks</button>
+
         </div>
     );
 };

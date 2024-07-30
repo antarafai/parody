@@ -11,6 +11,19 @@
   font-family: 'Orbitron', sans-serif;
 }
 
+/* WalletOptions.css */
+.wallet-options-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.wallet-option {
+  margin-bottom: 10px;
+}
+
 .font-orbitron-small {
   font-family: 'Orbitron', sans-serif;
   font-size:0.6rem
@@ -115,6 +128,10 @@
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
+
+.animate-float-wallets {
+  animation: float var(--float-duration, 3s) ease-in-out infinite;
+}
 .glow {
   box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
 }
@@ -129,6 +146,47 @@
   }
   50% {
       transform: translateY(-10px);
+  }
+}
+
+.orbiting-logo {
+  position: absolute;
+  width: 200px;
+  height: auto;
+  animation: orbit 20s linear infinite;
+}
+
+.orbiting-logo-0 {
+  animation-delay: 0s;
+}
+
+.orbiting-logo-1 {
+  animation-delay: 4s;
+}
+
+.orbiting-logo-2 {
+  animation-delay: 8s;
+}
+
+.orbiting-logo-3 {
+  animation-delay: 12s;
+}
+
+.orbiting-logo-4 {
+  animation-delay: 16s;
+}
+
+.custom-logo {
+  width: 100px; /* Adjust the width as needed */
+  height: auto; /* Adjust the height as needed */
+}
+
+@keyframes orbit {
+  0% {
+      transform: rotate(0deg) translateX(400px) rotate(0deg);
+  }
+  100% {
+      transform: rotate(360deg) translateX(400px) rotate(-360deg);
   }
 }
 

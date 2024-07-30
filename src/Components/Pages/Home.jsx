@@ -1,7 +1,6 @@
 import React from "react";
 import LeftSide from "../LeftSidebar/LeftSide";
 import CardSection from "../Main/CardSection";
-import Navbar from "../Navbar/Navbar";
 import RightSide from "../RightSidebar/RightSide";
 import Main from "../Main/Main";
 

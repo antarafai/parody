@@ -14,6 +14,7 @@ import * as Yup from "yup";
 import ClipLoader from "react-spinners/ClipLoader";
 import { AuthContext } from "../AppContext/AppContext";
 import { auth, onAuthStateChanged } from "../firebase/firebase";
+import parodyLogo from "../../assets/images/parodyLogo.png";
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
@@ -70,17 +71,14 @@ const Login = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 h-screen justify-items-center items-center">
-          <Card className="w-96">
-            <CardHeader
-              variant="gradient"
-              color="blue"
-              className="mb-4 grid h-28 place-items-center"
-            >
-              <Typography variant="h3" color="white">
-                LOGIN
-              </Typography>
-            </CardHeader>
-            <CardBody className="flex flex-col gap-4">
+          <Card className="w-96 bg-black">
+              <div className="flex items-center" style={{marginLeft:'40px'}}>
+                <img src={parodyLogo} alt="" className="w-40 h-auto m-0" style={{ marginRight: '-70px', marginBottom: '-20px' , marginTop:'-50px'}} />
+                <div className="text-3xl text-white font-orbitron glitch" style={{ marginBottom: '-10px' }}>
+                arody
+              </div>
+              </div>
+            <CardBody className="flex flex-col justify-center items-centergap-4">
               <form onSubmit={handleSubmit}>
                 <div className="mb-2">
                   <Input
@@ -114,34 +112,32 @@ const Login = () => {
                     )}
                   </div>
                 </div>
-                <Button
-                  variant="gradient"
-                  fullWidth
-                  className="mb-4"
+                <button
+                  className="btn btn-sm mb-4 bg-accent text-black font-thin"
+                  style={{ marginLeft: "110px", width: "100px" }}
                   type="submit"
                 >
                   Login
-                </Button>
+                </button>
               </form>
             </CardBody>
             <CardFooter className="pt-0">
-              <Button
-                variant="gradient"
-                fullWidth
-                className="mb-4"
+              <button
+                className="mb-4 text-center font-orbitron text-accent font-thin"
+                style={{ marginLeft: "90px" }}
                 onClick={signInWithGoogle}
               >
                 Sign In with Google
-              </Button>
+              </button>
               <Link to="/reset">
-                <p className="ml-1 font-bold font-roboto text-sm text-blue-500 text-center ">
+                <p className="ml-0 font-bold font-orbitron font-thin text-xs text-yellow-500 text-center ">
                   Reset the password
                 </p>
               </Link>
-              <div className="mt-6 flex items-center font-roboto text-base justify-center">
+              <div className="mt-6 flex items-center text-xs font-orbitron text-yellow-200 justify-center">
                 Don't have an account?
                 <Link to="/register">
-                  <p className="ml-1 font-bold font-roboto text-sm text-blue-500 text-center ">
+                  <p className="ml-1 font-bold font-orbitron text-sm text-accent text-center ">
                     Register
                   </p>
                 </Link>

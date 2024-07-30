@@ -56,9 +56,9 @@ class ConfigModal extends Component {
 
     render() {
         return (
-            <div className="modal modal-open">
+            <div className="modal bg-black glow bg-opacity-70 modal-open">
                 <div className="modal-box">
-                    <h2 className="text-xl font-bold mb-4">Configuration</h2>
+                    <h2 className="text-2xl font-orbitron text-accent font-bold mb-4">Configuration</h2>
                     <div className="space-y-4">
                         <input
                             type="text"
@@ -66,18 +66,18 @@ class ConfigModal extends Component {
                             value={this.state.input1}
                             onChange={this.handleInputChange}
                             placeholder="Number of Frames"
-                            className="input input-bordered w-full"
+                            className="input font-orbitron font-thin text-xs text-yellow-200 input-bordered w-full"
                         />
                     </div>
                     <div className="modal-action">
                         <button 
                             onClick={this.handleConfirm} 
-                            className="btn btn-primary">
-                            Confirm
+                            className="btn bg-accent font-orbitron font-thin text-black">
+                            CONFIRM
                         </button>
                         <button 
                             onClick={() => this.props.onClose()} // Assuming there's a prop to close the modal
-                            className="btn">
+                            className="btn bg-neutral font-orbitron font-thin text-xs text-red-800">
                             Cancel
                         </button>
                     </div>
