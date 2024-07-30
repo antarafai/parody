@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import HlsPlayer from '../VideoPlayer/HlsPlayer';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
 import PostForm from '../Main/PostForm';
 
 const PreviewModal = ({ onClose, frameCount }) => {
   const [videoUrl, setVideoUrl] = useState(null);
-  const [firebaseUrl, setFirebaseUrl] = useState(null);
+  const [metadataUrl, setMetadataUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [progressBar, setProgressBar] = useState(0);
   const [isPostFormOpen, setIsPostFormOpen] = useState(false);
@@ -60,9 +61,10 @@ const PreviewModal = ({ onClose, frameCount }) => {
 
   const uploadBytestream = async (blob) => {
     const storage = getStorage();
-    const storageRef = ref(storage, `videos/${new Date().getTime()}.mp4`);
+    const uniqueID = new Date().getTime();
+    const videoStorageRef = ref(storage, `videos/${uniqueID}.mp4`);
     
-    const uploadTask = uploadBytesResumable(storageRef, blob);
+    const uploadTask = uploadBytesResumable(videoStorageRef, blob);
 
     uploadTask.on(
       "state_changed",
@@ -75,10 +77,60 @@ const PreviewModal = ({ onClose, frameCount }) => {
       },
       async () => {
         const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-        console.log("Uploaded firebase URL:", downloadURL);
-        setFirebaseUrl(downloadURL); // Optionally update the video URL with the Firebase storage URL
+        console.log("Uploaded firebase URL in PreviewModal:", downloadURL);
+        // Create and upload metadata.json file with the video URL
+        await uploadMetadata(uniqueID, downloadURL);
       }
     );
+  };
+
+  const uploadMetadata = async (uniqueID, firebaseUrl) => {
+    const storage = getStorage();
+    const metadataStorageRef = ref(storage, `metadata/${uniqueID}.json`);
+
+    const metadata = {
+      name: "Video NFT",
+      description: "An NFT with a video",
+      video: firebaseUrl
+    };
+
+    const metadataBlob = new Blob([JSON.stringify(metadata)], { type: 'application/json' });
+
+    const uploadTask = uploadBytesResumable(metadataStorageRef, metadataBlob);
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        setProgressBar(progress);
+      },
+      (error) => {
+        console.error("Metadata upload failed:", error);
+      },
+      async () => {
+        const metadataDownloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+        setMetadataUrl(metadataDownloadURL);
+        console.log("Uploaded metadata URL:", metadataDownloadURL);
+        // Store metadata in Firestore
+        await storeMetadataInFirestore(uniqueID, firebaseUrl, metadataDownloadURL);
+      }
+    );
+  };
+
+  const storeMetadataInFirestore = async (uniqueID, videoUrl, metadataUrl) => {
+    const db = getFirestore();
+    try {
+      await addDoc(collection(db, "videos"), {
+        id: uniqueID,
+        videoUrl: videoUrl,
+        metadataUrl: metadataUrl,
+        name: "Video NFT",
+        description: "An NFT with a video"
+      });
+      console.log("Metadata stored in Firestore");
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
   };
 
   const handlePostClick = () => {
@@ -105,11 +157,13 @@ const PreviewModal = ({ onClose, frameCount }) => {
             <button onClick={onClose} className="btn-accent mt-4 p-2 bg-blue-500 text-white rounded">Download</button>
           </div>
         ) : (
-          <PostForm onPostSubmit={() => { setIsPostFormOpen(false); onClose(); }} setProgressBar={setProgressBar} initialMediaUrl={initialMediaUrl} />
+          <PostForm onPostSubmit={() => { setIsPostFormOpen(false); onClose(); }} setProgressBar={setProgressBar} initialMediaUrl={initialMediaUrl} metadataUrl = {metadataUrl} />
         )}
       </div>
     </div>
   );
 };
+
+// videoUrl-> initialMediaUrl for PostForm
 
 export default PreviewModal;

@@ -12,7 +12,7 @@ const Home = () => {
         <div className="flex-auto w-[20%] fixed top-12">
           <LeftSide></LeftSide>
         </div>
-        <div className="flex-auto w-[60%] absolute left-[20%] top-14 bg-black rounded-xl">
+        <div className="flex-auto w-[60%] absolute left-[20%] top-14 bg-neutral rounded-xl">
           <div className="w-[80%] mx-auto">
             <CardSection></CardSection>
             <Main></Main>

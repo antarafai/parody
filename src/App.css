@@ -108,26 +108,17 @@
   }
 }
 
-.spotlight {
-  position: absolute;
-  bottom: 0;
-  width: 100px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(255,255,255,0.6) 20%, rgba(255,255,255,0) 70%);
-  pointer-events: none;
-}
-.spotlight.left-0 {
-  left: 10%;
-}
-.spotlight.right-0 {
-  right: 10%;
-}
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
 .glow {
   box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
 }
+
+.glow-card {
+  box-shadow: 0 0 15px rgba(255, 206, 28, 0.6);
+}
+
 @keyframes float {
   0%, 100% {
       transform: translateY(0);
@@ -136,5 +127,6 @@
       transform: translateY(-10px);
   }
 }
+
 
 

@@ -1,3 +1,5 @@
+export const contractAddress = "0xcd84b4c4e967e0fb7d42c1637bafbd90f63bf952"
+
 export const nftABI = [
 	{
 		"inputs": [
