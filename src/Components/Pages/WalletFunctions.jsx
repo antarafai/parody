@@ -54,7 +54,6 @@ function WalletFunctions() {
     return (
         <div style={{ marginTop: '100px' }}>
             <ConnectWallet />
-            <MintNFT />
             <div style={{ marginTop: '40px' }}>
                 <button style={{ marginRight: '200px' }} onClick={handleOpenModal}>Open Connect Modal</button>
                 <button style={{ marginRight: '200px' }} onClick={() => open({ view: 'Networks' })}>Open Network Modal</button>

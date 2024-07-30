@@ -193,7 +193,22 @@ const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestam
           </div>
          
           
-          {minted && 
+          {minted && user?.uid === uid &&
+          
+          <div className="text-xs font-orbitron-small" style={{marginRight:'-230px'}}>
+          <img src={thetaNFTbadge2} alt="" className="" style={{ 
+              width: '90px', 
+              height: 'auto', 
+              marginTop: '-30px',
+              marginRight: '-20px', 
+              marginLeft: '-16px',
+              marginBottom: '-7px' 
+            }}  
+          />
+          
+           NFT
+          </div>}
+          {minted && user?.uid !== uid &&
           
           <div className="text-xs font-orbitron-small" style={{marginRight:'-30px'}}>
           <img src={thetaNFTbadge2} alt="" className="" style={{ 
