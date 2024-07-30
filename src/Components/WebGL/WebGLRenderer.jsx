@@ -12,7 +12,7 @@ const WebGLRenderer = ({ progressBarRef, modelPaths }) => {
     const mount = mountRef.current;
 
     // Flash logic
-    const flashInterval = setInterval(() => {
+    /*const flashInterval = setInterval(() => {
       const flashElement = document.createElement("div");
       flashElement.className = "flash-animation";
       mountRef.current.appendChild(flashElement);
@@ -22,7 +22,7 @@ const WebGLRenderer = ({ progressBarRef, modelPaths }) => {
       setTimeout(() => {
         mountRef.current.removeChild(flashElement);
       }, 1000); // Flash duration
-    }, 3000); // Flash interval
+    }, 3000); // Flash interval*/
 
     // Scene setup
     const scene = new THREE.Scene();
@@ -239,7 +239,7 @@ const WebGLRenderer = ({ progressBarRef, modelPaths }) => {
     // Clean up the scene when the component unmounts
     return () => {
       window.removeEventListener('resize', onWindowResize);
-      clearInterval(flashInterval);
+      //clearInterval(flashInterval);
       if (renderer.domElement.parentNode === mount) {
         mount.removeChild(renderer.domElement);
       }

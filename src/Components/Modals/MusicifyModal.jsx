@@ -216,13 +216,13 @@ const MusicifyModal = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-      <div className="bg-white p-4 rounded shadow-lg w-full max-w-md">
-        <h2 className="text-xl text-black mb-4">Musicify Feature</h2>
-        <p className="text-black mb-4">Welcome to the Musicify feature!</p>
+      <div className="bg-black bg-opacity-25 glow rounded-xl p-4 rounded shadow-lg w-full max-w-md">
+        <h2 className="text-2xl font-orbitron font-bold text-accent mb-4">Musicify Feature</h2>
+        <p className="text-yellow-200 font-thin  font-orbitron text-xs mb-4">Welcome to the Musicify feature!</p>
 
         {/* File upload */}
         <div className="mb-4">
-          <label className="block text-black mb-2" htmlFor="music-upload">
+          <label className="block text-accent font-bold font-orbitron text-sm mb-2" htmlFor="music-upload">
             Upload Custom Music:
           </label>
           <input
@@ -234,7 +234,7 @@ const MusicifyModal = ({ onClose }) => {
             disabled={uploading}
           />
           {selectedFile && typeof selectedFile !== 'string' && (
-            <p className="text-black mt-2">
+            <p className="text-yellow-800 text-xs font-orbitron font-thin mt-2">
               Selected file: {selectedFile.name}
             </p>
           )}
@@ -242,7 +242,7 @@ const MusicifyModal = ({ onClose }) => {
 
         {/* Sample selection */}
         <div className="mb-4">
-          <label className="block text-black mb-2" htmlFor="music-samples">
+          <label className="block text-accent font-bold font-orbitron text-sm mb-2" htmlFor="music-samples">
             Choose from Samples:
           </label>
           <select
@@ -251,7 +251,7 @@ const MusicifyModal = ({ onClose }) => {
             value={selectedSample}
             onChange={handleSampleChange}
           >
-            <option value="">Select a sample</option>
+            <option className="text-accent font-thin font-orbitron text-xs" value="">Select a sample</option>
             {samples.map((sample) => (
               <option key={sample.value} value={sample.value}>
                 {sample.name} (ID: {sample.id})
@@ -259,7 +259,7 @@ const MusicifyModal = ({ onClose }) => {
             ))}
           </select>
           {selectedSample && (
-            <p className="text-black mt-2">Selected sample: {selectedSample}</p>
+            <p className="text-yellow-200 font-orbitron text-xs font-thin mt-2">Selected sample: {selectedSample}</p>
           )}
         </div>
 
@@ -273,16 +273,16 @@ const MusicifyModal = ({ onClose }) => {
 
         {/* Buttons */}
         <div className="flex justify-end mt-4">
-          <button onClick={handleAnalyzeTrack} className="btn btn-secondary mr-2">
+          <button onClick={handleAnalyzeTrack} className="btn btn-accent btn-outlinebtn btn-outline btn-accent mb-3 h-10 w-20 mx-2 rounded-l-full glow mr-2">
             Analyze
           </button>
-          <button onClick={handleGenerate} className="btn btn-secondary mr-2">
+          <button onClick={handleGenerate} className="btn btn-outline btn-accent mb-3 h-10 w-20 mx-2 rounded glow mr-2">
             Generate
           </button>
-          <button onClick={handlePreview} className="btn btn-primary" disabled={!isPreviewEnabled}>
+          <button onClick={handlePreview} className="btn btn-outline btn-accent mb-3 h-10 w-20 mx-2 rounded glow mr-2" disabled={!isPreviewEnabled}>
             Preview
           </button>
-          <button onClick={onClose} className="btn btn-primary">
+          <button onClick={onClose} className="btn btn-outline btn-accent mb-3 h-10 w-20 mx-2 rounded-r-full roundedglow">
             Close
           </button>
         </div>

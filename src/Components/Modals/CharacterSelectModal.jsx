@@ -63,10 +63,10 @@ const CharacterSelectModal = ({ isOpen, onClose, onSelectCharacter}) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg w-96">
-        <h2 className="text-xl mb-4 text-center">Select a Character Video</h2>
+      <div className="bg-black bg-opacity-25 p-6 rounded-lg w-96">
+        <h2 className="text-2xl font-orbitron text-accent mb-4 text-center">Select a Character Video</h2>
         <div className="flex justify-center mb-4">
-          <label className="block text-center">
+          <label className="block font-orbitron font-thin text-white text-center">
             <input
               type="radio"
               name="character"
@@ -84,12 +84,12 @@ const CharacterSelectModal = ({ isOpen, onClose, onSelectCharacter}) => {
           </video>
         </div>
         <div className="flex justify-between mb-4">
-          <button onClick={handlePrevious} className="btn btn-secondary">Previous</button>
-          <button onClick={handleNext} className="btn btn-secondary">Next</button>
+          <button onClick={handlePrevious} className="btn text-accent font-orbitron font-thin bg-neutral btn-outline btn-accent">PREVIOUS</button>
+          <button onClick={handleNext} className="btn text-accent font-orbitron font-thin bg-neutral btn-outline btn-accent">NEXT</button>
         </div>
         <button
           onClick={handleConfirm}
-          className="btn btn-primary w-full"
+          className="btn bg-accent btn-ghost text-black font-orbitron font-bold w-full"
         >
           Confirm
         </button>

@@ -139,22 +139,22 @@ const PreviewModal = ({ onClose, frameCount }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-      <div className="bg-white p-4 rounded shadow-lg w-full max-w-2xl">
-        <h2 className="text-xl mb-4">Preview</h2>
+    <div className="fixed inset-0 bg-black glow bg-opacity-75 flex items-center justify-center z-50">
+      <div className="bg-black bg-opacity-25 p-4 rounded shadow-lg w-full max-w-2xl">
+        <h2 className="text-xl font-orbitron text-accent mb-4" style={{marginLeft:'250px'}}>Preview</h2>
         {loading ? (
           <div className="flex justify-center items-center">
             <span className="loading loading-spinner loading-lg bg-purple-400"></span> {/* DaisyUI loading symbol */}
-            <p className="ml-4 text-purple-400">Video uploading...</p>
+            <p className="ml-4 font-orbitron text-yellow-800">Video uploading...</p>
           </div>
         ) : (
           <HlsPlayer videoUrl={videoUrl} videoRef={videoRef} />
         )}
         {!isPostFormOpen ? (
-          <div>
-            <button onClick={onClose} className="btn-accent mt-4 p-2 mr-4 bg-blue-500 text-white rounded">Close</button>
-            <button onClick={handlePostClick} className="btn-accent mt-4 p-2 mr-4 bg-blue-500 text-white rounded">Post</button>
-            <button onClick={onClose} className="btn-accent mt-4 p-2 bg-blue-500 text-white rounded">Download</button>
+          <div className="justify-center" style={{marginLeft:'200px'}}>
+            <button onClick={onClose} className="btn-ghost mt-4 bl-4 p-2 mr-4 bg-accent btn-outline text-black rounded">Close</button>
+            <button onClick={handlePostClick} className="btn-ghost mt-4 p-2 mr-4 bg-accent btn-outline text-black rounded">Post</button>
+            <button onClick={onClose} className="btn-ghost mt-4 p-2 mr-4 bg-accent btn-outline text-black rounded">Download</button>
           </div>
         ) : (
           <PostForm onPostSubmit={() => { setIsPostFormOpen(false); onClose(); }} setProgressBar={setProgressBar} initialMediaUrl={initialMediaUrl} metadataUrl = {metadataUrl} />

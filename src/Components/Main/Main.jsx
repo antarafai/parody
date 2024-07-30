@@ -60,6 +60,7 @@ const Main = () => {
                       name={post?.name}
                       email={post?.email}
                       media={post?.media}
+                      text = {post?.text}
                       mediaType={post?.media?.includes("mp4") || post?.media?.includes("m3u8") ? "video" : "image"}
                       metadataUrl={post?.metadataUrl}
                       mintStatus={post?.mintStatus}

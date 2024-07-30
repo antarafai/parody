@@ -2,7 +2,7 @@ import React from 'react';
 
 const ExecProgressAlert = ({ isExecInProgress, renderProgress }) => {
   return (
-    <div className="fixed top-4 right-4 p-4 bg-yellow-500 text-black rounded-xl shadow-lg flex items-center space-x-2">
+    <div className="fixed bottom-4 right-4 p-4 bg-yellow-500 text-black rounded-xl shadow-lg flex items-center space-x-2">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         className="h-6 w-6 shrink-0 stroke-current"

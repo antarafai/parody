@@ -164,7 +164,7 @@ const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestam
   }, [isInView, mediaType]);
 
   return (
-    <div className="mb-0 bg-accent relative" ref={postRef}>
+    <div className="mb-0 bg-black relative" ref={postRef}>
         <div className="absolute top-0 left-0 right-0 flex justify-between items-center p-1 bg-opacity-50 bg-black z-10">
         
           <div className="flex items-center z-5">
@@ -263,7 +263,7 @@ const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestam
           )}
         </div>
         <div className="p-0">
-          <p className="text-sm text-gray-300">{text}</p>
+          <p className="text-sm mb-2">{text}</p>
         </div>
         <div className="flex justify-around items-center p-1 bg-black">
           <button
