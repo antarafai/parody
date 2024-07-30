@@ -1,12 +1,6 @@
 // Workflow.js
-import { server_url } from '../config'; // Adjust the import based on your project structure
-
-export const runPrompt = async (prompt, filesString) => {
-  // Simulate runPrompt function
-  return new Promise((resolve) => {
-    setTimeout(() => resolve("filtered_result"), 1000);
-  });
-};
+const server_url = 'http://localhost:5000';
+import runPrompt2 from "../NLP/Prompt";
 
 export const sendPostRequest = async (url, data) => {
   const response = await fetch(url, {
@@ -30,10 +24,10 @@ export const handleWorkflow = async (analysisResult, selectedFile, selectedSampl
     // Step 1: Call runPrompt
     const prompt1 = JSON.stringify(analysisResult);
     const filesString = "sample filesString"; // Replace with actual filesString
-    const promptResult = await runPrompt(prompt1, filesString);
+    const promptResult = await runPrompt2(prompt1, filesString);
 
-    // Step 2: Filter the result (assuming filterFunction is defined elsewhere)
-    const filteredResult = await filterFunction(promptResult); // Placeholder function call
+    // Step 2: Filter the result
+    const filteredResult = filterFunction(promptResult, filesString); 
 
     // Step 3: Send to /config/motions
     await sendPostRequest(`${server_url}/config/motions`, { motions: filteredResult });
@@ -114,8 +108,9 @@ export const handleWorkflow = async (analysisResult, selectedFile, selectedSampl
   }
 };
 
-// Placeholder filter function
-export const filterFunction = async (result) => {
-  // Implement your filter logic here
-  return result;
+// Filter function
+export const filterFunction = (paths, filesString) => {
+  // Split the filesString using regex to handle both commas and spaces
+  const availableFiles = new Set(filesString.split(/[\s,]+/).map(file => file.trim()));
+  return paths.filter(path => availableFiles.has(path));
 };
