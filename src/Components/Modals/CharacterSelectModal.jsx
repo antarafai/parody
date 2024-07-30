@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 const CharacterSelectModal = ({ isOpen, onClose, onSelectCharacter}) => {
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const server_url = 'http://localhost:5000';
+  const server_url = process.env.SERVER_URL;
 
   const videos = [
     {

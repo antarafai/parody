@@ -14,7 +14,7 @@ class ConfigModal extends Component {
 
     handleConfirm = async () => {
         const { input1 } = this.state;
-        const server_url = 'http://localhost:5000'; // Replace with your server URL
+        const server_url = process.env.SERVER_URL;
 
         // Define the requests in sequence
         const requests = [
