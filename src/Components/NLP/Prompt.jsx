@@ -1,5 +1,5 @@
 // Function to send a prompt to the new endpoint and process the response
-const inference_endpoint = process.env.LLM_ENDPOINT;
+const inference_endpoint = process.env.REACT_APP_LLM_ENDPOINT;
 
 const runPrompt = async (prompt1, filesString) => {
   try {
