@@ -1,6 +1,6 @@
 // Workflow.js
+import { runPrompt2 } from "../NLP/Prompt";
 const server_url = 'http://localhost:5000';
-import runPrompt2 from "../NLP/Prompt";
 
 export const sendPostRequest = async (url, data) => {
   const response = await fetch(url, {
@@ -22,16 +22,16 @@ export const sendPostRequest = async (url, data) => {
 export const handleWorkflow = async (analysisResult, selectedFile, selectedSample, samples) => {
   try {
     // Step 1: Call runPrompt
-    const prompt1 = JSON.stringify(analysisResult);
-    const filesString = "sample filesString"; // Replace with actual filesString
+    const prompt1 = "The song to be used has the following properties - Genre of the song: " + analysisResult.genreTags.join(', ') + ", Mood of the song: " + analysisResult.moodTags.join(', ') + ", Short Description: " + analysisResult.transformerCaption + ". Please select the dance moves from the available dance motions which match the song properties.";
+    const filesString = "indian, ballerina, belly, booty_hip_hop, breakdance_ending_1, breakdance_ending_2, breakdance_ending_3, breakdance_footwork_1, breakdance_footwork_2, breakdance_footwork_3, breakdance_ready, breakdance_spin, breakdance_spin_2, breakdance_spin_head, breakdance_up, brooklyn_uprock, cross_leg_freeze, flair, flair_3, footwork_to_freeze, footwork_to_idle, footwork_to_idle_2, freezes, freeze_1, freeze_2, freeze_3, freeze_4, jazz, moonwalk_1, nerd_ymca, ready_pose, ready_pose_3, robot_hip_hop, salsa, samba, shopping_cart, shuffling, silly, slide_hip_hop, snake_hip_hop, swipes, thriller_2, twerk, twist, uprock, uprock_1, uprock_2, uprock_end_1, uprock_start_1, uprock_to_ground, uprock_to_ground_2, wave_hip_hop";
     const promptResult = await runPrompt2(prompt1, filesString);
 
     // Step 2: Filter the result
     const filteredResult = filterFunction(promptResult, filesString); 
+    console.log('Filtered result:', filteredResult);
 
     // Step 3: Send to /config/motions
     await sendPostRequest(`${server_url}/config/motions`, { motions: filteredResult });
-
     // Step 4: Send analysisResult and audio file to /generate
     const formData = new FormData();
     if (selectedFile) {
@@ -70,7 +70,7 @@ export const handleWorkflow = async (analysisResult, selectedFile, selectedSampl
 
     // Step 5: Send to /config/character
     await sendPostRequest(`${server_url}/config/character`, {
-      character: "/home/mizookie/anigen-flask-app/Ybot.blend",
+      character: "/home/mizookie/anigen-flask-app/Xbot.blend",
     });
 
     // Step 6: Send to /config/frames
