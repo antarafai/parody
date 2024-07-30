@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { fetchFileUploadRequest, uploadFile, createLibraryTrack, fetchLibraryTrack } from '../Music/api';
+import { handleWorkflow } from './Workflow'; // Adjust the import based on your project structure
 
 /**
  * A modal component for the Musicify feature.
@@ -170,58 +171,8 @@ const MusicifyModal = ({ onClose }) => {
       return;
     }
 
-    try {
-      const formData = new FormData();
-      if (selectedFile) {
-        if (typeof selectedFile === 'string') {
-          console.log('Fetching blob for custom file path:', selectedFile);
-          // If selectedFile is a custom file path (string), fetch the blob
-          const response = await fetch(selectedFile);
-          const blob = await response.blob();
-          formData.append('file_from_react', blob, selectedSample);
-        } else {
-          formData.append('file', selectedFile);
-        }
-      } else if (selectedSample) {
-        const selectedSampleData = samples.find(sample => sample.value === selectedSample);
-        if (selectedSampleData.isCustom) {
-          console.log('Fetching blob for selected custom sample:', selectedSampleData.filePath);
-          const response = await fetch(selectedSampleData.filePath);
-          const blob = await response.blob();
-          formData.append('file_from_react', blob, selectedSample);
-        } else {
-          console.log('Fetching blob for selected predefined sample:', selectedSample);
-          // Fetch the sample file data and append it to the form data
-          const response = await fetch(`/sample-music/${selectedSample}`);
-          const blob = await response.blob();
-          formData.append('file_from_react', blob, selectedSample);
-        }
-      }
-      formData.append('analysisResult', JSON.stringify(analysisResult));
-
-      // Debugging: Log the formData contents
-      for (let pair of formData.entries()) {
-        console.log(`${pair[0]}: ${pair[1]}`);
-      }
-
-      console.log('Sending request to /generate with formData:');
-      const response = await fetch(`${server_url}/generate`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-      }
-
-      const result = await response.json();
-      console.log('Generate API result:', result);
-      alert('Generation request completed successfully.');
-    } catch (error) {
-      console.error('Error generating content:', error);
-      alert('Error generating content. Please try again later.');
-    }
+    // Call the handleWorkflow function
+    await handleWorkflow(analysisResult, selectedFile, selectedSample, samples);
   };
 
   useEffect(() => {
