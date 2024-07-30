@@ -19,31 +19,28 @@ export const sendPostRequest = async (url, data) => {
   return response.json();
 };
 
-export const handleWorkflow = async (analysisResult, selectedFile, selectedSample, samples) => {
+export const handleWorkflow = async (analysisResult, selectedFile, selectedSample, samples, updateMessages) => {
   try {
+    updateMessages("Starting workflow...");
+
     // Step 1: Call runPrompt
+    updateMessages("Running prompt...");
     const prompt1 = "The song to be used has the following properties - Genre of the song: " + analysisResult.genreTags.join(', ') + ", Mood of the song: " + analysisResult.moodTags.join(', ') + ", Short Description: " + analysisResult.transformerCaption + ". Please select the dance moves from the available dance motions which match the song properties.";
     const filesString = "indian, ballerina, belly, booty_hip_hop, breakdance_ending_1, breakdance_ending_2, breakdance_ending_3, breakdance_footwork_1, breakdance_footwork_2, breakdance_footwork_3, breakdance_ready, breakdance_spin, breakdance_spin_2, breakdance_spin_head, breakdance_up, brooklyn_uprock, cross_leg_freeze, flair, flair_3, footwork_to_freeze, footwork_to_idle, footwork_to_idle_2, freezes, freeze_1, freeze_2, freeze_3, freeze_4, jazz, moonwalk_1, nerd_ymca, ready_pose, ready_pose_3, robot_hip_hop, salsa, samba, shopping_cart, shuffling, silly, slide_hip_hop, snake_hip_hop, swipes, thriller_2, twerk, twist, uprock, uprock_1, uprock_2, uprock_end_1, uprock_start_1, uprock_to_ground, uprock_to_ground_2, wave_hip_hop";
     const promptResult = await runPrompt2(prompt1, filesString);
 
     // Step 2: Filter the result
+    updateMessages("Filtering result...");
     const filteredResult = filterFunction(promptResult, filesString); 
     console.log('Filtered result:', filteredResult);
 
     // Step 3: Send to /config/motions
-    // Define the requests related to motions
-    const motionRequest = fetch(`${server_url}/config/motions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ motions: filteredResult })
-    });
-    // Execute the motions request
-    const motionResponse = await motionRequest;
-    if (!motionResponse.ok) {
-        throw new Error(`Request failed with status ${motionResponse.status}`);
-    }
-    console.log('Motions configuration request successful');
+    updateMessages("Configuring motions...");
+    await sendPostRequest(`${server_url}/config/motions`, { motions: filteredResult });
+    updateMessages("Motions configured successfully.");
+
     // Step 4: Send analysisResult and audio file to /generate
+    updateMessages("Generating audio...");
     const formData = new FormData();
     if (selectedFile) {
       if (typeof selectedFile === 'string') {
@@ -78,43 +75,38 @@ export const handleWorkflow = async (analysisResult, selectedFile, selectedSampl
     }
 
     await generateResponse.json();
+    updateMessages("Audio generation completed.");
 
-    // Define the requests in sequence
-    const requests = [
-      // Step 5: Send to /config/frames
-      fetch(`${server_url}/config/frames`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ total_frames: 400 }) // input1 denote number of frames
-      }),
-      // Step 6: Send to /config/import
-      fetch(`${server_url}/config/import`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ import_path: "/home/mizookie/Motions/Motions/Motions" })
-      }),
-      // Step 7: Send to /config/render
-      fetch(`${server_url}/config/render`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ render_path: "/home/mizookie/Renders" })
-      })
-    ];
+    // Step 5: Send to /config/character
+    updateMessages("Configuring character...");
+    await sendPostRequest(`${server_url}/config/character`, {
+      character: "/home/mizookie/anigen-flask-app/Ybot.blend",
+    });
+    updateMessages("Character configured successfully.");
 
-    try {
-      // Execute the requests sequentially
-      for (const request of requests) {
-          const response = await request;
-          if (!response.ok) {
-              throw new Error(`Request failed with status ${response.status}`);
-          }
-      }
-      console.log('All configuration requests successful');
-    } catch (error) {
-      console.error('Error during configuration requests', error);
-    }
+    // Step 6: Send to /config/frames
+    updateMessages("Configuring frames...");
+    await sendPostRequest(`${server_url}/config/frames`, {
+      total_frames: 400,
+    });
+    updateMessages("Frames configured successfully.");
 
-    // Step 8: Send GET request to /exec
+    // Step 7: Send to /config/import
+    updateMessages("Configuring import path...");
+    await sendPostRequest(`${server_url}/config/import`, {
+      import_path: "/home/mizookie/Motions/Motions/Motions",
+    });
+    updateMessages("Import path configured successfully.");
+
+    // Step 8: Send to /config/render
+    updateMessages("Configuring render path...");
+    await sendPostRequest(`${server_url}/config/render`, {
+      render_path: "/home/mizookie/Renders",
+    });
+    updateMessages("Render path configured successfully.");
+
+    // Step 9: Send GET request to /exec
+    updateMessages("Executing process...");
     const execResponse = await fetch(`${server_url}/exec`, {
       method: 'GET',
     });
@@ -134,10 +126,12 @@ export const handleWorkflow = async (analysisResult, selectedFile, selectedSampl
       done = readerDone;
       if (value) {
         console.log(decoder.decode(value));
+        updateMessages(decoder.decode(value));
       }
     }
 
     console.log('Exec request completed');
+    updateMessages("Execution completed successfully.");
     alert('Execution completed successfully.');
 
   } catch (error) {
