@@ -1,6 +1,6 @@
 // Workflow.js
 import { runPrompt2 } from "../NLP/Prompt";
-const server_url = 'http://localhost:5000';
+const server_url = process.env.SERVER_URL;
 
 export const handleWorkflow = async (analysisResult, selectedFile, selectedSample, samples, updateMessages) => {
   try {
