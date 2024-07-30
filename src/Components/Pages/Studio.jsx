@@ -3,7 +3,7 @@ import WebGLRenderer from '../WebGL/WebGLRenderer';
 import ConfigModal from '../WebGL/ConfigModal';
 import PreviewModal from '../WebGL/PreviewModal';
 import CharacterSelectModal from '../Modals/CharacterSelectModal'; // Import the CharacterSelectModal
-import runPrompt from '../NLP/Prompt';
+import { runPrompt } from '../NLP/Prompt';
 import MusicifyModal from '../Modals/MusicifyModal';
 import MusicifyWarningModal from '../Modals/MusicifyWarningModal';
 import InputBar from '../Input/InputBar';
