@@ -72,7 +72,7 @@ const WebGLRenderer = ({ progressBarRef, modelPaths }) => {
 
     // Camera setup
     const camera = new THREE.PerspectiveCamera(75, mount.clientWidth / mount.clientHeight, 0.1, 1000);
-    camera.position.set(0.8, 1.4, 1.0);
+    camera.position.set(0.8, 1.4, 2.0);
 
     // Renderer setup
     const renderer = new THREE.WebGLRenderer();
