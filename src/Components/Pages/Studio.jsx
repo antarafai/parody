@@ -3,9 +3,13 @@ import WebGLRenderer from '../WebGL/WebGLRenderer';
 import ConfigModal from '../WebGL/ConfigModal';
 import PreviewModal from '../WebGL/PreviewModal';
 import CharacterSelectModal from '../Modals/CharacterSelectModal'; // Import the CharacterSelectModal
-import runPrompt from '../NLP/Prompt';
+import { runPrompt } from '../NLP/Prompt';
+import MusicifyModal from '../Modals/MusicifyModal';
+import MusicifyWarningModal from '../Modals/MusicifyWarningModal';
+import InputBar from '../Input/InputBar';
+import ExecProgressAlert from '../Alerts/ExecProgressAlert';
 
-const server_url = 'http://localhost:5000'; // Replace with your server URL
+const server_url = process.env.SERVER_URL;
 
 const FBXAnimations = () => {
     const progressBarRef = useRef(null);
@@ -18,6 +22,8 @@ const FBXAnimations = () => {
     const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
     const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false); // State for preview modal
     const [isCharacterSelectModalOpen, setIsCharacterSelectModalOpen] = useState(false); // State for character select modal
+    const [isMusicifyWarningModalOpen, setIsMusicifyWarningModalOpen] = useState(false); // State for Musicify warning modal
+    const [isMusicifyModalOpen, setIsMusicifyModalOpen] = useState(false); // State for Musicify modal
 
     // Alert state
     const [showAlert, setShowAlert] = useState(false);
@@ -179,53 +185,61 @@ const FBXAnimations = () => {
         }
     };
 
+    const handleMusicifyClick = () => {
+        setIsMusicifyWarningModalOpen(true);
+    };
+
+    const handleAcceptMusicify = () => {
+        setIsMusicifyWarningModalOpen(false);
+        setIsMusicifyModalOpen(true);
+    };
+
+    const handleRejectMusicify = () => {
+        setIsMusicifyWarningModalOpen(false);
+    };
+
     return (
         <div className="flex flex-col h-full bg-black">
             <div className="flex flex-row h-full flex-1">
                 <div className="relative flex-grow h-full bg-black">
-                <div style={{ marginRight: '0px' }}> {/* Adjust this value to move the component left or right */}
+                    <div style={{ marginRight: '0px' }}> {/* Adjust this value to move the component left or right */}
                         <WebGLRenderer progressBarRef={progressBarRef} modelPaths={modelPaths} updateFlag={updateFlag} />
                         <div id="webGLpanel" className="flex bg-black justify-center mt-10 p-4">
-                        <button 
-                            id="preConfig" 
-                            className="btn btn-outline btn-accent mb-3 rounded-l-full h-10 w-60 text-yellow-50 mx-2 animate-float glow"
-                            onClick={handleConfigButtonClick}
-                        >
-                            Configure
-                        </button>
-                        <button 
-                            id="character" 
-                            className="btn btn-outline btn-accent mb-3 h-10 w-40 mx-2 rounded animate-float glow"
-                            onClick={handleCharacterSelectButtonClick}
-                        >
-                            Character
-                        </button>
-                        <button 
-                            id="preview" 
-                            className={`btn ${hasRenderJob ? (isExecInProgress ? 'btn-accent' : 'btn-outline btn-accent') : 'btn-disabled btn-outline btn-accent mx-2 rounded'} mb-3 rounded-r-full h-10 w-60 text-black animate-float glow`}
-                            onClick={handlePreviewClick}
-                        >
-                            Preview
-                        </button>
-                        
-                    </div>
+                            <button 
+                                id="preConfig" 
+                                className="btn btn-outline btn-accent mb-3 rounded-l-full h-10 w-60 text-yellow-50 mx-2 animate-float glow"
+                                onClick={handleConfigButtonClick}
+                            >
+                                Configure
+                            </button>
+                            <button 
+                                id="character" 
+                                className="btn btn-outline btn-accent mb-3 h-10 w-40 mx-2 rounded animate-float glow"
+                                onClick={handleCharacterSelectButtonClick}
+                            >
+                                Character
+                            </button>
+                            <button
+                                id="musicify (experimental)"
+                                className="btn btn-outline btn-accent mb-3 h-10 w-60 mx-2 rounded animate-float glow"
+                                onClick={handleMusicifyClick}
+                            >
+                                Musicify
+                            </button>
+                            <button 
+                                id="preview" 
+                                className={`btn ${hasRenderJob ? (isExecInProgress ? 'btn-accent' : 'btn-outline btn-accent') : 'btn-disabled btn-outline btn-accent mx-2 rounded'} mb-3 rounded-r-full h-10 w-60 text-black animate-float glow`}
+                                onClick={handlePreviewClick}
+                            >
+                                Preview
+                            </button>
+                        </div>
                     </div>
                     <progress value={renderProgress} max="100" id="progressBar" ref={progressBarRef} className="absolute top-2 left-2"></progress>
-                    
                 </div>
             </div>
-            <div id="inputBar" className="flex justify-center h-full w-full glow">
-            <div className="flex justify-center items-center h-full w-3/4">
-                <input
-                    type="text"
-                    id="modelPathsInput"
-                    placeholder="Enter model paths separated by commas"
-                    className="flex-grow p-2 mr-2 border border-accent rounded-l-full glow"
-                    style={{ fontSize: '12px' }} // Adjust this value to change the font size
-                />
-                <button id="Animate" className="btn glass p-2 bg-accent text-black rounded-r-full glow" onClick={handleButtonClick}>Animate</button>
-            </div>
-            </div>
+
+            <InputBar onButtonClick={handleButtonClick} />
 
             {isConfigModalOpen && (
                 <ConfigModal onClose={handleCloseConfigModal} />
@@ -242,27 +256,22 @@ const FBXAnimations = () => {
                     onSelectCharacter={(character) => setSelectedCharacter(character)}
                 />
             )}
+            
+            {isMusicifyWarningModalOpen && (
+                <MusicifyWarningModal 
+                onAccept={handleAcceptMusicify} 
+                onReject={handleRejectMusicify} 
+                />
+            )}
+
+            {isMusicifyModalOpen && (
+                <MusicifyModal onClose={() => setIsMusicifyModalOpen(false)} />
+            )}
 
             {showAlert && (
-                <div className="fixed top-4 right-4 p-4 bg-yellow-500 text-black rounded-xl shadow-lg flex items-center space-x-2">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6 shrink-0 stroke-current"
-                        fill="none"
-                        viewBox="0 0 24 24">
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                    {isExecInProgress ? (
-                        <span>Video rendering is still in progress ({renderProgress}%)</span>
-                    ) : (
-                        <span>No rendering job has been given</span>
-                    )}
-                </div>
+                <ExecProgressAlert isExecInProgress={isExecInProgress} renderProgress={renderProgress} />
             )}
+
             <style jsx>{`
                 .spotlight {
                     position: absolute;

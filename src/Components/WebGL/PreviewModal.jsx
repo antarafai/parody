@@ -12,7 +12,7 @@ const PreviewModal = ({ onClose, frameCount }) => {
   const [isPostFormOpen, setIsPostFormOpen] = useState(false);
   const [initialMediaUrl, setInitialMediaUrl] = useState(null); // State to hold initial media URL
   const videoRef = useRef(null);
-  const server_url = 'http://localhost:5000';
+  const server_url = process.env.SERVER_URL;
 
   useEffect(() => {
     const fetchVideoUrl = async () => {
