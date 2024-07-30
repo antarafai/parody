@@ -6,7 +6,7 @@ import PostForm from '../Main/PostForm';
 
 const PreviewModal = ({ onClose, frameCount }) => {
   const [videoUrl, setVideoUrl] = useState(null);
-  const [firebaseUrl, setFirebaseUrl] = useState(null);
+  const [metadataUrl, setMetadataUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [progressBar, setProgressBar] = useState(0);
   const [isPostFormOpen, setIsPostFormOpen] = useState(false);
@@ -77,8 +77,7 @@ const PreviewModal = ({ onClose, frameCount }) => {
       },
       async () => {
         const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-        console.log("Uploaded firebase URL:", downloadURL);
-        setFirebaseUrl(downloadURL);
+        console.log("Uploaded firebase URL in PreviewModal:", downloadURL);
         // Create and upload metadata.json file with the video URL
         await uploadMetadata(uniqueID, downloadURL);
       }
@@ -110,6 +109,7 @@ const PreviewModal = ({ onClose, frameCount }) => {
       },
       async () => {
         const metadataDownloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+        setMetadataUrl(metadataDownloadURL);
         console.log("Uploaded metadata URL:", metadataDownloadURL);
         // Store metadata in Firestore
         await storeMetadataInFirestore(uniqueID, firebaseUrl, metadataDownloadURL);
@@ -157,11 +157,13 @@ const PreviewModal = ({ onClose, frameCount }) => {
             <button onClick={onClose} className="btn-accent mt-4 p-2 bg-blue-500 text-white rounded">Download</button>
           </div>
         ) : (
-          <PostForm onPostSubmit={() => { setIsPostFormOpen(false); onClose(); }} setProgressBar={setProgressBar} initialMediaUrl={initialMediaUrl} />
+          <PostForm onPostSubmit={() => { setIsPostFormOpen(false); onClose(); }} setProgressBar={setProgressBar} initialMediaUrl={initialMediaUrl} metadataUrl = {metadataUrl} />
         )}
       </div>
     </div>
   );
 };
+
+// videoUrl-> initialMediaUrl for PostForm
 
 export default PreviewModal;

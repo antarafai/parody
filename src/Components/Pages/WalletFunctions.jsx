@@ -1,7 +1,7 @@
 import { useWeb3Modal, createWeb3Modal, defaultConfig } from '@web3modal/ethers/react'
 import React from 'react'
 import { ConnectWallet } from '../../App'
-import { MintNFT } from './mint-nft'
+import  MintNFT  from './mint-nft'
 
 const projectId = '6edbdfe6202f9696377b991124957015';
 

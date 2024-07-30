@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext, useReducer, useEffect } from "react";
+import React, { useState, useRef, useContext, useReducer, useEffect, useCallback } from "react";
 import { AuthContext } from "../AppContext/AppContext";
 import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase/firebase";
@@ -37,11 +37,8 @@ const Main = () => {
   }, [SUBMIT_POST]);
 
   return (
-    <div className="flex flex-col items-center">
-      {/*<div className="flex flex-col py-4 w-full bg-white rounded-3xl shadow-lg">
-        <PostForm onPostSubmit={handlePostSubmit} setProgressBar={setProgressBar} />
-      </div> */}
-      <div className="flex flex-col py-4 w-full">
+    <div className="flex bg-neutral flex-col items-center">
+      <div className="flex flex-col rounded-full py-4 w-4/5">
         {state?.error ? (
           <div className="flex justify-center items-center">
             <Alert color="red">
@@ -50,22 +47,27 @@ const Main = () => {
           </div>
         ) : (
           <div>
-  {state?.posts?.length > 0 &&
-    state?.posts?.map((post, index) => (
-      <div key={index} style={{ marginBottom: '120px' }}>
-        <PostCard
-          logo={post?.logo}
-          id={post?.documentId}
-          uid={post?.uid}
-          name={post?.name}
-          email={post?.email}
-          media={post?.media}
-          mediaType={post?.media?.includes("mp4") || post?.media?.includes("m3u8") ? "video" : "image"}
-          timestamp={new Date(post?.timestamp?.toDate())?.toUTCString()}
-        />
-      </div>
-    ))}
-</div>
+            {state?.posts?.length > 0 &&
+              state?.posts?.map((post, index) => {
+                console.log("Post Data:", post); // Log the post data
+
+                return (
+                  <div className="p-4 rounded-3xl shadow-4xl bg-black" key={index} style={{ marginBottom: '120px' }}>
+                    <PostCard
+                      logo={post?.logo}
+                      id={post?.documentId}
+                      uid={post?.uid}
+                      name={post?.name}
+                      email={post?.email}
+                      media={post?.media}
+                      mediaType={post?.media?.includes("mp4") || post?.media?.includes("m3u8") ? "video" : "image"}
+                      metadataUrl={post?.metadataUrl}
+                      timestamp={new Date(post?.timestamp?.toDate())?.toUTCString()}
+                    />
+                  </div>
+                );
+              })}
+          </div>
         )}
       </div>
       <div ref={scrollRef}>{/* reference for later */}</div>
