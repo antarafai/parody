@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 const CharacterSelectModal = ({ isOpen, onClose, onSelectCharacter}) => {
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const server_url = process.env.REACT_APP_SERVER_URL;
+  const server_url = 'https://anigenflaspwcylf79y4-db0acd9313e7f31c.tec-s1.onthetaedgecloud.com';
 
   const videos = [
     {
