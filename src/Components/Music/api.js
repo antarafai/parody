@@ -3,7 +3,7 @@
 import { fileUploadRequestMutation, libraryTrackCreateMutation, libraryTrackQuery } from './graphqlQueries';
 
 const music_url = 'https://api.cyanite.ai/graphql';
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiSW50ZWdyYXRpb25BY2Nlc3NUb2tlbiIsInZlcnNpb24iOiIxLjAiLCJpbnRlZ3JhdGlvbklkIjoxMTUwLCJ1c2VySWQiOjEzNTI2NywiYWNjZXNzVG9rZW5TZWNyZXQiOiJiNDg3OThhOTUzNGVlN2I4M2ZiZmFmNWNkOTY4YTQwODU4OGI5ODdmMDBmNjUwYjhjZDM2MThlNDU0N2JlODlhIiwiaWF0IjoxNzIyMTg5Njg3fQ.p5OGUjShzW-572M3uB21Lj87RjVJYNhAOiJw5XB_g2A';
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiSW50ZWdyYXRpb25BY2Nlc3NUb2tlbiIsInZlcnNpb24iOiIxLjAiLCJpbnRlZ3JhdGlvbklkIjoxMTU3LCJ1c2VySWQiOjEzNTc0OSwiYWNjZXNzVG9rZW5TZWNyZXQiOiJkYTE0YzkzN2Q2NTA2OTY5ZTllN2QyOWE5ZjZmZDRjMDI0NWY2ZWE0MWJjZmQwMTc2NTkwYzExMjYzMWIwY2QyIiwiaWF0IjoxNzIyMzQ5MTQ5fQ.q_Wk_1KRUzh_oo12pJDFT8WVG3p3L97ORfydNdXDs70';
 
 export const fetchFileUploadRequest = async () => {
   const response = await fetch(music_url, {
