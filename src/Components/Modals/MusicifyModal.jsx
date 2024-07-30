@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { fetchFileUploadRequest, uploadFile, createLibraryTrack, fetchLibraryTrack } from '../Music/api';
 import { handleWorkflow } from './Workflow';
-import LoadingModal from './LoadingModal'; // Adjust the import based on your project structure
+import LoadingModal from './LoadingModal';
+import PreviewModal from '../WebGL/PreviewModal';
 
 /**
  * A modal component for the Musicify feature.
@@ -26,6 +27,8 @@ const MusicifyModal = ({ onClose }) => {
   const [analysisResult, setAnalysisResult] = useState(null);
   const [loadingMessages, setLoadingMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPreviewEnabled, setIsPreviewEnabled] = useState(false);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
   const audioRef = useRef(null);
 
   const updateMessages = (message) => {
@@ -178,11 +181,22 @@ const MusicifyModal = ({ onClose }) => {
     }
     setIsLoading(true);
     setLoadingMessages([]);
+    setIsPreviewEnabled(false);
 
     // Call the handleWorkflow function
     await handleWorkflow(analysisResult, selectedFile, selectedSample, samples, updateMessages);
 
     setIsLoading(false);
+    setIsPreviewEnabled(true); // Enable the preview button after the workflow is complete
+  };
+
+  /**
+   * Handles the preview action.
+   */
+  const handlePreview = () => {
+    if (isPreviewEnabled) {
+      setShowPreviewModal(true);
+    }
   };
 
   useEffect(() => {
@@ -265,6 +279,9 @@ const MusicifyModal = ({ onClose }) => {
           <button onClick={handleGenerate} className="btn btn-secondary mr-2">
             Generate
           </button>
+          <button onClick={handlePreview} className="btn btn-primary" disabled={!isPreviewEnabled}>
+            Preview
+          </button>
           <button onClick={onClose} className="btn btn-primary">
             Close
           </button>
@@ -273,6 +290,9 @@ const MusicifyModal = ({ onClose }) => {
 
       {/* Loading modal */}
       <LoadingModal isVisible={isLoading} messages={loadingMessages} />
+
+      {/* Preview modal */}
+      {showPreviewModal && <PreviewModal onClose={() => setShowPreviewModal(false)} frameCount={400} />}
     </div>
   );
 };
