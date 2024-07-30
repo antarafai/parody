@@ -3,7 +3,7 @@
 import { fileUploadRequestMutation, libraryTrackCreateMutation, libraryTrackQuery } from './graphqlQueries';
 
 const music_url = 'https://api.cyanite.ai/graphql';
-const token = process.env.CYANITE_API;
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoiSW50ZWdyYXRpb25BY2Nlc3NUb2tlbiIsInZlcnNpb24iOiIxLjAiLCJpbnRlZ3JhdGlvbklkIjoxMTUwLCJ1c2VySWQiOjEzNTI2NywiYWNjZXNzVG9rZW5TZWNyZXQiOiJiNDg3OThhOTUzNGVlN2I4M2ZiZmFmNWNkOTY4YTQwODU4OGI5ODdmMDBmNjUwYjhjZDM2MThlNDU0N2JlODlhIiwiaWF0IjoxNzIyMTg5Njg3fQ.p5OGUjShzW-572M3uB21Lj87RjVJYNhAOiJw5XB_g2A';
 
 export const fetchFileUploadRequest = async () => {
   const response = await fetch(music_url, {

@@ -1,5 +1,5 @@
 // Function to send a prompt to the new endpoint and process the response
-const inference_endpoint = process.env.LLM_ENDPOINT;
+const inference_endpoint = 'https://llama38bize483jb30-5ace32af5f2c5f78.tec-s1.onthetaedgecloud.com/v1/chat/completions';
 
 const runPrompt = async (prompt1, filesString) => {
   try {
