@@ -11,6 +11,10 @@
   font-family: 'Orbitron', sans-serif;
 }
 
+.font-orbitron-small {
+  font-family: 'Orbitron', sans-serif;
+  font-size:0.6rem
+}
 .glitch {
   position: relative;
   color: white;

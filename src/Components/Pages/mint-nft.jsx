@@ -1,40 +1,44 @@
-
-import * as React from 'react'
+import * as React from 'react';
 import { 
   useWaitForTransactionReceipt, 
   useWriteContract 
-} from 'wagmi'
-import { nftABI as abi, contractAddress } from './ABI'
+} from 'wagmi';
+import { nftABI as abi, contractAddress } from './ABI';
 import { GiMonkey } from "react-icons/gi";
 
-
 const { BigInt } = window; // Import BigInt from the global scope
- 
-const MintNFT = ({metadataUrl}) =>{
+
+const MintNFT = ({ metadataUrl, onMinted }) => {
   const { 
     data: hash,
     error,   
     isPending, 
     writeContract 
-  } = useWriteContract() 
+  } = useWriteContract();
 
   async function submit(e) { 
-    e.preventDefault() 
-    const formData = new FormData(e.target) 
-    const tokenId = formData.get('tokenId')
-    const mintToAddress = formData.get('mintToAddress')
+    e.preventDefault();
+    const formData = new FormData(e.target); 
+    const tokenId = formData.get('tokenId');
+    const mintToAddress = formData.get('mintToAddress');
     writeContract({
       address: contractAddress,
       abi,
       functionName: 'mint',
       args: [mintToAddress, BigInt(tokenId), metadataUrl],
-    })
-  } 
+    });
+  }
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } = 
     useWaitForTransactionReceipt({ 
       hash, 
-    }) 
+    });
+
+  React.useEffect(() => {
+    if (isConfirmed && hash) {
+      onMinted(hash);
+    }
+  }, [isConfirmed, hash, onMinted]);
 
   return (
     <div>
@@ -51,10 +55,9 @@ const MintNFT = ({metadataUrl}) =>{
           placeholder="NFT to this Address"
           required
         />
-        <div className="text-yellow-500 font-thin text-xs" style={{ marginTop: '5px' }}>
-          Metadata URL: {metadataUrl || "No Metadata Url"}
+        <div className="mb-5" style={{ marginTop: '5px' }}>
         </div>
-        <button className="btn bg-black btn-circle" style={{ marginTop: '15px' }} disabled={isPending} type="submit">
+        <button className="btn bg-black btn-circle" style={{ marginTop: '15px' }} disabled={isPending || isConfirming || isConfirmed } type="submit">
           <GiMonkey className="h-6 w-6 text-accent" stroke="black">
             <path
               strokeLinecap="round"
@@ -69,15 +72,13 @@ const MintNFT = ({metadataUrl}) =>{
         ) : (
           <div></div>
         )}
-        {hash && <div>Transaction Hash: {hash}</div>}
-        {isConfirming && <div>Waiting for confirmation...</div>}
-        {isConfirmed && <div>Transaction confirmed.</div>}
+        {isConfirming && <div className="text-accent font-thin">Waiting for confirmation...</div>}
         {error && (
-          <div>Error: {error.shortMessage || error.message}</div>
+          <div className="text-accent font-thin">Error: {error.shortMessage || error.message}</div>
         )}
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default MintNFT
+export default MintNFT;
