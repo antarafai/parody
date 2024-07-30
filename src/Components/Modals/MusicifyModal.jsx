@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { fetchFileUploadRequest, uploadFile, createLibraryTrack, fetchLibraryTrack } from '../Music/api';
-import { handleWorkflow } from './Workflow'; // Adjust the import based on your project structure
+import { handleWorkflow } from './Workflow';
+import LoadingModal from './LoadingModal'; // Adjust the import based on your project structure
 
 /**
  * A modal component for the Musicify feature.
@@ -23,8 +24,13 @@ const MusicifyModal = ({ onClose }) => {
     { name: 'Private Party', value: 'private-party.mp3', id: '19225502', isCustom: false },
   ]);
   const [analysisResult, setAnalysisResult] = useState(null);
+  const [loadingMessages, setLoadingMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const audioRef = useRef(null);
-  const server_url = 'http://127.0.0.1:5000';
+
+  const updateMessages = (message) => {
+    setLoadingMessages((prevMessages) => [...prevMessages, message]);
+  };
 
   /**
    * Handles the change event when a file is selected.
@@ -170,9 +176,13 @@ const MusicifyModal = ({ onClose }) => {
       alert('Please analyze a track before generating.');
       return;
     }
+    setIsLoading(true);
+    setLoadingMessages([]);
 
     // Call the handleWorkflow function
-    await handleWorkflow(analysisResult, selectedFile, selectedSample, samples);
+    await handleWorkflow(analysisResult, selectedFile, selectedSample, samples, updateMessages);
+
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -260,6 +270,9 @@ const MusicifyModal = ({ onClose }) => {
           </button>
         </div>
       </div>
+
+      {/* Loading modal */}
+      <LoadingModal isVisible={isLoading} messages={loadingMessages} />
     </div>
   );
 };
