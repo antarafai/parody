@@ -31,7 +31,18 @@ export const handleWorkflow = async (analysisResult, selectedFile, selectedSampl
     console.log('Filtered result:', filteredResult);
 
     // Step 3: Send to /config/motions
-    await sendPostRequest(`${server_url}/config/motions`, { motions: filteredResult });
+    // Define the requests related to motions
+    const motionRequest = fetch(`${server_url}/config/motions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ motions: filteredResult })
+    });
+    // Execute the motions request
+    const motionResponse = await motionRequest;
+    if (!motionResponse.ok) {
+        throw new Error(`Request failed with status ${motionResponse.status}`);
+    }
+    console.log('Motions configuration request successful');
     // Step 4: Send analysisResult and audio file to /generate
     const formData = new FormData();
     if (selectedFile) {
@@ -68,27 +79,42 @@ export const handleWorkflow = async (analysisResult, selectedFile, selectedSampl
 
     await generateResponse.json();
 
-    // Step 5: Send to /config/character
-    await sendPostRequest(`${server_url}/config/character`, {
-      character: "/home/mizookie/anigen-flask-app/Xbot.blend",
-    });
+    // Define the requests in sequence
+    const requests = [
+      // Step 5: Send to /config/frames
+      fetch(`${server_url}/config/frames`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ total_frames: 400 }) // input1 denote number of frames
+      }),
+      // Step 6: Send to /config/import
+      fetch(`${server_url}/config/import`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ import_path: "/home/mizookie/Motions/Motions/Motions" })
+      }),
+      // Step 7: Send to /config/render
+      fetch(`${server_url}/config/render`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ render_path: "/home/mizookie/Renders" })
+      })
+    ];
 
-    // Step 6: Send to /config/frames
-    await sendPostRequest(`${server_url}/config/frames`, {
-      total_frames: 400,
-    });
+    try {
+      // Execute the requests sequentially
+      for (const request of requests) {
+          const response = await request;
+          if (!response.ok) {
+              throw new Error(`Request failed with status ${response.status}`);
+          }
+      }
+      console.log('All configuration requests successful');
+    } catch (error) {
+      console.error('Error during configuration requests', error);
+    }
 
-    // Step 7: Send to /config/import
-    await sendPostRequest(`${server_url}/config/import`, {
-      import_path: "/home/mizookie/Motions/Motions/Motions",
-    });
-
-    // Step 8: Send to /config/render
-    await sendPostRequest(`${server_url}/config/render`, {
-      render_path: "/home/mizookie/Renders",
-    });
-
-    // Step 9: Send GET request to /exec
+    // Step 8: Send GET request to /exec
     const execResponse = await fetch(`${server_url}/exec`, {
       method: 'GET',
     });
@@ -98,8 +124,20 @@ export const handleWorkflow = async (analysisResult, selectedFile, selectedSampl
       throw new Error(`HTTP error! status: ${execResponse.status}, message: ${errorText}`);
     }
 
-    const execResult = await execResponse.json();
-    console.log('Exec API result:', execResult);
+    // Use a reader to process the response in chunks
+    const reader = execResponse.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+    let done = false;
+
+    while (!done) {
+      const { value, done: readerDone } = await reader.read();
+      done = readerDone;
+      if (value) {
+        console.log(decoder.decode(value));
+      }
+    }
+
+    console.log('Exec request completed');
     alert('Execution completed successfully.');
 
   } catch (error) {
