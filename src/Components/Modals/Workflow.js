@@ -150,7 +150,7 @@ export const handleWorkflow = async (analysisResult, selectedFile, selectedSampl
           const percentage = (frameNumber / 400) * 100;
           updateMessages(`Processing frame ${frameNumber} (${percentage.toFixed(2)}% done)`);
         } else {
-          updateMessages(decodedValue);
+          updateMessages('Processing frame...');
         }
       }
     }
