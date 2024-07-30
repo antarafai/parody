@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect, useReducer, useRef } from "reac
 import { Avatar } from "@material-tailwind/react";
 import avatar from "../../assets/images/avatar.jpg";
 import { FaHeart, FaRegComment, FaTrash} from "react-icons/fa";
-import { IoPersonAdd } from "react-icons/io5";
+import { IoAddCircle } from "react-icons/io5";
 import { GiMonkey } from "react-icons/gi";
 import { AuthContext } from "../AppContext/AppContext";
 import {
@@ -25,9 +25,10 @@ import {
 import { db } from "../firebase/firebase";
 import CommentSection from "./CommentSection";
 import HlsPlayer from "../VideoPlayer/HlsPlayer"; // Import the HLS player component
-import  MintNFT  from '../Pages/mint-nft'
+import  MintNFT  from '../Pages/mint-nft';
+import thetaNFTbadge2 from "../../assets/images/thetaNFTbadge2.png";
 
-const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestamp, metadataUrl}) => {
+const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestamp, metadataUrl, mintStatus}) => {
   const { user } = useContext(AuthContext);
   const [state, dispatch] = useReducer(PostsReducer, postsStates);
   const likesRef = doc(collection(db, "posts", id, "likes"));
@@ -37,8 +38,9 @@ const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestam
   const [open, setOpen] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const postRef = useRef(null);
+  const [minted, setMinted] = useState(mintStatus);
 
-  const handleOpen = (e) => {
+  const handleOpen = (e) => { 
     e.preventDefault();
     setOpen(true);
   };
@@ -60,20 +62,6 @@ const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestam
       console.log(err.message);
     }
   };
-
-  const mintVideo = async (e) => {
-    e.preventDefault();
-    try {
-      if (user?.uid === uid) {
-        // Mint video
-      } else {
-        alert("You can't mint other users' posts!");
-      }
-    } catch (err) {
-      alert(err.message);
-      console.log(err.message);
-    }
-  }  
 
   const handleLike = async (e) => {
     e.preventDefault();
@@ -153,6 +141,19 @@ const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestam
     };
   }, []);
 
+  const handleMinted = async (hash, e) => {
+    // remove the mint button
+    setMinted(true);
+    // update the post with the new mintStatus set to true
+    const postRef = doc(db, "posts", id);
+    await updateDoc(postRef, {
+      mintStatus: true,
+      txHash: hash,
+    });
+
+    console.log('Minted NFT with transaction hash:', hash);
+  };
+
   useEffect(() => {
     if (isInView && mediaType === "video") {
       const videoElement = postRef.current.querySelector("video");
@@ -165,31 +166,71 @@ const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestam
   return (
     <div className="mb-0 bg-accent relative" ref={postRef}>
         <div className="absolute top-0 left-0 right-0 flex justify-between items-center p-1 bg-opacity-50 bg-black z-10">
-          <div className="flex items-center">
+        
+          <div className="flex items-center z-5">
             <Avatar
               size="sm"
               variant="circular"
               src={logo || avatar}
               alt="avatar"
             />
+            {user?.uid !== uid && (
+            <div
+              onClick={addUser}
+              className="cursor-pointer z-10"
+              style={{ marginTop: "-30px", marginLeft: "-15px" }}
+            >
+              <IoAddCircle
+                className="w-5 h-5 glow rounded-full"
+                alt="addFriend"
+              />
+            </div>
+          )}
             <div className="ml-2">
               <p className="text-xs text-white">{email}</p>
               <p className="text-xs text-gray-300">Published: {timestamp}</p>
             </div>
           </div>
-          {user?.uid !== uid && (
-            <div
-              onClick={addUser}
-              className="cursor-pointer"
-            >
-              <IoPersonAdd
-                className="w-6 h-6"
-                alt="addFriend"
-              />
-            </div>
-          )}
+         
+          
+          {minted && user?.uid === uid &&
+          
+          <div className="text-xs font-orbitron-small" style={{marginRight:'-230px'}}>
+          <img src={thetaNFTbadge2} alt="" className="" style={{ 
+              width: '90px', 
+              height: 'auto', 
+              marginTop: '-30px',
+              marginRight: '-20px', 
+              marginLeft: '-16px',
+              marginBottom: '-7px' 
+            }}  
+          />
+          
+           NFT
+          </div>}
+          {minted && user?.uid !== uid &&
+          
+          <div className="text-xs font-orbitron-small" style={{marginRight:'-30px'}}>
+          <img src={thetaNFTbadge2} alt="" className="" style={{ 
+              width: '90px', 
+              height: 'auto', 
+              marginTop: '-30px',
+              marginRight: '-20px', 
+              marginLeft: '-16px',
+              marginBottom: '-7px' 
+            }}  
+          />
+          
+           NFT
+          </div>}
+          
           {user?.uid === uid && (
             <div className="tooltip font-orbitron" data-tip="NFT your Parody">
+              {minted? 
+              <div>
+                
+              </div> 
+              : 
               <div className="dropdown dropdown-left">
                 <div tabIndex={0} role="button" className="btn bg-accent text-black glass m-1 font-thin p-1">
                   <GiMonkey className="w-6 h-6 text-black" style={{marginRight:'-5px'}} alt="monkey" />
@@ -201,10 +242,11 @@ const PostCard = ({ uid, id, logo, name, email, text, media, mediaType, timestam
                     tabIndex={0}
                     className=" flex flex-col dropdown-content card items-center card-compact bg-black bg-opacity-80  text-primary-content z-[1] w-64 h-44 p-0 shadow-2xl">
                     <div className="card-body">
-                      <MintNFT metadataUrl={metadataUrl}  />
+                      <MintNFT metadataUrl={metadataUrl} onMinted={handleMinted}  />
                     </div>
                   </div>
               </div>
+              }
             </div>
           )}
         </div>

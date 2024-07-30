@@ -41,6 +41,8 @@ const PostForm = ({ onPostSubmit, setProgressBar, initialMediaUrl, metadataUrl }
           text: text.current.value,
           media: media,
           timestamp: serverTimestamp(),
+          mintStatus: false,
+          txHash: "",
           metadataUrl: metadataUrl,
         });
         text.current.value = "";
