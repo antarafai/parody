@@ -19,8 +19,7 @@ const MusicifyModal = ({ onClose }) => {
   const [audioSrc, setAudioSrc] = useState('');
   const [uploading, setUploading] = useState(false);
   const [samples, setSamples] = useState([
-    { name: 'All That', value: 'allthat.mp3', id: '19234983', isCustom: false },
-    { name: 'Private Party', value: 'private-party.mp3', id: '19234982', isCustom: false },
+    { name: 'All That', value: 'allthat.mp3', id: '19251026', isCustom: false }
   ]);
   const [analysisResult, setAnalysisResult] = useState(null);
   const [loadingMessages, setLoadingMessages] = useState([]);
