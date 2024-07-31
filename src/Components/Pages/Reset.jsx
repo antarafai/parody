@@ -9,10 +9,10 @@ const Reset = () => {
   return (
     <div className="grid grid-cols-1 justify-items-center items-center h-screen">
       <div className="w-96">
-        <Typography variant="h6" color="blue-gray" className="pb-4">
+        <div className="pb-4 justify-items-center items-center font-orbitron text-accent">
           Enter the email address associated with your account and we 'll send
           you a link to reset your password
-        </Typography>
+        </div>
         <Input
           name="email"
           type="email"
@@ -20,9 +20,9 @@ const Reset = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         ></Input>
-        <Button variant="gradient" fullWidth className="mt-4">
+        <button className="btn btn-sm mt-4 bg-accent text-black font-thin" style={{marginLeft:'148px'}}>
           Continue
-        </Button>
+        </button>
       </div>
     </div>
   );

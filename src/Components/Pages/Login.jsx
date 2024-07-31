@@ -71,7 +71,7 @@ const Login = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 h-screen justify-items-center items-center">
-          <Card className="w-96 bg-black">
+          <Card className="w-96 glow-card bg-black">
               <div className="flex items-center" style={{marginLeft:'40px'}}>
                 <img src={parodyLogo} alt="" className="w-40 h-auto m-0" style={{ marginRight: '-70px', marginBottom: '-20px' , marginTop:'-50px'}} />
                 <div className="text-3xl text-white font-orbitron glitch" style={{ marginBottom: '-10px' }}>
@@ -114,7 +114,7 @@ const Login = () => {
                 </div>
                 <button
                   className="btn btn-sm mb-4 bg-accent text-black font-thin"
-                  style={{ marginLeft: "110px", width: "100px" }}
+                  style={{ marginLeft: "110px", width: "100px", marginBottom: "-20px" }}
                   type="submit"
                 >
                   Login
@@ -124,13 +124,13 @@ const Login = () => {
             <CardFooter className="pt-0">
               <button
                 className="mb-4 text-center font-orbitron text-accent font-thin"
-                style={{ marginLeft: "90px" }}
+                style={{ marginLeft: "80px" }}
                 onClick={signInWithGoogle}
               >
                 Sign In with Google
               </button>
               <Link to="/reset">
-                <p className="ml-0 font-bold font-orbitron font-thin text-xs text-yellow-500 text-center ">
+                <p className="ml-0 font-bold font-orbitron font-thin text-xs text-yellow-500 text-center " style={{marginBottom:'-20px', marginTop:'20px'}}>
                   Reset the password
                 </p>
               </Link>

@@ -7,13 +7,13 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import { Input } from "@material-tailwind/react";
-import { Button } from "@material-tailwind/react";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import ClipLoader from "react-spinners/ClipLoader";
 import { AuthContext } from "../AppContext/AppContext";
 import { auth, onAuthStateChanged } from "../firebase/firebase";
+import parodyLogo from "../../assets/images/parodyLogo.png";
 
 const Regsiter = () => {
   const [loading, setLoading] = useState(false);
@@ -72,17 +72,14 @@ const Regsiter = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 justify-items-center items-center h-screen">
-          <Card className="w-96">
-            <CardHeader
-              variant="gradient"
-              color="blue"
-              className="mb-4 grid h-28 place-items-center"
-            >
-              <Typography variant="h3" color="white">
-                REGISTER
-              </Typography>
-            </CardHeader>
-            <CardBody className="flex flex-col gap-4">
+          <Card className="w-96 glow-card bg-black">
+              <div className="flex items-center" style={{marginLeft:'40px'}}>
+                <img src={parodyLogo} alt="" className="w-40 h-auto m-0" style={{ marginRight: '-70px', marginBottom: '-20px' , marginTop:'-50px'}} />
+                <div className="text-3xl text-white font-orbitron glitch" style={{ marginBottom: '-10px' }}>
+                arody
+              </div>
+              </div>
+            <CardBody className="flex flex-col justify-center items-centergap-4">
               <form onSubmit={handleRegister}>
                 <div className="mb-2">
                   <Input
@@ -132,21 +129,20 @@ const Regsiter = () => {
                     </Typography>
                   )}
                 </div>
-                <Button
-                  variant="gradient"
-                  fullWidth
+                <button
+                  style={{ marginLeft: "120px", width: "100px", marginTop:'10px', marginBottom:'-10px' }}
                   type="submit"
-                  className="mb-4"
+                  className="btn btn-sm mb-4 bg-accent text-black font-thin"
                 >
                   Register
-                </Button>
+                </button>
               </form>
             </CardBody>
             <CardFooter className="pt-0">
-              <div className="mt-6 flex font-roboto text-base  justify-center">
+              <div className="mt-6 flex items-center text-xs font-orbitron text-yellow-200 justify-center">
                 Already have an account?
                 <Link to="/login">
-                  <p className="ml-1 font-bold font-roboto text-base text-blue-500 text-center">
+                  <p className="ml-1 font-bold font-orbitron text-sm text-accent text-center ">
                     Login
                   </p>
                 </Link>
