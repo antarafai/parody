@@ -7,7 +7,7 @@ import { runPrompt } from '../NLP/Prompt';
 import MusicifyModal from '../Modals/MusicifyModal';
 import MusicifyWarningModal from '../Modals/MusicifyWarningModal';
 import InputBar from '../Input/InputBar';
-import ExecProgressAlert from '../Alerts/ExecProgressAlert';
+import { ExecProgressAlert, PromptError } from '../Alerts/ExecProgressAlert';
 
 const server_url = 'https://anigenflaspwcylf79y4-db0acd9313e7f31c.tec-s1.onthetaedgecloud.com';
 
@@ -34,6 +34,9 @@ const FBXAnimations = () => {
     const [renderProgress, setRenderProgress] = useState(0); // Track rendering progress
     // Character state
     const [character, setCharacter] = useState(null);
+
+    // Error state
+    const [promptErrorMessage, setPromptErrorMessage] = useState('');
 
     const handleConfigButtonClick = () => {
         setIsConfigModalOpen(true);
@@ -150,9 +153,11 @@ const FBXAnimations = () => {
                     }
                 } else {
                     console.error('No valid paths after filtering');
+                    setPromptErrorMessage('No suitable motions found, please try another prompt');
                 }
             } else {
                 console.error('No valid paths returned from runPrompt');
+                setPromptErrorMessage('No suitable paths found, please try another prompt');
             }
         } catch (error) {
             console.error('Error during requests:', error);
@@ -198,6 +203,10 @@ const FBXAnimations = () => {
         setIsMusicifyWarningModalOpen(false);
     };
 
+    const handleCloseErrorAlert = () => {
+        setPromptErrorMessage('');
+    };
+
     return (
         <div className="flex flex-col h-full bg-black">
             <div className="flex flex-row h-full flex-1">
@@ -212,20 +221,24 @@ const FBXAnimations = () => {
                             >
                                 Configure
                             </button>
-                            <button 
-                                id="character" 
-                                className="btn btn-outline btn-accent mb-3 h-10 w-40 mx-2 rounded animate-float glow"
-                                onClick={handleCharacterSelectButtonClick}
-                            >
-                                Character
-                            </button>
-                            <button
-                                id="musicify (experimental)"
-                                className="btn btn-outline btn-accent mb-3 h-10 w-60 mx-2 rounded animate-float glow"
-                                onClick={handleMusicifyClick}
-                            >
-                                Musicify
-                            </button>
+                            <div className="tooltip text-xs font-thin text-neutral" data-tip="Configure first, then select character">
+                                <button 
+                                    id="character" 
+                                    className="btn btn-outline btn-accent mb-3 h-10 w-40 mx-2 rounded animate-float glow"
+                                    onClick={handleCharacterSelectButtonClick}
+                                >
+                                    Character
+                                </button>
+                            </div>
+                            <div className="tooltip text-xs font-thin text-neutral" data-tip="Musicify currently only uses the Female bot">
+                                <button
+                                    id="musicify (experimental)"
+                                    className="btn btn-outline btn-accent mb-3 h-10 w-60 mx-2 rounded animate-float glow"
+                                    onClick={handleMusicifyClick}
+                                >
+                                    Musicify
+                                </button>
+                            </div>
                             <button 
                                 id="preview" 
                                 className={`btn ${hasRenderJob ? (isExecInProgress ? 'btn-accent' : 'btn-outline btn-accent') : 'btn-disabled btn-outline btn-accent mx-2 rounded'} mb-3 rounded-r-full h-10 w-60 text-black animate-float glow`}
@@ -270,6 +283,12 @@ const FBXAnimations = () => {
 
             {showAlert && (
                 <ExecProgressAlert isExecInProgress={isExecInProgress} renderProgress={renderProgress} />
+            )}
+
+            {promptErrorMessage && (
+               <div> 
+                <PromptError promptErrorMessage={promptErrorMessage} onClose={handleCloseErrorAlert} />
+               </div>  
             )}
 
             <style jsx>{`

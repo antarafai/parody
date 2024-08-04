@@ -59,15 +59,16 @@ class ConfigModal extends Component {
             <div className="modal bg-black glow bg-opacity-70 modal-open">
                 <div className="modal-box">
                     <h2 className="text-2xl font-orbitron text-accent font-bold mb-4">Configuration</h2>
-                    <div className="space-y-4">
+                    <div className="space-y-4 font-thin text-xs font-orbitron text-gray-700">
                         <input
                             type="text"
                             name="input1"
                             value={this.state.input1}
                             onChange={this.handleInputChange}
                             placeholder="Number of Frames"
-                            className="input font-orbitron font-thin text-xs text-yellow-200 input-bordered w-full"
+                            className="input mb-1 font-orbitron font-thin text-xs text-yellow-200 input-bordered w-full"
                         />
+                        30 frames equals 1 second. Please choose atleast 100 frames for a sizeable render
                     </div>
                     <div className="modal-action">
                         <button 
