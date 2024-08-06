@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 const CharacterSelectModal = ({ isOpen, onClose, onSelectCharacter}) => {
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const server_url = 'https://anigenflaspwcylf79y4-db0acd9313e7f31c.tec-s1.onthetaedgecloud.com';
+  const server_url = 'https://anigenflas3kzxx1a014-7c9f2efb8947ade2.tec-s1.onthetaedgecloud.com';
 
   const videos = [
     {

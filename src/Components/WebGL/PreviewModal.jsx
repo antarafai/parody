@@ -12,7 +12,7 @@ const PreviewModal = ({ onClose, frameCount }) => {
   const [isPostFormOpen, setIsPostFormOpen] = useState(false);
   const [initialMediaUrl, setInitialMediaUrl] = useState(null); // State to hold initial media URL
   const videoRef = useRef(null);
-  const server_url = 'https://anigenflaspwcylf79y4-db0acd9313e7f31c.tec-s1.onthetaedgecloud.com';
+  const server_url = 'https://anigenflas3kzxx1a014-7c9f2efb8947ade2.tec-s1.onthetaedgecloud.com';
 
   useEffect(() => {
     const fetchVideoUrl = async () => {

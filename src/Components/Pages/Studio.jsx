@@ -9,7 +9,7 @@ import MusicifyWarningModal from '../Modals/MusicifyWarningModal';
 import InputBar from '../Input/InputBar';
 import { ExecProgressAlert, PromptError } from '../Alerts/ExecProgressAlert';
 
-const server_url = 'https://anigenflaspwcylf79y4-db0acd9313e7f31c.tec-s1.onthetaedgecloud.com';
+const server_url = 'https://anigenflas3kzxx1a014-7c9f2efb8947ade2.tec-s1.onthetaedgecloud.com';
 
 const FBXAnimations = () => {
     const progressBarRef = useRef(null);

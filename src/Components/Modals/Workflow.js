@@ -1,6 +1,6 @@
 // Workflow.js
 import { runPrompt2 } from "../NLP/Prompt";
-const server_url = 'https://anigenflaspwcylf79y4-db0acd9313e7f31c.tec-s1.onthetaedgecloud.com';
+const server_url = 'https://anigenflas3kzxx1a014-7c9f2efb8947ade2.tec-s1.onthetaedgecloud.com';
 
 export const handleWorkflow = async (analysisResult, selectedFile, selectedSample, samples, updateMessages) => {
   try {
